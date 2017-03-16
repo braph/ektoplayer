@@ -2,8 +2,8 @@
 
 Ektoplayer is a console audio player for [ektplazm.com](http://www.ektoplazm.com).
 
-![Screenshot 2017-03-16](http://pixelbanane.de/yafu/3175329883/ekto_2.png)
-![Screenshot 2017-03-16](http://pixelbanane.de/yafu/2856546263/ekto_1.png)
+![Screenshot 2017-03-16](http://pixelbanane.de/yafu/118231024/ekto1.png)
+![Screenshot 2017-03-16](http://pixelbanane.de/yafu/324630271/ekto2.png)
 
 ## Requirements
 
