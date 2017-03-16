@@ -2,8 +2,8 @@
 
 Ektoplayer is a console audio player for [ektplazm.com](http://www.ektoplazm.com).
 
-![Screenshot 2017-03-16](http://pixelbanane.de/yafu/2856546263/ekto_1.png)
 ![Screenshot 2017-03-16](http://pixelbanane.de/yafu/3175329883/ekto_2.png)
+![Screenshot 2017-03-16](http://pixelbanane.de/yafu/2856546263/ekto_1.png)
 
 ## Requirements
 
@@ -31,10 +31,10 @@ library to compile the native extensions.
 ## Features
 
   * Browse ektoplazm by artists/albums/styles
-  * Mouse is supported
-  * Colors are supported (up to 256!)
-  * Local sound file cache
   * Vi-Bindings
+  * Mouse is supported
+  * 256 colors are supported
+  * Local sound file cache
   * Highly configurable
 
 ## Authors
