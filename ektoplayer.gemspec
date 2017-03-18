@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency "audite", "~> 0.4"
+  s.add_dependency "sqlite3", "~> 1.3"
   s.add_dependency "curses", "~> 1.0"
   s.add_dependency "nokogiri", "~> 1.7"
   s.add_dependency "rubyzip", "~> 1.2"
