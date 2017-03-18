@@ -14,15 +14,11 @@ module Ektoplayer
          @database = database
       end
 
-      def get_archives(url)
-         @database.execute(@database.const_get('SELECT_ARCHIVES'), [url])
-      end
-
       def get_track_infos(url)
-         r = @database.select(filters: [{tag: url, operator: :==, value: url}])[0]
+         r = @database.select(filters: [{tag: :url, operator: :==, value: url}])[0]
 
          r.update(
-            get_archives(url).select {|_|_['archive_type'] == 'MP3'}[0]
+            @database.get_archives(url).select {|_|_['archive_type'] == 'MP3'}[0]
          )
 
          r['archive_filename'] = URI.unescape(File.basename(URI.parse(r['archive_url']).path))

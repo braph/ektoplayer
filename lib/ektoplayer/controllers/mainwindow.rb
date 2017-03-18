@@ -13,6 +13,27 @@ module Ektoplayer
             ops.reg('help.show')     { view.tabs.selected=(view.help)     }
             ops.reg('tabs.next')     { view.tabs.next                     }
             ops.reg('tabs.prev')     { view.tabs.prev                     }
+
+            ops.reg('playinginfo.toggle') do
+               view.with_lock do
+                  view.playinginfo.visible=(!view.playinginfo.visible?)
+                  view.want_layout
+               end
+            end
+
+            ops.reg('progressbar.toggle') do
+               view.with_lock do
+                  view.progressbar.visible=(!view.progressbar.visible?)
+                  view.want_layout
+               end
+            end
+
+            ops.reg('volumemeter.toggle') do
+               view.with_lock do
+                  view.volumemeter.visible=(!view.volumemeter.visible?)
+                  view.want_layout
+               end
+            end
          end
       end
    end

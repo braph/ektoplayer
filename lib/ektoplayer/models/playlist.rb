@@ -55,6 +55,7 @@ module Ektoplayer
          def add(*tracks)
             @playlist.concat(tracks)
             events.trigger(:changed, added: tracks)
+            Application.log(self.class, "added #{tracks.count} tracks to playlist")
          end
 
          def clear

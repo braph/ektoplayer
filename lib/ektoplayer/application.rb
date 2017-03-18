@@ -17,8 +17,11 @@ module Ektoplayer
       CONFIG_DIR  = File.join(Dir.home, '.config', 'ektoplayer').freeze
       CONFIG_FILE = File.join(CONFIG_DIR, 'ektoplayer.rc').freeze
 
-      def self.log(*msg)
-         $stderr.write("#{DateTime.now.rfc3339}: #{msg.join(' ')}\n")
+      def self.log(*msgs)
+         $stderr.write(DateTime.now.rfc3339 + ': ' + msgs.join(' '))
+         ex = msgs.select { |m| m.kind_of?Exception }[0] 
+         $stderr.write(?\n + ex.backtrace.join(?\n)) if ex
+         $stderr.write(?\n)
          $stderr.flush
       end
 

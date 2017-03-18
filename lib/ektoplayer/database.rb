@@ -46,7 +46,7 @@ module Ektoplayer
          JOIN albums        AS a   ON a.url = t.album_url
          JOIN albums_styles AS a_s ON a.url = a_s.album_url
 
-         GROUP BY t.url
+         GROUP BY t.url, a_s.style
       )
 
       WHERE 1  %{WHERE}
@@ -123,7 +123,7 @@ module Ektoplayer
          q.execute
          @events.trigger(:changed)
       rescue => e
-         Application.log(self.class, "#{mode}_into: #{e} on #{hash}")
+         Application.log(self.class, "#{mode}_into: #{e} on #{hash}", e)
       end
 
       def replace_into(table, hash)
@@ -135,7 +135,7 @@ module Ektoplayer
          stm.bind_params(*params) if params
          stm.execute.to_a
       rescue => e
-         Application.log(self.class, "execute(): #{e}")
+         Application.log(self.class, 'execute()', e)
       end
 
       def select(
@@ -179,7 +179,11 @@ module Ektoplayer
          stm.bind_params(*where_params)
          stm.execute.to_a
       rescue => e
-         Application.log(self.class, "select(): #{e}")
+         Application.log(self.class, 'select(): ', e)
+      end
+
+      def get_archives(url)
+         execute(SELECT_ARCHIVES, [url])
       end
 
       def track_count

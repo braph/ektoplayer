@@ -26,17 +26,21 @@ module Ektoplayer
          reg 'reload',  'Apply database changes to browser'
          reg 'update',  'Start a database update'
 
-         reg 'player.stop',     'Stop playing'
-         reg 'player.toggle',   'Toggle pause/play'
-         reg 'player.forward',  'Seek forward'
-         reg 'player.backward', 'Seek backward'
+         reg 'player.stop',               'Stop playing'
+         reg 'player.toggle',             'Toggle play/pause'
+         reg 'player.forward',            'Seek forward'
+         reg 'player.backward',           'Seek backward'
 
-         reg 'tabs.next', 'Select next tab'
-         reg 'tabs.prev', 'Select previous tab'
+         reg 'tabs.next',                 'Select next tab'
+         reg 'tabs.prev',                 'Select previous tab'
 
-         reg 'browser.enter',           'Enter selected directory'
-         reg 'browser.add_to_playlist', 'Add tracks under cursor to playlist'
-         reg 'browser.back',            'Change to parent directory'
+         reg 'browser.enter',             'Enter selected directory'
+         reg 'browser.add_to_playlist',   'Add tracks under cursor to playlist'
+         reg 'browser.back',              'Change to parent directory'
+
+         reg 'playinginfo.toggle',        'Toggle playinginfo visibility'
+         reg 'progressbar.toggle',        'Toggle progressbar visibility'
+         reg 'volumemeter.toggle',        'Toggle volumemeter visibility'
 
          reg 'playlist.goto_current',     'Go to current playing track'
          reg 'playlist.clear',            'Delete all items in playlist'
@@ -67,10 +71,14 @@ module Ektoplayer
          @bindings = {
             global: {
                'splash.show':             [?`, ?^                         ],
-               'playlist.show':           [?1,                            ],
-               'browser.show':            [?2,                            ],
-               'info.show':               [?3,                            ],
-               'help.show':               [?4,      Curses::KEY_F1        ],
+               'playlist.show':           [?1                             ],
+               'browser.show':            [?2                             ],
+               'info.show':               [?3                             ],
+               'help.show':               [?4                             ],
+
+               'playinginfo.toggle':      [         Curses::KEY_F2        ],
+               'progressbar.toggle':      [         Curses::KEY_F3        ],
+               'volumemeter.toggle':      [         Curses::KEY_F4        ],
 
                'player.forward':          [?f,      Curses::KEY_RIGHT     ],
                'player.backward':         [?b,      Curses::KEY_LEFT      ],
