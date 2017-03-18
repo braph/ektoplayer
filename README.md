@@ -10,8 +10,6 @@ Ektoplayer is a console audio player for [ektplazm.com](http://www.ektoplazm.com
   * Ruby (1.9)
   * Portaudio (19)
   * Mpg123 (1.14)
-  * Nokogiri (1.7)
-  * RubyZip (1.2)
 
 ## Installation
 
