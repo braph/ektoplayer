@@ -10,6 +10,8 @@ Ektoplayer is a console audio player for [ektplazm.com](http://www.ektoplazm.com
   * Ruby (1.9)
   * Portaudio (19)
   * Mpg123 (1.14)
+  * Nokogiri (1.7)
+  * RubyZip (1.2)
 
 ## Installation
 
@@ -30,11 +32,13 @@ library to compile the native extensions.
 
 ## Features
 
-  * Browse ektoplazm by artists/albums/styles
-  * Vi-Bindings
+  * Listen to ektoplazm tracks
+  * Download whole albums
+  * Browse database by tags
+  * Vi keybindings (`hjkl`, `^d`, `^u`, `/`, `?`, `n`, `N`, `:`, ...)
   * Mouse is supported
-  * 256 colors are supported
-  * Local sound file cache
+  * Supports 256/16/mono colors
+  * Local sound file cache and download archive
   * Highly configurable
 
 ## Authors
@@ -43,6 +47,6 @@ library to compile the native extensions.
 
 ## See also
 
-  * [Soundcloud2000](https://github.com/grobie/soundcloud2000)
-  * [Audite](https://github.com/georgi/audite)
+  * Ektoplayer was inspired by [Soundcloud2000](https://github.com/grobie/soundcloud2000) and [ncmpcpp](https://github.com/arybczak/ncmpcpp)
+  * It uses [Audite](https://github.com/georgi/audite) as playback engine and [Nokogiri](http://www.nokogiri.org/) for parsing HTML
 
