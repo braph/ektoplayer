@@ -16,16 +16,21 @@ Ektoplayer is a console audio player for [ektplazm.com](http://www.ektoplazm.com
 Assuming you have Ruby/Rubygems installed, you need portaudio and mpg123 as
 library to compile the native extensions.
 
-### OSX (not yet tested)
+### Arch Linux
 
-    xcode-select --install
-    brew install portaudio
-    brew install mpg123
+    pacman -S portaudio mpg123 ncurses ruby
     gem install ektoplayer
 
 ### Debian / Ubuntu (not yet tested)
 
     apt-get install portaudio19-dev libmpg123-dev libncurses-dev ruby1.9.1-dev
+    gem install ektoplayer
+
+### OSX (not yet tested)
+
+    xcode-select --install
+    brew install portaudio
+    brew install mpg123
     gem install ektoplayer
 
 ## Features
