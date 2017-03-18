@@ -91,7 +91,7 @@ module UI
 
       def render(index, **opts)
          return unless @item_renderer
-         fail "#{index.to_s} #{@list.size} #{caller.join("\n")}" unless @list[index]
+         return unless @list[index] # TODO...?
          @item_renderer.render(@win, @list[index], index, **opts)
       end
 

@@ -75,6 +75,7 @@ module Ektoplayer
                'player.forward':          [?f,      Curses::KEY_RIGHT     ],
                'player.backward':         [?b,      Curses::KEY_LEFT      ],
                'player.stop':             [?s                             ],
+               'player.toggle':           [?p                             ],
 
                'playlist.play_next':      [?>                             ],
                'playlist.play_prev':      [?<                             ],
@@ -107,7 +108,7 @@ module Ektoplayer
                'playlist.clear':          [?c                             ],
                'playlist.delete':         [?d                             ],
                # other
-               'player.toggle':           [?p, ' '                        ]},
+               'player.toggle':           [' '                            ]},
             browser: {
                # movement
                'browser.top':             [?g,      Curses::KEY_HOME      ],
