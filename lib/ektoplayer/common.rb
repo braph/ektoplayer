@@ -37,13 +37,11 @@ module Common
 
    def self.open_image_extern(url)
       fork do
-         begin exec('feh', url)
-         rescue
-            begin exec('display', url)
-            rescue 
+         exec('feh', url) rescue (
+            exec('display', url) rescue (
                exec('xdg-open', url)
-            end
-         end
+            )
+         )
       end
    end
 
