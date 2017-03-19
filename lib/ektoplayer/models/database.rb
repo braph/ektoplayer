@@ -40,7 +40,7 @@ module Ektoplayer
                   @events.trigger(:update_finished)
                end
             else
-               Application.log('already updating')
+               Application.log(self, 'already updating')
             end
          end
       end
