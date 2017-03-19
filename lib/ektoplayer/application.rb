@@ -74,66 +74,66 @@ module Ektoplayer
                Theme.use_colors(Config[:use_colors])
             end
 
-            @client = Client.new
+            client = Client.new
 
             # ... models ...
-            @player      = Models::Player.new(@client)
-            @browser     = Models::Browser.new(@client)
-            @playlist    = Models::Playlist.new
-            @database    = Models::Database.new(@client)
-            @trackloader = Models::Trackloader.new(@client)
+            player      = Models::Player.new(client)
+            browser     = Models::Browser.new(client)
+            playlist    = Models::Playlist.new
+            database    = Models::Database.new(client)
+            trackloader = Models::Trackloader.new(client)
 
             # ... operations ...
-            @operations = Operations::Operations.new
-            @view_operations = Operations::Operations.new
-            @operations.register(:quit,    &method(:exit))
-            @operations.register(:reload,  &@browser.method(:reload))
-            @operations.register(:update,  &@database.method(:update))
-            @operations.register(:refresh) { UI::Canvas.on_winch; UI::Canvas.update_screen(true) }
-            Operations::Player.new(@operations, @player)
-            Operations::Browser.new(@operations, @browser, @playlist)
-            Operations::Playlist.new(@operations, @playlist, @player, @trackloader)
+            operations = Operations::Operations.new
+            operations.register(:quit,    &method(:exit))
+            operations.register(:reload,  &browser.method(:reload))
+            operations.register(:update,  &database.method(:update))
+            operations.register(:refresh) { UI::Canvas.on_winch; UI::Canvas.update_screen(true) }
+            Operations::Player.new(operations, player)
+            Operations::Browser.new(operations, browser, playlist)
+            Operations::Playlist.new(operations, playlist, player, trackloader)
 
             # ... views ...
-            @mainwindow = UI::Canvas.sub(Views::MainWindow)
+            main_w = UI::Canvas.sub(Views::MainWindow)
 
             # next operations may take some time, espacially the ones
-            # using the database (@browser), so we put this inside a thread
+            # using the database (browser), so we put this inside a thread
             Thread.new do
                # ... controllers ...
-               Controllers::MainWindow.new(@mainwindow, @view_operations)
-               Controllers::Browser.new(@mainwindow.browser, @browser, @view_operations, @operations)
-               Controllers::Playlist.new(@mainwindow.playlist, @playlist, @view_operations, @operations)
-               Controllers::Help.new(@mainwindow.help, @view_operations)
-               Controllers::Info.new(@mainwindow.info, @playlist, @trackloader, @database, @view_operations)
-               @mainwindow.progressbar.attach(@player)
-               @mainwindow.volumemeter.attach(@player)
-               @mainwindow.playinginfo.attach(@playlist, @player)
+               view_ops = Operations::Operations.new
+               Controllers::MainWindow.new(main_w, view_ops)
+               Controllers::Browser.new(main_w.browser, browser, view_ops, operations)
+               Controllers::Playlist.new(main_w.playlist, playlist, view_ops, operations)
+               Controllers::Help.new(main_w.help, view_ops)
+               Controllers::Info.new(main_w.info, playlist, trackloader, database, view_ops)
+               main_w.progressbar.attach(player)
+               main_w.volumemeter.attach(player)
+               main_w.playinginfo.attach(playlist, player)
 
                # ... events ...
-               @database.events.on(:update_finished, &@browser.method(:reload ))
-               @player.events.on(:stop) do |reason|
-                  @operations.send(:'playlist.play_next') if reason == :track_completed
+               database.events.on(:update_finished, &browser.method(:reload ))
+               player.events.on(:stop) do |reason|
+                  operations.send(:'playlist.play_next') if reason == :track_completed
                end
 
                # ... bindings ...
-               Bindings.bind_view(:global, @mainwindow, @view_operations, @operations)
+               Bindings.bind_view(:global, main_w, view_ops, operations)
                %w(splash playlist browser info help).each do |w|
-                  Bindings.bind_view(w, @mainwindow.send(w), @view_operations, @operations)
+                  Bindings.bind_view(w, main_w.send(w), view_ops, operations)
                end
 
-               @player.stop
+               player.stop
 
                # If database is empty, start an initial update
-               if @browser.tracks(0).size < 1
-                  @operations.send(:update)
+               if browser.tracks(0).size < 1
+                  operations.send(:update)
                elsif (c = Config[:small_update_pages]) > 0
-                  @operations.send(:update, pages: c)
+                  operations.send(:update, pages: c)
                end
 
                if (n = Config[:playlist_load_newest]) > 0
-                  r = @client.database.select(order_by: 'date', limit: n)
-                  @playlist.add(*r)
+                  r = client.database.select(order_by: 'date', limit: n)
+                  playlist.add(*r)
                end
             end
 
