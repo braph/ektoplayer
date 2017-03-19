@@ -17,8 +17,9 @@ It allows you to
 
 ## Screenshots
 
-![Screenshot 2017-03-16](http://pixelbanane.de/yafu/118231024/ekto1.png)
-![Screenshot 2017-03-16](http://pixelbanane.de/yafu/324630271/ekto2.png)
+![Screenshot 2017-03-18](http://pixelbanane.de/yafu/1384751165/ekto1.gif)
+![Screenshot 2017-03-18](http://pixelbanane.de/yafu/3868182865/ekto2.gif)
+![Screenshot 2017-03-18](http://pixelbanane.de/yafu/2446075869/ekto3.gif)
 
 ## Requirements
 
