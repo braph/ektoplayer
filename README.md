@@ -1,6 +1,21 @@
 # Ektoplayer
 
-Ektoplayer is a console audio player for [ektoplazm.com](http://www.ektoplazm.com).
+Ektoplayer is a commandline client for [ektoplazm.com](http://www.ektoplazm.com), a website where you can listen and download freely licensed psytrance, techno and downtempo music. 
+
+It allows you to
+  * Search for tracks by tags (artist, album, style, ...)
+  * Play tracks located at ektoplazm.com
+  * Display information about albums
+  * Download a whole albums as mp3
+
+## Features
+
+  * Mouse support
+  * Vi-like keybindings (`hjkl`, `^d`, `^u`, `/`, `?`, `n`, `N`, ...)
+  * Up to 256 colors are supported
+  * Local sound file cache
+
+## Screenshots
 
 ![Screenshot 2017-03-16](http://pixelbanane.de/yafu/118231024/ekto1.png)
 ![Screenshot 2017-03-16](http://pixelbanane.de/yafu/324630271/ekto2.png)
@@ -28,17 +43,6 @@ library to compile the native extensions.
     apt-get install ruby ruby-dev portaudio19-dev libmpg123-dev sqlite3 libsqlite3-dev libncurses-dev libz1g-dev build-essential
     gem install ektoplayer
 
-## Features
-
-  * Listen to ektoplazm tracks
-  * Download whole albums
-  * Browse database by tags
-  * Vi keybindings (`hjkl`, `^d`, `^u`, `/`, `?`, `n`, `N`, ...)
-  * Mouse is supported
-  * Supports 256/16/mono colors
-  * Local sound file cache and download archive
-  * Highly configurable
-
 ## Authors
 
   * [Benjamin Abendroth](https://github.com/braph)
@@ -47,4 +51,3 @@ library to compile the native extensions.
 
   * Ektoplayer was inspired by [Soundcloud2000](https://github.com/grobie/soundcloud2000) and [ncmpcpp](https://github.com/arybczak/ncmpcpp)
   * It uses [Audite](https://github.com/georgi/audite) as playback engine and [Nokogiri](http://www.nokogiri.org/) for parsing HTML
-

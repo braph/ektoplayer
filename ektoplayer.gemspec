@@ -2,12 +2,13 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = "ektoplayer"
-  s.version       = "0.1.2"
+  s.version       = "0.1.3"
   s.authors       = ["Benjamin Abendroth"]
   s.email         = "braph93@gmx.de"
-  s.homepage      = "http://www.github.com/braph/ektoplayer"
-  s.summary       = "play music from ektoplazm.com"
-  s.description   = "Console audio player for ektoplazm.com"
+  s.homepage      = "http://github.com/braph/ektoplayer"
+  s.summary       = "play or download music from ektoplazm.com"
+  s.description   = "Ektoplayer is a commandline client for http://ektoplazm.com, a website providing free electronic music such as techno, goa and psy-trance"
+  s.source        = "https://github.com/braph/ektoplayer"
   s.license       = 'GPL-3.0'
 
   s.bindir        = 'bin'
