@@ -8,7 +8,7 @@ module Ektoplayer
          FROM   archive_urls
          JOIN   tracks AS t ON t.album_url = archive_urls.album_url
          WHERE  t.url = ?
-      ].freeze
+      ].squeeze(' ').freeze
 
       SELECT = %q[
       SELECT
@@ -39,20 +39,22 @@ module Ektoplayer
 
             a_s.style         AS style,
 
-            GROUP_CONCAT(DISTINCT a_s.style) as styles
+            (
+               SELECT GROUP_CONCAT(style)
+               FROM  albums_styles
+               WHERE albums_styles.album_url = t.album_url
+            ) AS styles
          FROM
-            tracks as t
+            tracks AS t
 
          JOIN albums        AS a   ON a.url = t.album_url
          JOIN albums_styles AS a_s ON a.url = a_s.album_url
-
-         GROUP BY t.url, a_s.style
       )
 
       WHERE 1  %{WHERE}
       GROUP BY %{GROUP_BY}
       ORDER BY %{ORDER_BY}
-      %{LIMIT} ].freeze
+      %{LIMIT} ].squeeze(' ').freeze
 
       attr_reader :db, :events
 
