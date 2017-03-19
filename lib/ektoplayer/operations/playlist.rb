@@ -16,23 +16,25 @@ module Ektoplayer
          def download_album(index)
             return unless track = @playlist[index]
             Thread.new do
-               @trackloader.download_album(track['url'])
+               @trackloader.download_album(track['url']) rescue (
+                  Application.log(self, $!)
+               )
             end
          end
 
          def reload(index)
             return unless track = @playlist[index]
             Thread.new do
-               @trackloader.get_track_file(track['url'], reload: true)
+               @trackloader.get_track_file(track['url'], reload: true) rescue (
+                  Application.log(self, $!)
+               )
             end
          end
 
          def play(index)
             return unless track = @playlist[index]
-            Thread.new do
-               @playlist.current_playing=(index)
-               @player.play(@trackloader.get_track_file(track['url']))
-            end
+            @playlist.current_playing=(index)
+            @player.play(@trackloader.get_track_file(track['url']))
          end
 
          def play_next

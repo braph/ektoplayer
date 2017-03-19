@@ -54,7 +54,7 @@ module Ektoplayer
             FileUtils::rm(dl.file) rescue nil
          end
 
-         @download << dl.start!
+         @downloads << dl.start!
       end
 
       def get_track_file(url, reload: false)

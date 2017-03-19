@@ -23,7 +23,7 @@ module Ektoplayer
          $stderr.puts("#{DateTime.now.rfc3339} #{from}.#{func}: " + msgs.join(' '))
 
          if e = msgs.select { |m| m.kind_of?Exception }[0] 
-            $stderr.puts "#{e.backtrace.first}: #{e.message} (#{e.class})", e.backtrace.drop(1).map{|s| "\t#{s}"}
+            $stderr.puts "#{e.backtrace.first}: #{e.message} (#{e.class})", e.backtrace.join(?\n)
          end
          $stderr.flush
       end
