@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'date'
 
-{  '.'            => %w(config theme bindings client common ui),
+{  '.'            => %w(compat config theme bindings client common ui),
    'views'        => %w(mainwindow),
    'models'       => %w(player browser playlist database trackloader),
    'operations'   => %w(operations player browser playlist),

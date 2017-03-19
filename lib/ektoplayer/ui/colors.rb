@@ -68,7 +68,7 @@ module UI
             @@id += 1
          end
 
-         Curses.init_pair(id, fg, bg) or fail
+         Curses.init_pair(id, fg, bg) #or fail
          Curses.color_pair(id)
       end
 

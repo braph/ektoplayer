@@ -219,12 +219,12 @@ module Ektoplayer
 
       def parse(file, bindings, theme)
          callbacks = {
-           'set':        self.method(:set),
-           'bind':       bindings.method(:bind),
-           'unbind':     bindings.method(:unbind),
-           'color':      theme.method(:color),
-           'color_256':  theme.method(:color_256),
-           'color_mono': theme.method(:color_mono)
+           set:        self.method(:set),
+           bind:       bindings.method(:bind),
+           unbind:     bindings.method(:unbind),
+           color:      theme.method(:color),
+           color_256:  theme.method(:color_256),
+           color_mono: theme.method(:color_mono)
          }
          callbacks.default_proc = proc { |h,k| fail "unknown command: #{k}" }
          callbacks.freeze
