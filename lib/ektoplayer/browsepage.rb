@@ -130,9 +130,9 @@ module Ektoplayer
             @albums << album
          end
 
-         Application.log("BrowserPage.parse(): -completed- #{src} #{@albums.size} albums found")
-      rescue => e      
-         Application.log("BrowsePage.parse(): #{e} -on- #{src}".freeze)
+         Application.log(self, "completed; #{src} #{@albums.size} albums found")
+      rescue
+         Application.log(self, src, $!)
       end
    end
 end

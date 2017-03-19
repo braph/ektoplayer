@@ -36,8 +36,7 @@ module Ektoplayer
          end
 
          sleep 1 while not queue.empty?
-      rescue => e
-         Application.log("DatabaseUpdater.update(): #{e}")
+      rescue Application.log(self, $!)
       end
 
       private def insert_browserpage(browserpage)
@@ -46,8 +45,7 @@ module Ektoplayer
          end
 
          browserpage.albums.each { |album| insert_album album }
-      rescue => e
-         Application.log("DatabaseUpdater.insert_browserpage(): #{e}")
+      rescue Application.log(self, $!)
       end
 
       private def insert_album(album)

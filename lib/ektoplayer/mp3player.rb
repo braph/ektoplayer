@@ -61,8 +61,8 @@ class Mp3Player
                   break if status == :done or status == :need_more
                   @portaudio.wait
                end
-            rescue => e
-               Application.log(self.class, e)
+            rescue
+               Application.log(self, $!)
             ensure
                @portaudio_thr = nil
                if status == :done or status == :need_more

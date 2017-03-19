@@ -124,8 +124,8 @@ module Ektoplayer
          q.bind_params(hash.values)
          q.execute
          @events.trigger(:changed)
-      rescue => e
-         Application.log(self.class, "#{mode}_into: #{e} on #{hash}", e)
+      rescue
+         Application.log(self, hash, $!)
       end
 
       def replace_into(table, hash)
@@ -136,8 +136,8 @@ module Ektoplayer
          stm = @db.prepare query
          stm.bind_params(*params) if params
          stm.execute.to_a
-      rescue => e
-         Application.log(self.class, 'execute()', e)
+      rescue
+         Application.log(self, $!)
       end
 
       def select(
@@ -180,8 +180,8 @@ module Ektoplayer
 
          stm.bind_params(*where_params)
          stm.execute.to_a
-      rescue => e
-         Application.log(self.class, 'select(): ', e)
+      rescue
+         Application.log(self, $!)
       end
 
       def get_archives(url)

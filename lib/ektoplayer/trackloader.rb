@@ -43,14 +43,14 @@ module Ektoplayer
                   FileUtils::mkdir_p(extract_dir)
                   Common::extract_zip(archive_file, extract_dir)
                   FileUtils::rm(archive_file) if Config[:delete_after_extraction]
-               rescue => e
-                  Application.log(self.class, 'extract failed', archive_file, extract_dir, e)
+               rescue
+                  Application.log(self, "extraction of '#{archive_file}' to '#{extract_dir}' failed:", $!)
                end
             end
          end
 
          dl.events.on(:failed) do |reason|
-            Application.log(self.class, dl.file, dl.url, reason)
+            Application.log(self, dl.file, dl.url, reason)
             FileUtils::rm(dl.file) rescue nil
          end
 
@@ -63,8 +63,8 @@ module Ektoplayer
             album_files = Dir.glob(File.join(track_info['album_path'], '*.mp3'))
             track_file = album_files.sort[track_info['number']]
             return track_file if track_file
-         rescue => e
-            Application.log(self.class, 'could not load track from archive_dir', e)
+         rescue
+            Application.log(self, 'could not load track from archive_dir:', $!)
          end
 
          url_obj    = URI.parse(url)
@@ -83,14 +83,14 @@ module Ektoplayer
          if Config[:use_cache]
             dl.events.on(:completed) do 
                begin FileUtils::mv(temp_file, cache_file)
-               rescue => e
-                  Application.log(self.class, 'mv failed', temp_file, cache_file, e)
+               rescue
+                  Application.log(self, 'mv failed', temp_file, cache_file, $!)
                end
             end
          end
 
          dl.events.on(:failed) do |reason|
-            Application.log(self.class, dl.file, dl.url, reason)
+            Application.log(self, dl.file, dl.url, reason)
             FileUtils::rm(dl.file) rescue nil
          end
 
@@ -131,8 +131,8 @@ module Ektoplayer
 
                fail 'filesize mismatch' if @progress != @total
                @events.trigger(:completed)
-            rescue => e
-               @events.trigger(:failed, (@error = e))
+            rescue
+               @events.trigger(:failed, (@error = $!))
             ensure
                @file.close
             end

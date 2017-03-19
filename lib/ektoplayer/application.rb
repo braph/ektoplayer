@@ -17,11 +17,14 @@ module Ektoplayer
       CONFIG_DIR  = File.join(Dir.home, '.config', 'ektoplayer').freeze
       CONFIG_FILE = File.join(CONFIG_DIR, 'ektoplayer.rc').freeze
 
-      def self.log(*msgs)
-         $stderr.write(DateTime.now.rfc3339 + ': ' + msgs.join(' '))
-         ex = msgs.select { |m| m.kind_of?Exception }[0] 
-         $stderr.write(?\n + ex.backtrace.join(?\n)) if ex
-         $stderr.write(?\n)
+      def self.log(from, *msgs)
+         func = caller[0][/`.*'/][1..-2]
+         from = from.class unless from.is_a?String
+         $stderr.puts("#{DateTime.now.rfc3339} #{from}.#{func}: " + msgs.join(' '))
+
+         if e = msgs.select { |m| m.kind_of?Exception }[0] 
+            $stderr.puts "#{e.backtrace.first}: #{e.message} (#{e.class})", e.backtrace.drop(1).map{|s| "\t#{s}"}
+         end
          $stderr.flush
       end
 
@@ -37,34 +40,30 @@ module Ektoplayer
          [Config, Bindings, Theme].each { |c| Common::mksingleton(c) }
 
          if File.file? Config::CONFIG_FILE
-            begin Config.parse(Config::CONFIG_FILE, Bindings, Theme)
-            rescue => e
-               fail "Config: #{e}"
-            end
+            Config.parse(Config::CONFIG_FILE, Bindings, Theme) rescue (
+               fail "Config: #{$!}"
+            )
          end
 
-         begin FileUtils::mkdir_p Config::CONFIG_DIR
-         rescue => e
-            fail "Could not create config dir: #{e}"
-         end
+         FileUtils::mkdir_p Config::CONFIG_DIR rescue (
+            fail "Could not create config dir: #{$!}"
+         )
 
          Application.open_log(Config[:log_file])
 
          if Config[:use_cache]
             unless File.directory? Config[:cache_dir]
-               begin FileUtils::mkdir Config[:cache_dir]
-               rescue => e
-                  fail "Could not create cache dir: #{e}"
-               end
+               FileUtils::mkdir Config[:cache_dir] rescue (
+                  fail "Could not create cache dir: #{$!}"
+               )
             end
          end
 
          [:temp_dir, :download_dir, :archive_dir].each do |key|
             unless File.directory? Config[key]
-               begin FileUtils::mkdir Config[key]
-               rescue => e
-                  fail "Could not create #{key}: #{e}"
-               end
+               FileUtils::mkdir Config[key] rescue (
+                  fail "Could not create #{key}: #{$!}"
+               )
             end
          end
 
@@ -141,9 +140,8 @@ module Ektoplayer
             UI::Canvas.update_screen
             UI::Input.start_loop
          end
-      rescue => e
-         puts "Error: #{e}"
-         Application.log("#{e}\n", e.backtrace.join(?\n))
+      rescue
+         Application.log($!) #puts "Error: #{e}"
       end
    end
 end

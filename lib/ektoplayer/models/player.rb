@@ -18,10 +18,8 @@ module Ektoplayer
          end
 
          def play(file)
-            Application.log(self.class, 'playing', file)
-            @player.play(file)
-         rescue => e
-            Application.log(e)
+            Application.log(self, 'playing', file)
+            @player.play(file) rescue Application.log(self, $!)
          end
 
          def close;  @player.close  end

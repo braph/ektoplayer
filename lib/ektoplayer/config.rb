@@ -14,8 +14,8 @@ module Ektoplayer
             begin
                fail 'Missing size= or rel=' if (!fmt[:size] and !fmt[:rel])
                fail 'size= and rel= are mutually exclusive' if (fmt[:size] and fmt[:rel])
-            rescue => e
-               fail "column: #{fmt[:tag]}: #{e}"
+            rescue 
+               fail "column: #{fmt[:tag]}: #{$!}"
             end
 
             fmt
@@ -213,8 +213,8 @@ module Ektoplayer
          end
 
          @options[option].freeze
-      rescue => e
-         fail "Invalid value '#{value}' for '#{option}': #{e}"
+      rescue
+         fail "Invalid value '#{value}' for '#{option}': #{$!}"
       end
 
       def parse(file, bindings, theme)
@@ -238,8 +238,8 @@ module Ektoplayer
                cb = callbacks[command.to_sym]
                fail "missing arguments for #{command}" if args.size != cb.arity
                cb.call(*args)
-            rescue => e
-               fail "#{file}:#{$.}: #{e}"
+            rescue
+               fail "#{file}:#{$.}: #{$!}"
             end
          end
       end
