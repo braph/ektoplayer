@@ -141,7 +141,7 @@ module Ektoplayer
             UI::Input.start_loop
          end
       rescue
-         puts "Error: #{e}"
+         puts "Error: #{$!}"
          Application.log(self, $!)
       end
    end
