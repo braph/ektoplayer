@@ -145,7 +145,7 @@ module Ektoplayer
          end
 
          sleep 0.1 while @total.nil?
-         sleep 0.1
+         sleep 0.2
          self
       end
    end

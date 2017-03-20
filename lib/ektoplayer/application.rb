@@ -35,6 +35,7 @@ module Ektoplayer
 
       def run
          #Thread.abort_on_exception=(true)
+         Thread.report_on_exception=(true) rescue nil
 
          # make each configuration object globally accessible as a singleton
          [Config, Bindings, Theme].each { |c| Common::mksingleton(c) }
