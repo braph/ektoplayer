@@ -138,7 +138,7 @@ module Ektoplayer
                   draw_tag('Posted by');   draw_url(url, @track['posted_by'])
                end
 
-               draw_tag('Styles',       @track['styles'].sub(?,, ', '))
+               draw_tag('Styles',       @track['styles'].gsub(?,, ', '))
                draw_tag('Downloads',    @track['download_count'])
                draw_tag('Rating',  "%0.2d%% (%d Votes)" % [@track['rating'], @track['votes']])
                draw_tag('Cover'); draw_url(@track['cover_url'], 'Cover')
