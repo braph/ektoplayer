@@ -8,7 +8,6 @@ Gem::Specification.new do |s|
   s.homepage      = "http://github.com/braph/ektoplayer"
   s.summary       = "play or download music from ektoplazm.com"
   s.description   = "Ektoplayer is a commandline client for http://ektoplazm.com, a website providing free electronic music such as techno, goa and psy-trance"
-  s.source        = "https://github.com/braph/ektoplayer"
   s.license       = 'GPL-3.0'
 
   s.bindir        = 'bin'
