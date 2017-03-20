@@ -6,6 +6,7 @@ module UI
 
       def initialize(widgets: [], **opts)
          super(**opts)
+         events.register(:changed)
          @selected, @selected_index, @widgets = nil, nil, widgets
       end
 
@@ -24,6 +25,7 @@ module UI
             end
 
             @selected_index = index
+            trigger(@events, :changed, @selected_index)
             want_layout
          end
       end
@@ -39,6 +41,7 @@ module UI
             end
 
             @selected = widget
+            trigger(@events, :changed, @selected_index)
             want_layout
          end
       end
@@ -70,19 +73,19 @@ module UI
 
       def draw;     visible_widgets.each(&:draw)     end
       def refresh;  visible_widgets.each(&:refresh)  end
-      def layout;   visible_widgets.each(&:layout)   end
+      def layout;   @widgets.each(&:layout)   end
 
       def on_key_press(key)
          @selected.key_press(key) if @selected
          super(key)
       end
 
-      def next
+      def select_next
          return unless @selected
          self.selected_index=((@selected_index + 1) % @widgets.size)
       end
 
-      def prev
+      def select_prev
          return unless @selected
          return self.selected_index=(@widgets.size - 1) if @selected_index == 0
          self.selected_index=(@selected_index - 1)
@@ -120,6 +123,37 @@ module UI
          end
 
          super
+      end
+   end
+
+   class SwitchContainer < GenericContainer
+      def layout
+         @widgets.each do |widget|
+            widget.with_lock do
+               widget.size=(@size)
+               widget.pos=(@pos)
+            end
+         end
+
+         super
+      end
+
+      def selected=(widget)
+         with_lock do
+            (@selected.invisible!) if @selected
+            super(widget)
+            (@selected.visible!) if @selected
+            want_layout
+         end
+      end
+
+      def selected_index=(index)
+         with_lock do
+            (@selected.invisible!) if @selected
+            super(index)
+            (@selected.visible!) if @selected
+            want_layout
+         end
       end
    end
 end

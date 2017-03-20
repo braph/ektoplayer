@@ -38,6 +38,8 @@ module UI
             height: @pad[:top] + @pad[:bottom] + 1 + @text.count(?\n),
             width:  @pad[:left] + @pad[:right] + @text.split(?\n).max.size
          ))
+
+         self
       end
    end
 end

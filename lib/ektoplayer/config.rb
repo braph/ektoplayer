@@ -177,8 +177,8 @@ module Ektoplayer
              'Format of second line in playinginfo', DEFAULT_PLAYINGINFO_FORMAT2,
              ColumnFormat.method(:parse_simple_format)
 
-         # - Tabs
-         reg 'tabs.show_tabbar',
+         # - Tabbar
+         reg 'tabbar.display',       
             'Enable/disable tabbar', true
 
          reg 'tabs.widgets', 'Specify widget order of tabbar (left to right)',
@@ -186,7 +186,7 @@ module Ektoplayer
             lambda { |v| v.split(/\s*,\s*/).map(&:to_sym) }
 
          reg 'main.widgets', 'Specify widgets to show (up to down)',
-            'playinginfo,progressbar,tabs,volumemeter',
+            'playinginfo,progressbar,tabbar,windows,volumemeter',
             lambda { |v| v.split(/\s*,\s*/).map(&:to_sym) }
       end
 

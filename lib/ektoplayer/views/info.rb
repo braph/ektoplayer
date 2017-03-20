@@ -1,5 +1,4 @@
 require_relative '../ui/widgets'
-require_relative '../bindings'
 require_relative '../theme'
 require_relative '../common'
 
@@ -78,33 +77,9 @@ module Ektoplayer
             end
          end
 
-         def with_mouse_section_event
-            start_cursor = @win.cursor; yield
-
-            start_pos = UI::Point.new(
-               y: [start_cursor.y, @win.cursor.y].min,
-               x: [start_cursor.x, @win.cursor.x].min,
-            )
-            stop_pos = UI::Point.new(
-               y: [start_cursor.y, @win.cursor.y].max,
-               x: [start_cursor.x, @win.cursor.x].max
-            )
-
-            ev = UI::MouseSectionEvent.new(start_pos, stop_pos)
-            mouse_section.add(ev)
-            ev
-         end
-
-         def mouse_click(mevent)
-            if ev = mouse_event_transform(mevent)
-               ev.x += @pad_mincol
-               ev.y += @pad_minrow
-               trigger(@mouse, ev)
-               trigger(@mouse_section, ev)
-            end
-         end
-
          def draw
+            return unless @player
+
             self.pad_size=(UI::Size.new(
                height: 200,
                width:  [@size.width, MIN_WIDTH].max

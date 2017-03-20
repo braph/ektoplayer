@@ -41,6 +41,7 @@ module Ektoplayer
          reg 'playinginfo.toggle',        'Toggle playinginfo visibility'
          reg 'progressbar.toggle',        'Toggle progressbar visibility'
          reg 'volumemeter.toggle',        'Toggle volumemeter visibility'
+         reg 'tabbar.toggle',             'Toggle tabbar visibility'
 
          reg 'playlist.goto_current',     'Go to current playing track'
          reg 'playlist.clear',            'Delete all items in playlist'
@@ -78,7 +79,8 @@ module Ektoplayer
 
                :'playinginfo.toggle'      => [         Curses::KEY_F2        ],
                :'progressbar.toggle'      => [         Curses::KEY_F3        ],
-               :'volumemeter.toggle'      => [         Curses::KEY_F4        ],
+               :'tabbar.toggle'           => [         Curses::KEY_F4        ],
+               :'volumemeter.toggle'      => [         Curses::KEY_F5        ],
 
                :'player.forward'          => [?f,      Curses::KEY_RIGHT     ],
                :'player.backward'         => [?b,      Curses::KEY_LEFT      ],

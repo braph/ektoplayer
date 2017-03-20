@@ -3,8 +3,8 @@ module UI
       WANT_REFRESH, WANT_REDRAW, WANT_LAYOUT = 1, 2, 4
 
       attr_reader  :pos, :size
+      def events;          @events ||= Events.new.no_auto_create       end
       def keys;            @keys   ||= Events.new                      end
-      def events;          @events ||= Events.new                      end
       def mouse;           @mouse  ||= MouseEvents.new                 end
       def mouse_section;   @mouse_section ||= MouseSectionEvents.new   end
 
@@ -182,6 +182,32 @@ module UI
       def down(n=1)
          new_minrow = (@pad_minrow + n).clamp(0, (@win.height - @size.height)) rescue 0
          self.pad_minrow=(new_minrow)
+      end
+
+      def with_mouse_section_event
+         start_cursor = @win.cursor; yield
+
+         start_pos = UI::Point.new(
+            y: [start_cursor.y, @win.cursor.y].min,
+            x: [start_cursor.x, @win.cursor.x].min,
+         )
+         stop_pos = UI::Point.new(
+            y: [start_cursor.y, @win.cursor.y].max,
+            x: [start_cursor.x, @win.cursor.x].max
+         )
+
+         ev = UI::MouseSectionEvent.new(start_pos, stop_pos)
+         mouse_section.add(ev)
+         ev
+      end
+
+      def mouse_click(mevent)
+         if ev = mouse_event_transform(mevent)
+            ev.x += @pad_mincol
+            ev.y += @pad_minrow
+            trigger(@mouse, ev)
+            trigger(@mouse_section, ev)
+         end
       end
 
       def refresh

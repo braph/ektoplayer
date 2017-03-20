@@ -10,7 +10,7 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.2'.freeze
+      VERSION = '0.1.4'.freeze
       GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
       EKTOPLAZM_URL = 'http://www.ektoplazm.com'.freeze
 
@@ -99,6 +99,8 @@ module Ektoplayer
             # next operations may take some time, espacially the ones
             # using the database (browser), so we put this inside a thread
             Thread.new do
+               begin
+
                # ... controllers ...
                view_ops = Operations::Operations.new
                Controllers::MainWindow.new(main_w, view_ops)
@@ -134,6 +136,10 @@ module Ektoplayer
                if (n = Config[:playlist_load_newest]) > 0
                   r = client.database.select(order_by: 'date', limit: n)
                   playlist.add(*r)
+               end
+
+               rescue
+                  Application.log(self, $!)
                end
             end
 

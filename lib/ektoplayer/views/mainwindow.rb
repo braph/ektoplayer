@@ -1,61 +1,52 @@
-%w( ../ui/widgets/tabbedcontainer playinginfo progressbar
-volumemeter splash playlist browser info help ).
+%w( ../ui/widgets/container playinginfo progressbar
+volumemeter splash playlist browser info help tabbar ).
    each {|_|require_relative(_)}
 
 module Ektoplayer
    module Views
       class MainWindow < UI::VerticalContainer
-         attr_reader :progressbar, :volumemeter, :playinginfo
-         attr_reader :tabs, :splash, :playlist, :browser, :info, :help
+         attr_reader :progressbar, :volumemeter, :playinginfo, :tabbar
+         attr_reader :windows, :splash, :playlist, :browser, :info, :help
 
          def initialize(**opts)
             super(**opts)
 
-            s1 = UI::Size.new(height: 1, width: 1) # TODO.....!!
-
             @playinginfo  = sub(PlayingInfo)
             @progressbar  = sub(ProgressBar)
             @volumemeter  = sub(VolumeMeter)
-            @tabs         = sub(UI::TabbedContainer)
-            @help         = @tabs.sub(Help, size: s1, visible: false)
-            @info         = @tabs.sub(Info, size: s1, visible: false)
-            @splash       = @tabs.sub(Splash, size: s1, visible: false)
-            @browser      = @tabs.sub(Browser, size: s1, visible: false)
-            @playlist     = @tabs.sub(Playlist, size: s1, visible: false)
-
-            @tabs.attributes=(
-               %w(tab_selected tabs).map do |attr|
-                  [attr.to_sym, Theme[attr.to_sym]]
-               end.to_h
-            )
+            @tabbar       = sub(TabBar)
+            @windows      = sub(UI::SwitchContainer)
+            @help         = @windows.sub(Help, visible: false)
+            @info         = @windows.sub(Info, visible: false)
+            @splash       = @windows.sub(Splash, visible: false)
+            @browser      = @windows.sub(Browser, visible: false)
+            @playlist     = @windows.sub(Playlist, visible: false)
 
             Config[:'tabs.widgets'].each do |widget|
-               @tabs.add(send(widget), widget)
+               @windows.add(send(widget))
+               @tabbar.add(widget)
             end
 
             Config[:'main.widgets'].each { |w| add(send(w)) }
-            self.selected=(@tabs)
+
+            @windows.selected=(@splash)
+            self.selected=(@windows)
          end
 
          def layout
             height = @size.height
 
-            if @playinginfo.visible?
-               @playinginfo.size=(@size.update(height: 2))
-               height -= 2
-            end
+            @playinginfo.size=(@size.update(height: 2))
+            @volumemeter.size=(@size.update(height: 1))
+            @progressbar.size=(@size.update(height: 1))
+            @tabbar.size=(@size.update(height: 1))
 
-            if @volumemeter.visible?
-               @volumemeter.size=(@size.update(height: 1))
-               height -= 1
-            end
+            height -= 2 if @playinginfo.visible?
+            height -= 1 if @volumemeter.visible?
+            height -= 1 if @progressbar.visible?
+            height -= 1 if @tabbar.visible?
 
-            if @progressbar.visible?
-               @progressbar.size=(@size.update(height: 1))
-               height -= 1
-            end
-
-            @tabs.size=(@size.update(height: height))
+            @windows.size=(@size.update(height: height))
 
             super
          end

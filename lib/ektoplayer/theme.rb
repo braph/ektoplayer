@@ -8,7 +8,8 @@ module Ektoplayer
          @current = 0
          @theme = {
             0 =>   { default: [-1, -1].freeze,
-               :'url'                     => [-1, -1, :underline      ].freeze},
+               :'url'                     => [-1, -1, :underline      ].freeze,
+               :'tabbar.selected'         => [-1, -1, :bold           ].freeze},
             8 =>   { default: [-1, -1].freeze,
                :'url'                     => [:magenta, -1, :underline].freeze,
 
@@ -26,8 +27,8 @@ module Ektoplayer
                :'volumemeter.level'       => [:magenta                ].freeze,
                :'volumemeter.rest'        => [:black                  ].freeze,
 
-               :'tabs'                    => [:none                   ].freeze,
-               :'tab_selected'            => [:blue                   ].freeze,
+               :'tabbar.selected'         => [:blue                   ].freeze,
+               :'tabbar.unselected'       => [:none                   ].freeze,
 
                :'list.item_even'          => [:blue                   ].freeze,
                :'list.item_odd'           => [:blue                   ].freeze,
@@ -56,8 +57,8 @@ module Ektoplayer
                :'volumemeter.level'       => [:magenta                ].freeze,
                :'volumemeter.rest'        => [236                     ].freeze,
 
-               :'tabs'                    => [250                     ].freeze,
-               :'tab_selected'            => [75                      ].freeze,
+               :'tabbar.selected'         => [75                      ].freeze,
+               :'tabbar.unselected'       => [250                     ].freeze,
 
                :'list.item_even'          => [:blue                   ].freeze,
                :'list.item_odd'           => [25                      ].freeze,
@@ -77,10 +78,10 @@ module Ektoplayer
       def color_256(*args)   color(*args, theme: 256)   end
 
       def get(theme_def)     UI::Colors.get(theme_def)  end
-      alias :[] :get
+      def [](theme_def)      UI::Colors.get(theme_def)  end
 
       def use_colors(colors)
-         fail ArgumentError unless @theme[colors]
+         fail ArgumentError, 'unknown theme' unless @theme[colors]
          @current = colors
 
          UI::Colors.reset
