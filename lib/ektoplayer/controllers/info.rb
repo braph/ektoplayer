@@ -5,9 +5,9 @@ require_relative 'controller'
 module Ektoplayer
    module Controllers
       class Info < Controller
-         def initialize(view, playlist, trackloader, database, view_operations)
+         def initialize(view, player, playlist, trackloader, database, view_operations)
             super(view)
-            view.attach(playlist, trackloader, database)
+            view.attach(player, playlist, trackloader, database)
             register = view_operations.with_register('info.')
             %w(up down page_up page_down top bottom).
                each { |op| register.(op, &view.method(op)) }

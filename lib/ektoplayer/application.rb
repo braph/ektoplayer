@@ -105,7 +105,7 @@ module Ektoplayer
                Controllers::Browser.new(main_w.browser, browser, view_ops, operations)
                Controllers::Playlist.new(main_w.playlist, playlist, view_ops, operations)
                Controllers::Help.new(main_w.help, view_ops)
-               Controllers::Info.new(main_w.info, playlist, trackloader, database, view_ops)
+               Controllers::Info.new(main_w.info, player, playlist, trackloader, database, view_ops)
                main_w.progressbar.attach(player)
                main_w.volumemeter.attach(player)
                main_w.playinginfo.attach(playlist, player)

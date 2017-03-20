@@ -16,8 +16,9 @@ module Ektoplayer
 
    module Views
       class Info < UI::Pad
-         def attach(playlist, trackloader, database)
-            @playlist, @trackloader, @database = playlist, trackloader, database
+         def attach(player, playlist, trackloader, database)
+            @player, @playlist, @trackloader, @database =
+               player, playlist, trackloader, database
 
             Thread.new do
                loop { sleep 1; with_lock { want_redraw } }
@@ -121,7 +122,7 @@ module Ektoplayer
                draw_tag('Artist', @track['artist'])
                draw_tag('Album',  @track['album'])
                draw_tag('BPM',    @track['bpm'])
-               draw_tag('Length', Common::to_time(@length))
+               draw_tag('Length', Common::to_time(@player.length))
                @win.next_line
 
                draw_heading('Current album')
