@@ -66,6 +66,8 @@ module UI
          Curses.clear
          Curses.addstr('terminal too small!')
          Curses.refresh
+      rescue
+         nil
       end
 
       def self.sub(cls, **opts)
@@ -92,6 +94,8 @@ module UI
             rescue UI::WidgetSizeError
                Curses.clear
                Curses.addstr('terminal too small!')
+            rescue
+               Application.log(self, $!)
             end
 
             Curses.doupdate
