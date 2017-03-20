@@ -122,6 +122,9 @@ module Ektoplayer
          reg :use_cache,
             'Enable/disable local mp3 cache', true
 
+         reg :prefetch,
+            'Enable prefetching next track do be played', true
+
          reg :small_update_pages,
             'How many pages should be fetched after start', 5
 

@@ -54,5 +54,7 @@ class Events
       if @map.key?(event)
          @map[event].each { |callback| callback.call(*args) }
       end
+   rescue
+      Ektoplayer::Application.log(self, 'event hook failed', $!)
    end
 end

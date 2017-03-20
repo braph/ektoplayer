@@ -30,7 +30,7 @@ module UI
             each {|_|Curses.send(_)}
          Curses.mousemask(Curses::ALL_MOUSE_EVENTS)
          Curses.stdscr.keypad(true)
-         [UI::Colors, UI::Input].each(&:start)
+         UI::Colors.start
 
          self.enable_resize_detection
       end
@@ -119,26 +119,19 @@ module UI
       KEYMAP_WORKAROUND.default_proc = proc { |h,k| k }
       KEYMAP_WORKAROUND.freeze
 
-      def self.start
-         @@mode = :curses
-         Readline.input, @@readline_in_write = IO.pipe
-         Readline.output = File.open(File::NULL, ?w)
-      end
-
       #def self.getch(timeout=-1)
       #   KEYMAP_WORKAROUND[@@widget.getch(timeout)]
       #end
 
       def self.start_loop
-         @@readline_mutex ||= Mutex.new
-         @@readline_cond  ||= ConditionVariable.new
+         @@readline_obj ||= ReadlineWindow.new
 
          loop do
-            if @@mode == :curses
+            unless @@readline_obj.active?
                Curses.curs_set(0)
                Curses.nonl
 
-               while @@mode == :curses
+               begin
                   UI::Canvas.widget.win.keypad=(true)
                   c = KEYMAP_WORKAROUND[UI::Canvas.widget.win.getch1]
 
@@ -149,64 +142,78 @@ module UI
                   elsif c # (not nil)
                      UI::Canvas.widget.key_press(c.is_a?(Integer) ? c : c.to_sym)
                   end
-               end
+               end while !@@readline_obj.active?
             else
                Curses.curs_set(1)
                Curses.nl
 
-               while @@mode == :readline
+               begin
                   win = UI::Canvas.widget.win
                   win.keypad=(false)
-                  c = win.getch1
+                  next unless (c = win.getch1)
 
                   if c == 10 or c == 4
-                     @@readline_thread.kill rescue nil
-                     @@mode = :curses
+                     @@readline_obj.feed(?\n)
                   else
-                     @@readline_in_write.write(c.chr)
+                     @@readline_obj.feed(c.chr)
 
                      if c == 27 # pass 3-character escape sequence
                         if c = win.getch1(1)
-                           @@readline_in_write.write(c.chr)
+                           @@readline_obj.feed(c.chr)
                            if c = win.getch1(1)
-                              @@readline_in_write.write(c.chr)
+                              @@readline_obj.feed(c.chr)
                            end
                         end
                      end
                   end
-
-                  @@readline_cond.signal
-               end
+               end while @@readline_obj.active?
             end
          end
       end
 
-      def self.readline(pos, size, prompt: '', add_hist: false)
-         @@mode = :readline
+      def self.readline(*args, **opts, &block)
+         (@@readline_obj ||= ReadlineWindow.new).readline(*args, **opts, &block)
+      end
+   end
 
-         Readline.set_screen_size(size.height, size.width)
-         @@readline_thread ||= Thread.new do
-            begin
-               window = Curses::Window.new(size.height, size.width, pos.y, pos.x)
-               rl_thread = Thread.new { Readline.delete_text; Readline.readline }
+   class ReadlineWindow
+      def initialize
+         @mutex, @cond = Mutex.new, ConditionVariable.new
+         Readline.input, @readline_in_write = IO.pipe
+         Readline.output = File.open(File::NULL, ?w)
+         @thread = nil
+      end
 
-               while rl_thread.alive?
-                  buffer = "#{prompt}#{Readline.line_buffer}"
-                  window.erase
-                  window << buffer[(buffer.size - size.width).clamp(0, buffer.size)..-1]
-                  window.cursor=(Point.new(x: Readline.point + prompt.size, y: 0))
-                  window.refresh
-                  @@readline_mutex.synchronize { @@readline_cond.wait(@@readline_mutex, 0.3) }
-               end
-            ensure
-               rl_thread.kill
-               window.clear
-               yield Readline.line_buffer
-               @@mode = :curses
-               @@readline_thread = nil
-               Canvas.update_screen(true)
+      def active?; @thread; end
+
+      def readline(pos, size, prompt: '', add_hist: false, &block)
+         @thread ||= Thread.new do
+            window = Curses::Window.new(size.height, size.width, pos.y, pos.x)
+
+            Readline.set_screen_size(size.height, size.width)
+            Readline.delete_text
+            rlt = Thread.new { Readline.readline(prompt, add_hist) }
+
+            while rlt.alive?
+               window.erase
+               buffer = "#{prompt}#{Readline.line_buffer}"
+               window << buffer[(buffer.size - size.width).clamp(0, buffer.size)..-1]
+               window.cursor=(Point.new(x: Readline.point + prompt.size, y: 0))
+               window.refresh
+               @mutex.synchronize { @cond.wait(@mutex, 0.2) }
             end
+
+            window.clear
+            block.(Readline.line_buffer)
+            UI::Canvas.update_screen(true)
+            @thread = nil
          end
+      end
+
+      def feed(c)
+         @readline_in_write.write(c)
+         @cond.signal
+         @thread = nil if c == ?\n
       end
    end
 

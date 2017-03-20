@@ -117,6 +117,20 @@ module Ektoplayer
                player.events.on(:stop) do |reason|
                   operations.send(:'playlist.play_next') if reason == :track_completed
                end
+               
+               if Config[:prefetch]
+                  trackloader_mutex = Mutex.new
+                  player.events.on(:position_change) do
+                     Thread.new do
+                        if player.length > 30 and player.position_percent > 0.8
+                           trackloader_mutex.synchronize do
+                              trackloader.get_track_file(playlist[playlist.get_next_pos]['url'])
+                              sleep 5
+                           end
+                        end
+                     end
+                  end
+               end
 
                # ... bindings ...
                Bindings.bind_view(:global, main_w, view_ops, operations)

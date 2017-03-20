@@ -22,6 +22,7 @@ module Ektoplayer
       def update(start_url: FREE_MUSIC_URL, pages: 0, parallel: 10)
          queue = parallel > 0 ? SizedQueue.new(parallel) : Queue.new 
          insert_browserpage(bp = BrowsePage.new(start_url))
+         results = Queue.new
 
          if pages > 0
             bp.page_urls[(bp.current_page_index + 1)..(bp.current_page_index + pages + 1)]
@@ -30,13 +31,26 @@ module Ektoplayer
          end.
          each do |url|
             queue << Thread.new do
-               insert_browserpage(BrowsePage.new(url))
+               results << BrowsePage.new(url)
                queue.pop # unregister our thread
+            end.priority=(-10)
+
+            if results.size > 40
+               @db.transaction
+               40.times { insert_browserpage(results.pop(true)) }
+               @db.commit
             end
          end
 
          sleep 1 while not queue.empty?
-      rescue Application.log(self, $!)
+
+         @db.transaction
+         while (result = queue.pop(true) rescue nil)
+            insert_browserpage(result)
+         end
+         @db.commit
+      rescue
+         Application.log(self, $!)
       end
 
       private def insert_browserpage(browserpage)
@@ -45,7 +59,8 @@ module Ektoplayer
          end
 
          browserpage.albums.each { |album| insert_album album }
-      rescue Application.log(self, $!)
+      rescue
+         Application.log(self, $!)
       end
 
       private def insert_album(album)
@@ -72,6 +87,8 @@ module Ektoplayer
             track_r[:album_url] = album[:url]
             @db.replace_into(:tracks, track_r)
          end
+      rescue
+         Application.log(self, $!)
       end
    end
 end

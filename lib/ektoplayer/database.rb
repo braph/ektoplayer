@@ -117,6 +117,14 @@ module Ektoplayer
             each { |t| @db.execute("DROP TABLE IF EXISTS #{t}") }
       end
 
+      def transaction
+         @db.transaction rescue Application.log(self, $!)
+      end
+
+      def commit
+         @db.commit rescue Application.log(self, $!)
+      end
+
       def insert_into(table, hash, mode: :insert)
          cols   = ?( + (hash.keys * ?,) + ?)
          values = ?( + (([??] * hash.size) * ?,) + ?)

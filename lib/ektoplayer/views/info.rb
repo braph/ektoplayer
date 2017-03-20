@@ -21,7 +21,7 @@ module Ektoplayer
 
             Thread.new do
                loop { sleep 1; with_lock { want_redraw } }
-            end
+            end.priority=(-10)
          end
 
          def draw_heading(heading)

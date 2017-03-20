@@ -55,6 +55,8 @@ module Ektoplayer
          end
 
          @downloads << dl.start!
+      rescue
+         Application.log(self, $!)
       end
 
       def get_track_file(url, reload: false)
@@ -97,6 +99,8 @@ module Ektoplayer
          @downloads << dl.start!
 
          return temp_file
+      rescue
+         Application.log(self, $!)
       end
    end
 
@@ -113,6 +117,8 @@ module Ektoplayer
       end
 
       def start!
+         Application.log(self, 'starting download: ', @url)
+
          Thread.new do
             begin
                http = Net::HTTP.new(@url.host, @url.port)
