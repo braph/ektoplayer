@@ -37,6 +37,10 @@ module Ektoplayer
             a.votes           AS votes,
             a.download_count  AS download_count,
 
+            strftime('%%Y', date)  AS year,
+            strftime('%%m', date)  AS month,
+            strftime('%%d', date)  AS day,
+
             a_s.style         AS style,
 
             (

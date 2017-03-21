@@ -6,12 +6,13 @@ module Ektoplayer
          PARENT_DIRECTORY = '..'.freeze
 
          PATHS = {
-            style:          [:style      ].freeze,
             artist:         [:artist     ].freeze,
             album:          [:album      ].freeze,
+            style:          [:style      ].freeze,
+            year:           [:year       ].freeze,
+            title:          [].freeze,
             released_by:    [:released_by].freeze,
-            posted_by:      [:posted_by  ].freeze,
-            tracks:         [].freeze
+            posted_by:      [:posted_by  ].freeze
          }.freeze
 
          def initialize(client)
@@ -119,7 +120,9 @@ module Ektoplayer
             end
 
             def tracks(index)
-               @database.select()
+               @database.select(
+                  order_by: CONTENTS[index].to_s + ",album,year,number".sub(",#{CONTENTS[index]}", '')
+               )
             end
          end
       end

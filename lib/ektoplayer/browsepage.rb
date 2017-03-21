@@ -1,6 +1,7 @@
 #!/bin/ruby
 
 require 'nokogiri'
+require 'date'
 require 'base64'
 require 'scanf'
 require 'open-uri'
@@ -50,7 +51,7 @@ module Ektoplayer
 
          doc.xpath('//div[starts-with(@id, "post-")]').each do |post|
             album = { tracks: [] }
-            album[:date] = post.at_css('.d').text        rescue nil
+            album[:date] = Date.parse(post.at_css('.d').text).iso8601 rescue nil
             album[:category] = post.at_css('.c a').text  rescue nil
 
             album[:styles] = []

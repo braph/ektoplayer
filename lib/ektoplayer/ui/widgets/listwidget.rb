@@ -104,8 +104,8 @@ module UI
       def bottom;      self.selected=(index_last)                 end
       def page_up;     self.scroll_up(size.height)                end
       def page_down;   self.scroll_down(size.height)              end
-      def up;          self.selected=(selected - 1)               end
-      def down;        self.selected=(selected + 1)               end
+      def up(n=1)      self.selected=(selected - n)               end
+      def down(n=1)    self.selected=(selected + n)               end
       def center;      self.force_cursorpos(@size.height / 2)     end
 
       def list=(list)

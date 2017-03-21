@@ -153,7 +153,7 @@ module Ektoplayer
                end
 
                if (n = Config[:playlist_load_newest]) > 0
-                  r = client.database.select(order_by: 'date', limit: n)
+                  r = client.database.select(order_by: 'date desc,album,number', limit: n)
                   playlist.add(*r)
                end
 

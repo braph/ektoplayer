@@ -50,19 +50,19 @@ module Ektoplayer
       CONFIG_DIR  = File.join(Dir.home, '.config', 'ektoplayer').freeze
       CONFIG_FILE = File.join(CONFIG_DIR, 'ektoplayer.rc').freeze
 
-      DEFAULT_PLAYLIST_FORMAT = (
-         '<number size="3" fg="magenta" />' +
-         '<artist rel="25" fg="blue"    />' +
-         '<album  rel="30" fg="red"     />' +
-         '<title  rel="33" fg="yellow"  />' +
-         '<styles rel="20" fg="cyan"    />' +
-         '<bpm    size="4" fg="green" justify="right" />').freeze
+      DEFAULT_PLAYLIST_FORMAT = %{
+         <number size="3" fg="magenta" />
+         <artist rel="25" fg="blue"    />
+         <album  rel="30" fg="red"     />
+         <title  rel="33" fg="yellow"  />
+         <styles rel="20" fg="cyan"    />
+         <bpm    size="4" fg="green" justify="right" />}.squeeze(' ').freeze
 
       DEFAULT_PLAYINGINFO_FORMAT1 =
          '<text fg="black">&lt;&lt; </text><title bold="on" fg="yellow" /><text fg="black"> &gt;&gt;</text>'.freeze
 
       DEFAULT_PLAYINGINFO_FORMAT2 = 
-         '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><date fg="cyan" /><text>)</text>'.freeze
+         '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><year fg="cyan" /><text>)</text>'.freeze
 
       def register(key, description, default, method=nil)
          # parameter `description` is used by tools/mkconfig.rb, but not here
@@ -118,7 +118,7 @@ module Ektoplayer
 
          reg :playlist_load_newest,
             %{How many tracks from database should be added to
-              the playlist on application start.}, 100
+              the playlist on application start.}, 300
 
          reg :use_cache,
             %{Enable/disable local mp3 cache.

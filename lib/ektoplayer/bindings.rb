@@ -75,12 +75,12 @@ module Ektoplayer
                :'playlist.show'           => [?1                             ],
                :'browser.show'            => [?2                             ],
                :'info.show'               => [?3                             ],
-               :'help.show'               => [?4                             ],
+               :'help.show'               => [?4,      Curses::KEY_F1        ],
 
-               :'playinginfo.toggle'      => [         Curses::KEY_F2        ],
-               :'progressbar.toggle'      => [         Curses::KEY_F3        ],
-               :'tabbar.toggle'           => [         Curses::KEY_F4        ],
-               :'volumemeter.toggle'      => [         Curses::KEY_F5        ],
+               :'playinginfo.toggle'      => [?!,      Curses::KEY_F2        ],
+               :'progressbar.toggle'      => [?%,      Curses::KEY_F3        ],
+               :'tabbar.toggle'           => [?=,      Curses::KEY_F4        ],
+               :'volumemeter.toggle'      => [?~,      Curses::KEY_F5        ],
 
                :'player.forward'          => [?f,      Curses::KEY_RIGHT     ],
                :'player.backward'         => [?b,      Curses::KEY_LEFT      ],
@@ -90,8 +90,8 @@ module Ektoplayer
                :'playlist.play_next'      => [?>                             ],
                :'playlist.play_prev'      => [?<                             ],
 
-               :'tabs.next'               => [?l                             ],
-               :'tabs.prev'               => [?h                             ],
+               :'tabs.next'               => [?l, ?}, 9                      ],
+               :'tabs.prev'               => [?h, ?{, 353                    ],
 
                :quit                      => [?q                             ],
                :refresh                   => ['^l'                           ],
@@ -134,7 +134,7 @@ module Ektoplayer
                :'browser.search_down'     => [?/                             ],
                # browser
                :'browser.add_to_playlist' => [' ', ?a                        ],
-               :'browser.enter'           => [?E,      Curses::KEY_ENTER     ],
+               :'browser.enter'           => [         Curses::KEY_ENTER     ],
                :'browser.back'            => [?B,      Curses::KEY_BACKSPACE ]},
             help: {
                :'help.top'                => [?g,      Curses::KEY_HOME      ],
