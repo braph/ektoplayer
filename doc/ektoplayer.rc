@@ -28,7 +28,7 @@ set delete_after_extraction true
 
 # How many tracks from database should be added to
 # the playlist on application start.
-set playlist_load_newest 100
+set playlist_load_newest 300
 
 # Enable/disable local mp3 cache.
 # If this option is disabled, the downloaded mp3 files won't be moved
@@ -49,10 +49,22 @@ set use_colors auto
 set threads 20
 
 # Format of browser columns
-set browser.format '<number size="3" fg="magenta" /><artist rel="33" fg="blue"    /><album  rel="33" fg="red"     /><title  rel="33" fg="yellow"  /><styles rel="20" fg="cyan"    /><bpm    size="4" fg="green" justify="right" />'
+set browser.format '
+ <number size="3" fg="magenta" />
+ <artist rel="25" fg="blue" />
+ <album rel="30" fg="red" />
+ <title rel="33" fg="yellow" />
+ <styles rel="20" fg="cyan" />
+ <bpm size="4" fg="green" justify="right" />'
 
 # Format of playlist columns
-set playlist.format '<number size="3" fg="magenta" /><artist rel="33" fg="blue"    /><album  rel="33" fg="red"     /><title  rel="33" fg="yellow"  /><styles rel="20" fg="cyan"    /><bpm    size="4" fg="green" justify="right" />'
+set playlist.format '
+ <number size="3" fg="magenta" />
+ <artist rel="25" fg="blue" />
+ <album rel="30" fg="red" />
+ <title rel="33" fg="yellow" />
+ <styles rel="20" fg="cyan" />
+ <bpm size="4" fg="green" justify="right" />'
 
 # Enable/disable progressbar
 set progressbar.display true
@@ -79,7 +91,7 @@ set playinginfo.display true
 set playinginfo.format1 '<text fg="black">&lt;&lt; </text><title bold="on" fg="yellow" /><text fg="black"> &gt;&gt;</text>'
 
 # Format of second line in playinginfo
-set playinginfo.format2 '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><date fg="cyan" /><text>)</text>'
+set playinginfo.format2 '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><year fg="cyan" /><text>)</text>'
 
 # Enable/disable tabbar
 set tabbar.display true
@@ -103,10 +115,15 @@ bind global 1 playlist.show
 bind global 2 browser.show
 bind global 3 info.show
 bind global 4 help.show
+bind global F1 help.show
+bind global ! playinginfo.toggle
 bind global F2 playinginfo.toggle
+bind global % progressbar.toggle
 bind global F3 progressbar.toggle
+bind global = tabbar.toggle
 bind global F4 tabbar.toggle
 bind global F5 volumemeter.toggle
+bind global ~ volumemeter.toggle
 bind global RIGHT player.forward
 bind global f player.forward
 bind global LEFT player.backward
@@ -115,8 +132,12 @@ bind global s player.stop
 bind global p player.toggle
 bind global > playlist.play_next
 bind global < playlist.play_prev
+bind global ^I tabs.next
 bind global l tabs.next
+bind global } tabs.next
+bind global BTAB tabs.prev
 bind global h tabs.prev
+bind global { tabs.prev
 bind global q quit
 bind global ^L refresh
 bind global ^R reload
@@ -166,7 +187,6 @@ bind browser ? browser.search_up
 bind browser / browser.search_down
 bind browser SPACE browser.add_to_playlist
 bind browser a browser.add_to_playlist
-bind browser E browser.enter
 bind browser ENTER browser.enter
 bind browser B browser.back
 bind browser BACKSPACE browser.back
