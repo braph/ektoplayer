@@ -38,9 +38,7 @@ module UI
       end
 
       def self.enable_resize_detection
-         CONDITION_SIGNALS.on(:WINCH, &Canvas.method(:on_winch))
-
-         Signal.trap('WINCH') { CONDITION_SIGNALS.signal(:WINCH) }
+         Signal.trap('WINCH') { @@want_resize = true }
       end
 
       def self.widget;      @@widget                   end
@@ -48,19 +46,6 @@ module UI
       def self.stop;        Curses.close_screen        end
       def self.visible?;    true                       end
       def self.inivsibile?; false                      end
-
-      def self.on_winch
-         h, w = IO.console.winsize()
-         Curses.resizeterm(h, w)
-         Curses.refresh
-         @@widget.size=(Size.new(height: h, width: w)) if @@widget
-      rescue UI::WidgetSizeError
-         Curses.clear
-         Curses.addstr('terminal too small!')
-         Curses.refresh
-      rescue
-         nil
-      end
 
       def self.sub(cls, **opts)
          @@widget ||= (widget = cls.new(parent: self, **opts))
@@ -74,15 +59,21 @@ module UI
       
       def self.update_screen(force_redraw=false)
          @@updating ||= Mutex.new
+         @@want_resize ||= false
 
          if @@updating.try_lock
-            if force_redraw
-               Curses.clear
-               Curses.refresh
-            end
-
             begin
-               @@widget.display(true, force_redraw) if @@widget
+               if @@want_resize
+                  @@want_resize = false
+                  h, w = IO.console.winsize()
+                  Curses.resizeterm(h, w)
+                  Curses.clear
+                  Curses.refresh
+                  @@widget.size=(Size.new(height: h, width: w)) if @@widget
+                  @@widget.display(true, true, true) if @@widget
+               else
+                  @@widget.display(true, force_redraw) if @@widget
+               end
             rescue UI::WidgetSizeError
                Curses.clear
                Curses.addstr('terminal too small!')
@@ -167,7 +158,7 @@ module UI
 
       def self.readline(*args, **opts, &block)
          (@@readline_obj ||= ReadlineWindow.new).readline(*args, **opts) do
-            @@updating.synchronize { yield }
+            Canvas.class_variable_get('@@updating').synchronize { yield }
          end
       end
    end
@@ -186,9 +177,10 @@ module UI
          @thread ||= Thread.new do
             window = Curses::Window.new(size.height, size.width, pos.y, pos.x)
 
+            rlt = Thread.new { Readline.readline(prompt, add_hist) }
             Readline.set_screen_size(size.height, size.width)
             Readline.delete_text
-            rlt = Thread.new { Readline.readline(prompt, add_hist) }
+            @readline_in_write.read_nonblock(100) rescue nil
 
             while rlt.alive?
                window.erase

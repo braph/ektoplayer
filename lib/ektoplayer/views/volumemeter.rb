@@ -35,13 +35,13 @@ module Ektoplayer
             load_colors
 
             if new_level_width > @level_width
-               @win.setpos(@win.cury, @level_width)
+               @win.setpos(0, @level_width)
                (@level_width).upto(new_level_width).each do |i|
                   @win.attron(@fade[i])
                   @win << @level_char
                end
             else
-               @win.setpos(@win.cury, new_level_width)
+               @win.setpos(0, new_level_width)
             end
 
             if (repeat = @size.width - @win.curx - 1) > 0

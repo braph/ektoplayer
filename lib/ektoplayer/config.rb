@@ -52,8 +52,8 @@ module Ektoplayer
 
       DEFAULT_PLAYLIST_FORMAT = (
          '<number size="3" fg="magenta" />' +
-         '<artist rel="33" fg="blue"    />' +
-         '<album  rel="33" fg="red"     />' +
+         '<artist rel="25" fg="blue"    />' +
+         '<album  rel="30" fg="red"     />' +
          '<title  rel="33" fg="yellow"  />' +
          '<styles rel="20" fg="cyan"    />' +
          '<bpm    size="4" fg="green" justify="right" />').freeze

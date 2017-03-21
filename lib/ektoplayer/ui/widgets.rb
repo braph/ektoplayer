@@ -42,7 +42,7 @@ module UI
       end
 
       def unlock
-         return unless (@lock.exit rescue nil) or not visible?
+         return unless (@lock.exit rescue nil)
 
          if @want & WANT_LAYOUT > 0 
             layout;
@@ -61,8 +61,8 @@ module UI
          end
       end
 
-      def display(force_refresh=false, force_redraw=false)
-         if @want & WANT_LAYOUT > 0 
+      def display(force_refresh=false, force_redraw=false, force_layout=false)
+         if @want & WANT_LAYOUT > 0  or force_layout
             layout;
             @want ^= WANT_LAYOUT
          end
