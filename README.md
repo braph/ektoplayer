@@ -44,6 +44,9 @@ library to compile the native extensions.
     apt-get install ruby ruby-dev portaudio19-dev libmpg123-dev sqlite3 libsqlite3-dev libncurses-dev libz1g-dev build-essential
     gem install ektoplayer
 
+## Configuration
+    Have a look at the default [ektoplayer.rc](https://github.com/braph/ektoplayer/blob/master/doc/ektoplayer.rc).
+
 ## Authors
 
   * [Benjamin Abendroth](https://github.com/braph)
