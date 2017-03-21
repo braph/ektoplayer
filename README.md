@@ -14,6 +14,7 @@ It allows you to
   * Vi-like keybindings (`hjkl`, `^d`, `^u`, `/`, `?`, `n`, `N`, ...)
   * Up to 256 colors are supported
   * Local sound file cache
+  * Song prefetching
 
 ## Screenshots
 
