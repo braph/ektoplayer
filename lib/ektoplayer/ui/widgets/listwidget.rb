@@ -28,7 +28,7 @@ module UI
       end
 
       def comp(item, search)
-         if item.is_a?String
+         if item.is_a?String or item.is_a?Symbol
             return item.downcase =~ Regexp.new(search.downcase)
          elsif item.is_a?Hash
             %w(title artist album).each do |key|
@@ -46,18 +46,23 @@ module UI
          @result = @source.size.times.select {|i| self.comp(@source[i], search) }
       end
 
-      def current; @result[@current] or 0                         end
-      def next;    @direction == :up ? search_up   : search_down  end
-      def prev;    @direction == :up ? search_down : search_up    end
+      def current; @current or 0 end #or 0                         end
+      def next(p)  @direction == :up ? search_up(p): search_down(p)  end
+      def prev(p)  @direction == :up ? search_down(p) : search_up(p) end
 
-      def search_up
-         @current -= 1
-         @current = @result.size - 1 if @current < 0
+      def search_up(p)
+         @current = (
+            @result.reverse.select { |v| v < p }[0] or @result[-1]
+         )
+
          self
       end
 
-      def search_down
-         @current = 0 if (@current += 1) >= @result.size
+      def search_down(p)
+         @current = (
+            @result.select { |v| v > p }[0] or @result[0]
+         )
+
          self
       end
    end
@@ -74,11 +79,11 @@ module UI
          @search = ListSearch.new
       end
 
-      def search_next;  self.selected=(@search.next.current)  end
-      def search_prev;  self.selected=(@search.prev.current)  end
+      def search_next;  self.selected=(@search.next(@selected).current)  end
+      def search_prev;  self.selected=(@search.prev(@selected).current)  end
       def search_up;    self.search_start(:up)                end
       def search_down;  self.search_start(:down)              end
-      def search_start(direction=:down)
+      def search_start(direction)
          UI::Input.readline(@pos, @size.update(height: 1), prompt: '> ', add_hist: true) do |result|
             if result
                @search.source=(@list)

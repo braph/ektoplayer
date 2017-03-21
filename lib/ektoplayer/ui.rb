@@ -157,8 +157,8 @@ module UI
       end
 
       def self.readline(*args, **opts, &block)
-         (@@readline_obj ||= ReadlineWindow.new).readline(*args, **opts) do
-            Canvas.class_variable_get('@@updating').synchronize { yield }
+         (@@readline_obj ||= ReadlineWindow.new).readline(*args, **opts) do |result|
+            Canvas.class_variable_get('@@updating').synchronize { yield result }
          end
       end
    end
@@ -175,26 +175,27 @@ module UI
 
       def readline(pos, size, prompt: '', add_hist: false, &block)
          @thread ||= Thread.new do
-            window = Curses::Window.new(size.height, size.width, pos.y, pos.x)
+            begin
+               window = Curses::Window.new(size.height, size.width, pos.y, pos.x)
 
-            rlt = Thread.new { Readline.readline(prompt, add_hist) }
-            Readline.set_screen_size(size.height, size.width)
-            Readline.delete_text
-            @readline_in_write.read_nonblock(100) rescue nil
+               rlt = Thread.new { block.(Readline.readline(prompt, add_hist)) }
+               Readline.set_screen_size(size.height, size.width)
+               Readline.delete_text
+               @readline_in_write.read_nonblock(100) rescue nil
 
-            while rlt.alive?
-               window.erase
-               buffer = prompt + Readline.line_buffer.to_s
-               window << buffer[(buffer.size - size.width).clamp(0, buffer.size)..-1]
-               window.cursor=(Point.new(x: Readline.point + prompt.size, y: 0))
-               window.refresh
-               CONDITION_SIGNALS.wait(:readline, 0.2)
+               while rlt.alive?
+                  window.erase
+                  buffer = prompt + Readline.line_buffer.to_s
+                  window << buffer[(buffer.size - size.width).clamp(0, buffer.size)..-1]
+                  window.cursor=(Point.new(x: Readline.point + prompt.size, y: 0))
+                  window.refresh
+                  CONDITION_SIGNALS.wait(:readline, 0.2)
+               end
+            ensure
+               @thread = nil
+               window.clear
+               UI::Canvas.update_screen(true)
             end
-
-            window.clear
-            block.(Readline.line_buffer)
-            UI::Canvas.update_screen(true)
-            @thread = nil
          end
       end
 
