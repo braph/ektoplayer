@@ -37,9 +37,9 @@ module Ektoplayer
             @rest_char      ||= Config[:'progressbar.rest_char']
 
             @win.with_attr(Theme[:'progressbar.progress']) do
-               repeat = (@progress_width - @progress_char.size)
-               @win << @progress_char[0] * repeat if repeat > 0
-               @win << @progress_char[1..-1] if @progress_width > 0
+               #repeat = (@progress_width - @progress_char.size)
+               @win << @progress_char * @progress_width
+               #@win << @progress_char[1..-1] if @progress_width > 0
             end
 
             @win.attron(Theme[:'progressbar.rest'])
