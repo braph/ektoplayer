@@ -1,0 +1,255 @@
+# Database file for storing ektoplazm metadata
+set database_file ~/.config/ektoplayer/meta.db
+
+# File used for logging
+set log_file ~/.config/ektoplayer/ektoplayer.log
+
+# Temporary dir for downloading mp3 files. They will be moved to `cache_dir`
+# after the download completed and was successful.
+# Directory will be created if it does not exist, parent directories will not be created.
+set temp_dir /tmp/.ektoplazm
+
+# Directory for storing cached mp3 files
+set cache_dir ~/.cache/ektoplayer
+
+# Where to search for downloaded MP3 archives
+set archive_dir ~/.config/ektoplayer/archives
+
+# Where to store downloaded MP3 archives
+set download_dir /tmp
+
+# Enable/disable automatic extraction of downloaded MP3
+# archives from `download_dir' to `archive_dir'
+set auto_extract_to_archive_dir true
+
+# In combination `with auto_extract_to_archive_dir':
+# Delete zip archive after successful extraction
+set delete_after_extraction true
+
+# How many tracks from database should be added to
+# the playlist on application start.
+set playlist_load_newest 100
+
+# Enable/disable local mp3 cache.
+# If this option is disabled, the downloaded mp3 files won't be moved
+# from `cache_dir`. Instead they will reside in `temp_dir` and will
+# be deleted on application exit.
+set use_cache true
+
+# Enable prefetching next track do be played
+set prefetch true
+
+# How many pages should be fetched after start
+set small_update_pages 5
+
+# Choose color capabilities. auto|mono|8|256
+set use_colors auto
+
+# Number of donwload threads during database update
+set threads 20
+
+# Format of browser columns
+set browser.format '<number size="3" fg="magenta" /><artist rel="33" fg="blue"    /><album  rel="33" fg="red"     /><title  rel="33" fg="yellow"  /><styles rel="20" fg="cyan"    /><bpm    size="4" fg="green" justify="right" />'
+
+# Format of playlist columns
+set playlist.format '<number size="3" fg="magenta" /><artist rel="33" fg="blue"    /><album  rel="33" fg="red"     /><title  rel="33" fg="yellow"  /><styles rel="20" fg="cyan"    /><bpm    size="4" fg="green" justify="right" />'
+
+# Enable/disable progressbar
+set progressbar.display true
+
+# Character used for displaying playing progress
+set progressbar.progress_char ~
+
+# Character used for the rest of the line
+set progressbar.rest_char ~
+
+# Enable/disable volumemeter
+set volumemeter.display true
+
+# Character used for displaying volume level
+set volumemeter.level_char ~
+
+# Character used for the rest of the line
+set volumemeter.rest_char ~
+
+# Enable/display playinginfo
+set playinginfo.display true
+
+# Format of first line in playinginfo
+set playinginfo.format1 '<text fg="black">&lt;&lt; </text><title bold="on" fg="yellow" /><text fg="black"> &gt;&gt;</text>'
+
+# Format of second line in playinginfo
+set playinginfo.format2 '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><date fg="cyan" /><text>)</text>'
+
+# Enable/disable tabbar
+set tabbar.display true
+
+# Specify widget order of tabbar (left to right)
+set tabs.widgets splash,playlist,browser,info,help
+
+# Specify widgets to show (up to down)
+set main.widgets playinginfo,progressbar,tabbar,windows,volumemeter
+
+
+### Bindings ###
+
+unbind_all
+
+
+### global
+bind global ^ splash.show
+bind global ` splash.show
+bind global 1 playlist.show
+bind global 2 browser.show
+bind global 3 info.show
+bind global 4 help.show
+bind global F2 playinginfo.toggle
+bind global F3 progressbar.toggle
+bind global F4 tabbar.toggle
+bind global F5 volumemeter.toggle
+bind global RIGHT player.forward
+bind global f player.forward
+bind global LEFT player.backward
+bind global b player.backward
+bind global s player.stop
+bind global p player.toggle
+bind global > playlist.play_next
+bind global < playlist.play_prev
+bind global l tabs.next
+bind global h tabs.prev
+bind global q quit
+bind global ^L refresh
+bind global ^R reload
+bind global U update
+
+### playlist
+bind playlist HOME playlist.top
+bind playlist g playlist.top
+bind playlist END playlist.bottom
+bind playlist G playlist.bottom
+bind playlist UP playlist.up
+bind playlist k playlist.up
+bind playlist DOWN playlist.down
+bind playlist j playlist.down
+bind playlist NPAGE playlist.page_down
+bind playlist ^D playlist.page_down
+bind playlist PPAGE playlist.page_up
+bind playlist ^U playlist.page_up
+bind playlist n playlist.search_next
+bind playlist N playlist.search_prev
+bind playlist ? playlist.search_up
+bind playlist / playlist.search_down
+bind playlist ENTER playlist.play
+bind playlist $ playlist.download_album
+bind playlist r playlist.reload
+bind playlist o playlist.goto_current
+bind playlist c playlist.clear
+bind playlist d playlist.delete
+bind playlist SPACE player.toggle
+
+### browser
+bind browser HOME browser.top
+bind browser g browser.top
+bind browser END browser.bottom
+bind browser G browser.bottom
+bind browser UP browser.up
+bind browser k browser.up
+bind browser DOWN browser.down
+bind browser j browser.down
+bind browser PPAGE browser.page_up
+bind browser ^U browser.page_up
+bind browser NPAGE browser.page_down
+bind browser ^D browser.page_down
+bind browser n browser.search_next
+bind browser N browser.search_prev
+bind browser ? browser.search_up
+bind browser / browser.search_down
+bind browser SPACE browser.add_to_playlist
+bind browser a browser.add_to_playlist
+bind browser E browser.enter
+bind browser ENTER browser.enter
+bind browser B browser.back
+bind browser BACKSPACE browser.back
+
+### help
+bind help HOME help.top
+bind help g help.top
+bind help END help.bottom
+bind help G help.bottom
+bind help UP help.up
+bind help k help.up
+bind help DOWN help.down
+bind help j help.down
+bind help PPAGE help.page_up
+bind help ^U help.page_up
+bind help NPAGE help.page_down
+bind help ^D help.page_down
+
+### info
+bind info HOME info.top
+bind info g info.top
+bind info END info.bottom
+bind info G info.bottom
+bind info UP info.up
+bind info k info.up
+bind info DOWN info.down
+bind info j info.down
+bind info PPAGE info.page_up
+bind info ^U info.page_up
+bind info NPAGE info.page_down
+bind info ^D info.page_down
+
+### splash
+
+### Theme ###
+
+color_mono default            none none
+color_mono url                none none underline
+color_mono tabbar.selected    none none bold
+
+color default                 none none
+color url                     magenta none underline
+color info.head               blue none bold
+color info.tag                blue
+color info.value              magenta
+color info.description        blue
+color info.download.file      blue
+color info.download.percent   magenta none
+color info.download.error     red
+color progressbar.progress    blue
+color progressbar.rest        black
+color volumemeter.level       magenta
+color volumemeter.rest        black
+color tabbar.selected         blue
+color tabbar.unselected       none
+color list.item_even          blue
+color list.item_odd           blue
+color playinginfo.position    magenta
+color playinginfo.state       cyan
+color help.widget_name        blue none bold
+color help.key_name           blue
+color help.command_name       magenta
+color help.command_desc       yellow
+
+color_256 default             none none
+color_256 url                 97 none underline
+color_256 info.head           32 none bold
+color_256 info.tag            74
+color_256 info.value          67
+color_256 info.description    67
+color_256 info.download.file  75
+color_256 info.download.percent 68
+color_256 info.download.error red
+color_256 progressbar.progress 23
+color_256 progressbar.rest    236
+color_256 volumemeter.level   magenta
+color_256 volumemeter.rest    236
+color_256 tabbar.selected     75
+color_256 tabbar.unselected   250
+color_256 list.item_even      blue
+color_256 list.item_odd       25
+color_256 help.widget_name    33
+color_256 help.key_name       75
+color_256 help.command_name   68
+color_256 help.command_desc   29
+

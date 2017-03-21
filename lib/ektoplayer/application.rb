@@ -10,7 +10,7 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.4'.freeze
+      VERSION = '0.1.5'.freeze
       GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
       EKTOPLAZM_URL = 'http://www.ektoplazm.com'.freeze
 
@@ -124,15 +124,15 @@ module Ektoplayer
                   @prefetch_thread = nil
                   player.events.on(:position_change) do
                      @prefetch_thread ||= Thread.new do
-                        if player.length > 30 and player.position_percent > 0.8
+                        if player.length > 30 and player.position_percent > 0.7
                            trackloader_mutex.synchronize do
                               trackloader.get_track_file(playlist[playlist.get_next_pos]['url'])
-                              sleep 20
-                              @prefetch_thread = nil
+                              sleep 30
                            end
                         end
 
-                        sleep 5
+                        sleep 10
+                        @prefetch_thread = nil
                      end
                   end
                end

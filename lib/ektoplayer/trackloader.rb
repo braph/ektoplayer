@@ -114,31 +114,44 @@ module Ektoplayer
          @file     = File.open(filename, ?w)
          @progress = 0
          @error    = nil
+         @tries    = 3
       end
 
       def start!
-         Application.log(self, 'starting download: ', @url)
+         Application.log(self, 'starting download:', @url)
 
          Thread.new do
             begin
-               http = Net::HTTP.new(@url.host, @url.port)
+               loop do
+                  begin
+                     http = Net::HTTP.new(@url.host, @url.port)
+                     @file.rewind
+                     @progress, @total = 0, nil
 
-               http.request(Net::HTTP::Get.new(@url.request_uri)) do |res|
-                  fail res.body unless res.code == '200'
+                     http.request(Net::HTTP::Get.new(@url.request_uri)) do |res|
+                        fail res.body unless res.code == '200'
 
-                  @total = res.header['Content-Length'].to_i
+                        @total = res.header['Content-Length'].to_i
 
-                  res.read_body do |chunk|
-                     @progress += chunk.size
-                     @events.trigger(:progress, @progress)
-                     @file << chunk
+                        res.read_body do |chunk|
+                           @progress += chunk.size
+                           @events.trigger(:progress, @progress)
+                           @file << chunk
+                        end
+                     end
+
+                     fail 'filesize mismatch' if @progress != @total
+                     @file.flush
+                     @events.trigger(:completed)
+                     break
+                  rescue
+                     if (@tries -= 1) < 1
+                        @events.trigger(:failed, (@error = $!))
+                        break
+                     end
+                     Application.log(self, 'retrying failed DL', $!)
                   end
                end
-
-               fail 'filesize mismatch' if @progress != @total
-               @events.trigger(:completed)
-            rescue
-               @events.trigger(:failed, (@error = $!))
             ensure
                @file.close
             end

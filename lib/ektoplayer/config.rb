@@ -65,7 +65,7 @@ module Ektoplayer
          '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><date fg="cyan" /><text>)</text>'.freeze
 
       def register(key, description, default, method=nil)
-         @doc[key.to_sym] = description.squeeze(' ').freeze
+         # parameter `description` is used by tools/mkconfig.rb, but not here
 
          if method
             @cast[key.to_sym]    = method if method
@@ -78,23 +78,24 @@ module Ektoplayer
 
       def initialize
          @options = Hash.new { |h,k| fail "Unknown option #{k}" }
-         @doc, @cast = {}, {}
+         @cast = {}
 
-         reg :database_file, 'File to store metadata',
+         reg :database_file, 'Database file for storing ektoplazm metadata',
             File.join(CONFIG_DIR, 'meta.db'),
             File.method(:expand_path)
 
-         reg :log_file, 'Log file',
+         reg :log_file, 'File used for logging',
             File.join(CONFIG_DIR, 'ektoplayer.log'),
             File.method(:expand_path)
 
-         reg :temp_dir, %{Where to temporary store mp3 files. Directory will be created 
-                          if it does not exist (parent directories will NOT be created},
+         reg :temp_dir, %{Temporary dir for downloading mp3 files. They will be moved to `cache_dir`
+                          after the download completed and was successful.
+                          Directory will be created if it does not exist, parent directories will not be created.},
             '/tmp/.ektoplazm',
             File.method(:expand_path)
 
          reg :cache_dir,
-            'Directory for storing mp3 files',
+            'Directory for storing cached mp3 files',
             File.join(Dir.home, '.cache', 'ektoplayer'),
             File.method(:expand_path)
 
@@ -109,18 +110,21 @@ module Ektoplayer
 
          reg :auto_extract_to_archive_dir,
             %{Enable/disable automatic extraction of downloaded MP3
-             archives from download_dir to archive_dir}, true
+             archives from `download_dir' to `archive_dir'}, true
 
          reg :delete_after_extraction,
-            %{In combination with auto_extract_to_archive_dir:
+            %{In combination `with auto_extract_to_archive_dir':
              Delete zip archive after successful extraction}, true
 
          reg :playlist_load_newest,
             %{How many tracks from database should be added to
-              the playlist on application start}, 100
+              the playlist on application start.}, 100
 
          reg :use_cache,
-            'Enable/disable local mp3 cache', true
+            %{Enable/disable local mp3 cache.
+              If this option is disabled, the downloaded mp3 files won't be moved
+              from `cache_dir`. Instead they will reside in `temp_dir` and will
+              be deleted on application exit.}, true
 
          reg :prefetch,
             'Enable prefetching next track do be played', true
@@ -150,7 +154,7 @@ module Ektoplayer
             'Enable/disable progressbar', true
 
          reg 'progressbar.progress_char',
-            'Character used for displaying playing progress',  ?~
+            'Character used for displaying playing progress', ?~
 
          reg 'progressbar.rest_char',
             'Character used for the rest of the line', ?~
@@ -222,11 +226,12 @@ module Ektoplayer
            set:        self.method(:set),
            bind:       bindings.method(:bind),
            unbind:     bindings.method(:unbind),
+           unbind_all: bindings.method(:unbind_all),
            color:      theme.method(:color),
            color_256:  theme.method(:color_256),
            color_mono: theme.method(:color_mono)
          }
-         callbacks.default_proc = proc { |h,k| fail "unknown command: #{k}" }
+         callbacks.default_proc = proc { fail 'unknown command' }
          callbacks.freeze
 
          open(file, ?r).readlines.each do |line|
@@ -236,10 +241,10 @@ module Ektoplayer
 
             begin
                cb = callbacks[command.to_sym]
-               fail "missing arguments for #{command}" if args.size != cb.arity
                cb.call(*args)
+               #fail "Command '#{command}' given args: #{args.size}, wanted #{cb.arity}" if args.size != cb.arity
             rescue
-               fail "#{file}:#{$.}: #{$!}"
+               fail "#{file}:#{$.}: #{command}: #{$!}"
             end
          end
       end

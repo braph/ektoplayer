@@ -135,7 +135,7 @@ module Ektoplayer
                # browser
                :'browser.add_to_playlist' => [' ', ?a                        ],
                :'browser.enter'           => [?E,      Curses::KEY_ENTER     ],
-               :'browser.back'            => [?b,      Curses::KEY_BACKSPACE ]},
+               :'browser.back'            => [?B,      Curses::KEY_BACKSPACE ]},
             help: {
                :'help.top'                => [?g,      Curses::KEY_HOME      ],
                :'help.bottom'             => [?G,      Curses::KEY_END       ],
@@ -155,7 +155,7 @@ module Ektoplayer
 
          @bindings.default_proc = proc { |h,k| fail "Unknown widget #{k}" }
          @bindings.each do |widget, hash|
-            hash.default_proc = proc { |h,k| h[k] = {} }
+            hash.default_proc = proc { |h,k| h[k] = [] }
             hash.values.each do |keys|
                keys.map! { |key| parse_key(key) }
             end
@@ -181,6 +181,8 @@ module Ektoplayer
             key.to_sym
          elsif key.size == 2 and key.start_with?(?^)
             Curses.const_get("KEY_CTRL_#{key[1].upcase}")
+         elsif key =~ /^(key_)?space$/i
+            :' '
          else
             key = key.upcase.tr(?-, ?_)
             key = "KEY_#{key}" unless key.start_with?('KEY_')
@@ -192,9 +194,9 @@ module Ektoplayer
 
       def bind(widget, key, command)
          widget, command = widget.to_sym, command.to_sym
-         fail "Unknown command #{command}" unless COMMANDS.include? command
+         fail "Unknown command #{command}" unless @commands.include? command
 
-         @bindings[widget][command].delete parse_key(key)
+         @bindings[widget][command].delete parse_key(key) rescue nil
          @bindings[widget][command] << parse_key(key)
          check_collisions
       end
@@ -202,6 +204,12 @@ module Ektoplayer
       def unbind(widget, key)
          @bindings[widget.to_sym].each do |command, keys|
             keys.delete( (parsed_key ||= parse_key(k)) )
+         end
+      end
+
+      def unbind_all
+         @bindings.each do |widget, commands|
+            commands.clear
          end
       end
 
@@ -217,14 +225,20 @@ module Ektoplayer
       private def check_collisions
          global_keys = @bindings[:global].values.flatten
          global_keys.each do |k|
-            fail "Double binding in 'global': #{k}" if global_keys.count(k) > 1
+            fail "Double binding in 'global', key #{keyname(k)}" if global_keys.count(k) > 1
          end
 
          @bindings.each_pair do |widget, commands|
+            next if widget == :global
             widget_keys = commands.values.flatten
             widget_keys.each do |k|
-               fail "Double binding in '#{widget}': #{k}"        if widget_keys.count(k) > 1
-               fail "Double binding in 'global/#{widget}': #{k}" if global_keys.include? k
+               if widget_keys.count(k) > 1
+                  fail "Double binding in '#{widget}', key `#{keyname(k)}`"
+               end
+
+               if global_keys.include? k
+                  fail "Double binding in 'global <> #{widget}', key #{keyname(k)}"
+               end
             end
          end
       end

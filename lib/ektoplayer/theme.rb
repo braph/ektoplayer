@@ -2,7 +2,7 @@ require_relative 'ui/colors'
 
 module Ektoplayer
    class Theme
-      attr_reader :current
+      attr_reader :current, :theme
 
       def initialize
          @current = 0
@@ -71,6 +71,7 @@ module Ektoplayer
       end
 
       def color(name, *defs, theme: 8)
+         defs.map! { |d| Integer(d) rescue d.to_sym }
          @theme[theme][name.to_sym] = defs.freeze
       end
 
@@ -81,7 +82,7 @@ module Ektoplayer
       def [](theme_def)      UI::Colors.get(theme_def)  end
 
       def use_colors(colors)
-         fail ArgumentError, 'unknown theme' unless @theme[colors]
+         fail 'unknown theme' unless @theme[colors]
          @current = colors
 
          UI::Colors.reset

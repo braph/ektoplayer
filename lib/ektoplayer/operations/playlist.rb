@@ -19,7 +19,7 @@ module Ektoplayer
                @trackloader.download_album(track['url']) rescue (
                   Application.log(self, $!)
                )
-            end
+            end.join(0.3) # prevent too many hits
          end
 
          def reload(index)
@@ -28,13 +28,15 @@ module Ektoplayer
                @trackloader.get_track_file(track['url'], reload: true) rescue (
                   Application.log(self, $!)
                )
-            end
+            end.join(0.3) # prevent too many hits
          end
 
          def play(index)
             return unless track = @playlist[index]
             @playlist.current_playing=(index)
-            @player.play(@trackloader.get_track_file(track['url']))
+            Thread.new do
+               @player.play(@trackloader.get_track_file(track['url']))
+            end.join(0.3) # prevent too many hits
          end
 
          def play_next
