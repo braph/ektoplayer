@@ -45,7 +45,8 @@ library to compile the native extensions.
     gem install ektoplayer
 
 ## Configuration
-    Have a look at the default [ektoplayer.rc](https://github.com/braph/ektoplayer/blob/master/doc/ektoplayer.rc).
+
+Have a look at the default [ektoplayer.rc](https://github.com/braph/ektoplayer/blob/master/doc/ektoplayer.rc).
 
 ## Authors
 
