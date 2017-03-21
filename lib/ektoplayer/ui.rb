@@ -6,6 +6,8 @@ require_relative 'ui/colors'
 require_relative 'events'
 
 module UI
+   CONDITION_SIGNALS = ConditionSignals.new
+
    class WidgetSizeError < Exception; end
 
    class Canvas
@@ -36,19 +38,9 @@ module UI
       end
 
       def self.enable_resize_detection
-         @@winch_mutex ||= Mutex.new
-         @@winch_cond  ||= ConditionVariable.new
+         CONDITION_SIGNALS.on(:WINCH, &Canvas.method(:on_winch))
 
-         Signal.trap('WINCH') { @@winch_cond.signal }
-
-         @@winch_thread ||= Thread.new do
-            loop do
-               @@winch_mutex.synchronize do
-                  @@winch_cond.wait(@@winch_mutex)
-                  self.on_winch
-               end
-            end
-         end
+         Signal.trap('WINCH') { CONDITION_SIGNALS.signal(:WINCH) }
       end
 
       def self.widget;      @@widget                   end
@@ -90,12 +82,12 @@ module UI
             end
 
             begin
-               @@widget.display(true, force_redraw) if @@widget and (@@mode ||= :curses) == :curses
+               @@widget.display(true, force_redraw) if @@widget
             rescue UI::WidgetSizeError
                Curses.clear
                Curses.addstr('terminal too small!')
             rescue
-               Application.log(self, $!)
+               Ektoplayer::Application.log(self, $!)
             end
 
             Curses.doupdate
@@ -166,13 +158,17 @@ module UI
                         end
                      end
                   end
+               rescue
+                  # getch() returned something weird that could not be chr()d
                end while @@readline_obj.active?
             end
          end
       end
 
       def self.readline(*args, **opts, &block)
-         (@@readline_obj ||= ReadlineWindow.new).readline(*args, **opts, &block)
+         (@@readline_obj ||= ReadlineWindow.new).readline(*args, **opts) do
+            @@updating.synchronize { yield }
+         end
       end
    end
 
@@ -196,11 +192,11 @@ module UI
 
             while rlt.alive?
                window.erase
-               buffer = "#{prompt}#{Readline.line_buffer}"
+               buffer = prompt + Readline.line_buffer.to_s
                window << buffer[(buffer.size - size.width).clamp(0, buffer.size)..-1]
                window.cursor=(Point.new(x: Readline.point + prompt.size, y: 0))
                window.refresh
-               @mutex.synchronize { @cond.wait(@mutex, 0.2) }
+               CONDITION_SIGNALS.wait(:readline, 0.2)
             end
 
             window.clear
@@ -212,7 +208,7 @@ module UI
 
       def feed(c)
          @readline_in_write.write(c)
-         @cond.signal
+         CONDITION_SIGNALS.signal(:readline)
          @thread = nil if c == ?\n
       end
    end

@@ -1,4 +1,43 @@
 require 'zip'
+require 'thread'
+
+class ConditionSignals
+   def initialize
+      @mutex, @cond = Mutex.new, ConditionVariable.new
+      @curr_signal = nil
+      @signal_hooks = {}
+
+      Thread.new do
+         @mutex.synchronize do
+            loop do
+               @cond.wait(@mutex)
+
+               if @signal_hooks.key? @curr_signal
+                  @signal_hooks[@curr_signal].()
+               end
+            end
+         end
+      end
+   end
+
+   def wait(name, timeout=nil)
+      @mutex.synchronize do
+         loop do
+            @cond.wait(@mutex, timeout)
+            return if @curr_signal == name
+         end
+      end
+   end
+
+   def signal(name)
+      @curr_signal = name
+      @cond.broadcast
+   end
+
+   def on(name, &block)
+      @signal_hooks[name] = block
+   end
+end
 
 class Object
    alias :frz :freeze

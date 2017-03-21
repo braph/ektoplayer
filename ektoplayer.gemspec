@@ -2,7 +2,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = "ektoplayer"
-  s.version       = "0.1.3"
+  s.version       = "0.1.4"
   s.authors       = ["Benjamin Abendroth"]
   s.email         = "braph93@gmx.de"
   s.homepage      = "http://github.com/braph/ektoplayer"

@@ -28,6 +28,8 @@ module Ektoplayer
          end
 
          def level=(level)
+            return unless visible?
+
             new_level_width = (1.4 * level * @size.width).to_i.clamp(0, @size.width - 1) rescue 0
             return if @level_width == new_level_width
             load_colors
@@ -48,7 +50,7 @@ module Ektoplayer
             end
 
             @level_width = new_level_width 
-            @win.refresh if visible?
+            @win.refresh
          end
 
          def attach(player)

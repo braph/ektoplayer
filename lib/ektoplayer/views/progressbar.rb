@@ -32,10 +32,9 @@ module Ektoplayer
 
          def draw
             @win.setpos(0,0)
-
-            @progress_width  ||= 0
-            @progress_char ||= Config[:'progressbar.progress_char']
-            @rest_char     ||= Config[:'progressbar.rest_char']
+            @progress_width ||= 0
+            @progress_char  ||= Config[:'progressbar.progress_char']
+            @rest_char      ||= Config[:'progressbar.rest_char']
 
             @win.with_attr(Theme[:'progressbar.progress']) do
                repeat = (@progress_width - @progress_char.size)

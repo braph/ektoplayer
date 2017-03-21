@@ -30,7 +30,7 @@ module Ektoplayer
                   end
 
                   @win.with_attr(Theme[:'help.command_name']) do
-                     @win.on_column(18).addstr("#{name}")
+                     @win.on_column(18).addstr(name.to_s)
                   end
 
                   @win.with_attr(Theme[:'help.command_desc']) do

@@ -2,7 +2,7 @@ unless Array.public_method_defined? :sum
    class Array
       def sum
          result = 0
-         self.each { |i| result += 1 }
+         self.each { |i| result += i }
          result
       end
    end

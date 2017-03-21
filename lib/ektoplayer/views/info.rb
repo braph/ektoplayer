@@ -37,7 +37,7 @@ module Ektoplayer
 
             @win.from_left(START_TAG_VALUE)
             @win.with_attr(Theme[:'info.value']) do
-               @win.addstr("#{value}")
+               @win.addstr(value.to_s)
             end
          end
          
@@ -48,7 +48,7 @@ module Ektoplayer
 
             @win.from_left(START_INFO_VALUE)
             @win.with_attr(Theme[:'info.value']) do
-               @win.addstr("#{value}")
+               @win.addstr(value.to_s)
             end
          end
 
@@ -161,7 +161,7 @@ module Ektoplayer
                @trackloader.downloads.each do |dl|
                   name = File.basename(dl.filename)
                   percent = Float(dl.progress) / dl.total * 100
-                  percent = "%0.2f" % percent
+                  percent = '%0.2f' % percent
                   draw_download(name, ?( + percent + '%)', dl.error)
                end
                @win.next_line

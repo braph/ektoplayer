@@ -11,11 +11,11 @@ module Ektoplayer
          def initialize(**opts)
             super(**opts)
 
-            @playinginfo  = sub(PlayingInfo)
-            @progressbar  = sub(ProgressBar)
-            @volumemeter  = sub(VolumeMeter)
-            @tabbar       = sub(TabBar)
-            @windows      = sub(UI::SwitchContainer)
+            @playinginfo  = sub(PlayingInfo, size: @size.update(height: 2))
+            @progressbar  = sub(ProgressBar, size: @size.update(height: 1))
+            @volumemeter  = sub(VolumeMeter, size: @size.update(height: 1))
+            @tabbar       = sub(TabBar,      size: @size.update(height: 1))
+            @windows      = sub(UI::SwitchContainer, size: @size.calc(height: -4))
             @help         = @windows.sub(Help, visible: false)
             @info         = @windows.sub(Info, visible: false)
             @splash       = @windows.sub(Splash, visible: false)
@@ -29,8 +29,8 @@ module Ektoplayer
 
             Config[:'main.widgets'].each { |w| add(send(w)) }
 
-            @windows.selected=(@splash)
             self.selected=(@windows)
+            @windows.selected=(@splash)
          end
 
          def layout

@@ -32,7 +32,7 @@ module UI
       # as draw, layout and refresh) are executed once and only once at the
       # end of this function.
       def with_lock
-         held_locks = lock; yield
+         lock; yield
       ensure
          unlock
       end
@@ -44,24 +44,43 @@ module UI
       def unlock
          return unless (@lock.exit rescue nil) or not visible?
 
-         layout   if @want >= WANT_LAYOUT
-         draw     if @want >= WANT_REDRAW
-         if @want >= WANT_REFRESH
-            Canvas.update_screen
+         if @want & WANT_LAYOUT > 0 
+            layout;
+            @want ^= WANT_LAYOUT
+         end
+         return   if not visible?
+
+         if @want & WANT_REDRAW > 0
+            draw
+            @want ^= WANT_REDRAW
          end
 
-         @want = 0
+         if @want > 0 #& WANT_REFRESH > 0
+            Canvas.update_screen
+            @want ^= WANT_REFRESH
+         end
       end
 
       def display(force_refresh=false, force_redraw=false)
+         if @want & WANT_LAYOUT > 0 
+            layout;
+            @want ^= WANT_LAYOUT
+         end
          return   if not visible?
-         layout   if @want >= WANT_LAYOUT
-         draw     if @want >= WANT_REDRAW or force_redraw
-         refresh  if @want >= WANT_REFRESH or force_refresh
+
+         if @want & WANT_REDRAW > 0 or force_redraw
+            draw
+            @want ^= WANT_REDRAW
+         end
+
+         if @want > 0 or force_refresh #WANT_REFRESH > 0 or force_refresh
+            refresh
+            @want ^= WANT_REFRESH
+         end
       end
 
-      def want_redraw;  @want |= WANT_REDRAW   end
-      def want_layout;  @want |= WANT_LAYOUT   end
+      def want_redraw;  @want |= 3             end
+      def want_layout;  @want = 7              end
       def want_refresh; @want |= WANT_REFRESH  end
 
       def invisible?;  !visible?                                     end

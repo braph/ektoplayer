@@ -35,7 +35,7 @@ module Ektoplayer
 
       def run
          #Thread.abort_on_exception=(true)
-         Thread.report_on_exception=(true) rescue nil
+         Thread.report_on_exception=(true) if Thread.public_method_defined? :report_on_exception
 
          # make each configuration object globally accessible as a singleton
          [Config, Bindings, Theme].each { |c| Common::mksingleton(c) }
@@ -121,14 +121,18 @@ module Ektoplayer
                
                if Config[:prefetch]
                   trackloader_mutex = Mutex.new
+                  @prefetch_thread = nil
                   player.events.on(:position_change) do
-                     Thread.new do
+                     @prefetch_thread ||= Thread.new do
                         if player.length > 30 and player.position_percent > 0.8
                            trackloader_mutex.synchronize do
                               trackloader.get_track_file(playlist[playlist.get_next_pos]['url'])
-                              sleep 5
+                              sleep 20
+                              @prefetch_thread = nil
                            end
                         end
+
+                        sleep 5
                      end
                   end
                end
