@@ -59,7 +59,7 @@ module Ektoplayer
          '<bpm    size="4" fg="green" justify="right" />').freeze
 
       DEFAULT_PLAYINGINFO_FORMAT1 =
-         '<text fg="black">──┤ </text><title bold="on" fg="yellow" /><text fg="black"> ├──</text>'.freeze
+         '<text fg="black">&lt;&lt; </text><title bold="on" fg="yellow" /><text fg="black"> &gt;&gt;</text>'.freeze
 
       DEFAULT_PLAYINGINFO_FORMAT2 = 
          '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><date fg="cyan" /><text>)</text>'.freeze
@@ -149,24 +149,21 @@ module Ektoplayer
          reg 'progressbar.display',
             'Enable/disable progressbar', true
 
-         reg 'progressbar.download_char',
-            'Character used for displaying download progress', ?-
-
          reg 'progressbar.progress_char',
-            'Character used for displaying playing progress',  '─'
+            'Character used for displaying playing progress',  ?~
 
          reg 'progressbar.rest_char',
-            'Character used for the rest of the line', '─'
+            'Character used for the rest of the line', ?~
 
          # - Volumemeter
          reg 'volumemeter.display',
             'Enable/disable volumemeter', true
 
          reg 'volumemeter.level_char',
-            'Character used for displaying volume level', '·'
+            'Character used for displaying volume level', ?~
 
          reg 'volumemeter.rest_char',
-            'Character used for the rest of the line', '·'
+            'Character used for the rest of the line', ?~
 
          # - Playinginfo
          reg 'playinginfo.display',
