@@ -10,7 +10,7 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.7'.freeze
+      VERSION = '0.1.8'.freeze
       GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
       EKTOPLAZM_URL = 'http://www.ektoplazm.com'.freeze
 
@@ -35,7 +35,7 @@ module Ektoplayer
 
       def run
          #Thread.abort_on_exception=(true)
-         Thread.report_on_exception=(true) if Thread.public_method_defined? :report_on_exception
+         Thread.report_on_exception=(true) if Thread.respond_to? :report_on_exception
 
          # make each configuration object globally accessible as a singleton
          [Config, Bindings, Theme].each { |c| Common::mksingleton(c) }
@@ -70,7 +70,7 @@ module Ektoplayer
 
          UI::Canvas.run do
             if Config[:use_colors] == :auto
-               Theme.use_colors(ENV['TERM'] =~ /256/ ? 256 : 8)
+               Theme.use_colors(Curses.colors >= 256 ? 256 : 8)
             else
                Theme.use_colors(Config[:use_colors])
             end

@@ -64,7 +64,8 @@ module Ektoplayer
          end
 
          { search_up: 'Start search upwards',     search_next: 'Goto next search result',
-           search_down: 'Start search downwards', search_prev: 'Goto previous search result'
+           search_down: 'Start search downwards', search_prev: 'Goto previous search result',
+           toggle_selection:  'Toggle multi line selection',
          }.each do |cmd, desc|
             %w(browser playlist).each { |w| reg("#{w}.#{cmd}", desc) }
          end
@@ -105,6 +106,8 @@ module Ektoplayer
                :'playlist.down'           => [?j,      Curses::KEY_DOWN      ],
                :'playlist.page_down'      => ['^d',    Curses::KEY_NPAGE     ],
                :'playlist.page_up'        => ['^u',    Curses::KEY_PPAGE     ],
+               # selection
+               :'playlist.toggle_selection' => ['^v'                           ],
                # search
                :'playlist.search_next'    => [?n                             ],
                :'playlist.search_prev'    => [?N                             ],
@@ -127,6 +130,8 @@ module Ektoplayer
                :'browser.down'            => [?j,      Curses::KEY_DOWN      ],
                :'browser.page_up'         => ['^u',    Curses::KEY_PPAGE     ],
                :'browser.page_down'       => ['^d',    Curses::KEY_NPAGE     ],
+               # selection
+               :'browser.toggle_selection' => ['^v'                           ],
                # search
                :'browser.search_next'     => [?n                             ],
                :'browser.search_prev'     => [?N                             ],

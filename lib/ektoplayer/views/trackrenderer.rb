@@ -90,7 +90,7 @@ module Ektoplayer
             end
          end
 
-         def render(scr, item, index, selected: false, marked: false)
+         def render(scr, item, index, selected: false, marked: false, selection: false)
             fail ArgumentError, 'item is nil' unless item
             return unless @column_format
 
@@ -99,7 +99,9 @@ module Ektoplayer
             additional_attributes |= Curses::A_STANDOUT if selected
 
             if item.is_a? String or item.is_a? Symbol
-               if index % 2 == 0
+               if selection
+                  color = Theme[:'list.item_selection']
+               elsif index % 2 == 0
                   color = Theme[:'list.item_even']
                else
                   color = Theme[:'list.item_odd']
@@ -111,8 +113,16 @@ module Ektoplayer
                return
             end
 
+            # todo write render code for selecte? optimize?
+
             @column_format.each_with_index do |c,i|
-               scr.with_attr(c[:curses_codes] | additional_attributes) do
+               if selection
+                  color = Theme[:'list.item_selection']
+               else
+                  color = c[:curses_codes]
+               end
+
+               scr.with_attr(color | additional_attributes) do
                   value = (item[c[:tag]] or '')
 
                   if value.is_a?(Integer)

@@ -10,7 +10,7 @@ module Ektoplayer
 
             register = view_operations.with_register('playlist.')
             %w(up down page_up page_down top bottom
-               search_up search_down search_next search_prev).
+               search_up search_down search_next search_prev toggle_selection).
                each { |op| register.(op, &@view.method(op)) }
 
             register.(:play) do
@@ -18,24 +18,36 @@ module Ektoplayer
             end
 
             register.(:reload) do
-               operations.send(:'playlist.reload', view.selected)
+               view.get_selection.each do |index|
+                  operations.send(:'playlist.reload', index)
+               end
             end
 
             register.(:download_album) do
-               operations.send(:'playlist.download_album', view.selected)
+               view.get_selection.each do |index|
+                  operations.send(:'playlist.download_album', index)
+               end
             end
 
             register.(:delete) do
-               old_cursor, old_selected = view.cursor, view.selected
-               operations.send(:'playlist.delete', old_selected)
-               view.selected=(old_selected)
-               view.force_cursorpos(old_cursor)
+               view.with_lock do
+                  old_cursor, selection = view.cursor, view.get_selection
+
+                  selection.each do 
+                     operations.send(:'playlist.delete', selection[0])
+                  end
+
+                  view.selected=(selection[0])
+                  view.force_cursorpos(old_cursor)
+               end
             end
 
             register.(:goto_current) do
-               if index = playlist.current_playing
-                  view.selected=(index)
-                  view.center()
+               view.with_lock do
+                  if index = playlist.current_playing
+                     view.selected=(index)
+                     view.center()
+                  end
                end
             end
 

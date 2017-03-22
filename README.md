@@ -48,7 +48,18 @@ library to compile the native extensions.
 
 ## Configuration
 
-Have a look at the default [ektoplayer.rc](https://github.com/braph/ektoplayer/blob/master/doc/ektoplayer.rc).
+Ektplayer keeps it's default configuration file under `~/.config/ektoplayer/ektoplayer.rc`.
+
+Available configuration commands:
+   * `set <option> <value>`
+   * `bind <window> <key> <command>`
+   * `undbind <window> <key>`
+   * `unbind_all`
+   * `color <name> <fg> [<bg> [<attribute> ...]]`
+   * `color_mono <name> <fg> [<bg> [<attribute> ...]]`
+   * `color_256 <name> <fg> [<bg> [<attribute> ...]]`
+
+See [ektoplayer.rc](https://github.com/braph/ektoplayer/blob/master/doc/ektoplayer.rc) for the a configuration file with the defaults.
 
 ## Authors
 

@@ -32,6 +32,7 @@ module Ektoplayer
 
                :'list.item_even'          => [:blue                   ].freeze,
                :'list.item_odd'           => [:blue                   ].freeze,
+               :'list.item_selection'     => [:magenta                ].freeze,
 
                :'playinginfo.position'    => [:magenta                ].freeze,
                :'playinginfo.state'       => [:cyan                   ].freeze,

@@ -186,7 +186,7 @@ module UI
                while rlt.alive?
                   window.erase
                   buffer = prompt + Readline.line_buffer.to_s
-                  window << buffer[(buffer.size - size.width).clamp(0, buffer.size)..-1]
+                  window.addstr(buffer[(buffer.size - size.width).clamp(0, buffer.size)..-1])
                   window.cursor=(Point.new(x: Readline.point + prompt.size, y: 0))
                   window.refresh
                   CONDITION_SIGNALS.wait(:readline, 0.2)

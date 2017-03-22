@@ -12,7 +12,7 @@ module Ektoplayer
             register = view_operations.with_register('browser.')
 
             %w(up down page_up page_down top bottom
-               search_up search_down search_next search_prev).
+               search_up search_down search_next search_prev toggle_selection).
                each { |op| register.(op, &view.method(op)) }
 
             register.(:enter) do
@@ -21,7 +21,9 @@ module Ektoplayer
 
             register.(:add_to_playlist) do
                #if tracks = browser.tracks(view.selected)
-               operations.send(:'browser.add_to_playlist', view.selected)
+               view.get_selection.each do |index|
+                  operations.send(:'browser.add_to_playlist', index)
+               end
                #end
             end
 
