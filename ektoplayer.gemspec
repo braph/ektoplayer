@@ -19,7 +19,6 @@ Gem::Specification.new do |s|
   s.add_dependency "sqlite3", "~> 1.3"
   s.add_dependency "curses", "~> 1.0"
   s.add_dependency "nokogiri", "~> 1.7"
-  s.add_dependency "rubyzip", "~> 1.2"
 
   #s.add_development_dependency "bundler", "~> 1.3"
   #s.add_development_dependency "rake", "~> 10.5"

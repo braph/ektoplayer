@@ -28,8 +28,11 @@ It allows you to
   * Ruby (1.9)
   * Portaudio (19)
   * Mpg123 (1.14)
-  * LibZip
   * Sqlite3 
+
+## Optional Requirements
+
+  * For extracting album archives either `unzip`, `7z` or the Gem `RubyZip` is needed
 
 ## Installation
 
@@ -38,12 +41,12 @@ library to compile the native extensions.
 
 ### Arch Linux
 
-    pacman -S ruby portaudio mpg123 sqlite3 ncurses zlib base-devel --needed
+    pacman -S ruby portaudio mpg123 sqlite3 ncurses base-devel --needed
     gem install ektoplayer
 
 ### Debian / Ubuntu (not yet tested)
 
-    apt-get install ruby ruby-dev portaudio19-dev libmpg123-dev sqlite3 libsqlite3-dev libncurses-dev libz1g-dev build-essential
+    apt-get install ruby ruby-dev portaudio19-dev libmpg123-dev sqlite3 libsqlite3-dev libncurses-dev build-essential
     gem install ektoplayer
 
 ## Configuration

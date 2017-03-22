@@ -1,5 +1,5 @@
-require 'zip'
 require 'thread'
+require 'open3'
 
 class ConditionSignals
    def initialize
@@ -83,13 +83,30 @@ module Common
          )
       end
    end
-
+   
    def self.extract_zip(zip_file, dest)
+      # try RubyZip gem
+      require 'zip'
+
       Zip::File.open(zip_file) do |zip_obj|
          zip_obj.each do |f|
             f.extract(File.join(dest, f.name))
          end
       end
+   rescue LoadError
+      # try 'unzip'
+      out, err, status = Open3.capture3('unzip', ?x, zip_file, chdir: dest)
+      fail err unless status.exitcode == 0
+   rescue Error::ENOENT
+      # try '7zip'
+      out, err, status = Open3.capture3('7z', ?x, zip_file, chdir: dest)
+      fail err unless status.exitcode == 0
+   rescue Error::ENOENT
+      fail 'neither RubzZip gem nor /bin/unzip or /bin/7z found'
+   rescue
+      # something failed ...
+      Ektoplayer::Application.log(self, "error extracting zip", zip, dest, $!)
+      fail $!
    end
 
    def self.with_hash_zip(keys, values)
