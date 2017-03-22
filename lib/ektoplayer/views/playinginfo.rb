@@ -20,7 +20,7 @@ module Ektoplayer
 
          def stopped!
             return if @state == :stopped
-            with_lock { @state = :stopped; want_redraw }
+            with_lock { @state = :stopped; @position = 0; want_redraw }
          end
 
          def track=(t)

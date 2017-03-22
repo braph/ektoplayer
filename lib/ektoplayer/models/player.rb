@@ -1,5 +1,5 @@
 require_relative 'model'
-require_relative '../mp3player'
+require_relative '../players/mpg_wrapper_player'
 
 module Ektoplayer
    module Models
@@ -7,7 +7,7 @@ module Ektoplayer
          def initialize(client)
             super()
             @client = client
-            @player = Mp3Player.new
+            @player = MpgWrapperPlayer.new
             @events.register(:position_change, :track_completed, :pause, :stop, :play)
             @player.events.on_all(&@events.method(:trigger))
 

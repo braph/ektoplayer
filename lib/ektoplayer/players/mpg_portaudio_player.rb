@@ -2,7 +2,7 @@ require 'thread'
 require 'mpg123'
 require 'portaudio'
 
-require_relative 'events'
+require_relative '../events'
 
 class Mpg123
    alias :samples_per_frame :spf
@@ -38,7 +38,7 @@ class Mpg123
    end
 end
 
-class Mp3Player
+class MpgPortaudioPlayer
    attr_reader :events
 
    def initialize(buffer_size = 2**12)
@@ -148,4 +148,4 @@ class Mp3Player
    def forward(seconds = 2)
       seek(position + seconds)
    end
-end
+e

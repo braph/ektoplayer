@@ -26,7 +26,6 @@ It allows you to
 ## Requirements
 
   * Ruby (1.9)
-  * Portaudio (19)
   * Mpg123 (1.14)
   * Sqlite3 
 
@@ -36,17 +35,14 @@ It allows you to
 
 ## Installation
 
-Assuming you have Ruby/Rubygems installed, you need portaudio and mpg123 as
-library to compile the native extensions.
-
 ### Arch Linux
 
-    pacman -S ruby portaudio mpg123 sqlite3 ncurses base-devel --needed
+    pacman -S ruby mpg123 sqlite3 ncurses --needed
     gem install ektoplayer
 
 ### Debian / Ubuntu (not yet tested)
 
-    apt-get install ruby ruby-dev portaudio19-dev libmpg123-dev sqlite3 libsqlite3-dev libncurses-dev build-essential
+    apt-get install ruby mpg123 sqlite3 libncurses5
     gem install ektoplayer
 
 ## Configuration
@@ -71,4 +67,3 @@ See [ektoplayer.rc](https://github.com/braph/ektoplayer/blob/master/doc/ektoplay
 ## See also
 
   * Ektoplayer was inspired by [Soundcloud2000](https://github.com/grobie/soundcloud2000) and [ncmpcpp](https://github.com/arybczak/ncmpcpp)
-  * It uses [Audite](https://github.com/georgi/audite) as playback engine and [Nokogiri](http://www.nokogiri.org/) for parsing HTML

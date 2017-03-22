@@ -134,26 +134,15 @@ module UI
 
       def render(index, **opts)
          return unless @item_renderer
-         return unless @list[index] # TODO...?
+         return Ektoplayer::Application.log(self, 'render todo') unless @list[index]
 
-         opts[:selection] = (
-            @selection.started? and (
+         opts[:selection] = (@selection.started? and (
                opts[:selected] or index.between?(
                   [@selection.start_pos, @selected].min,
                   [@selection.start_pos, @selected].max
                )
             )
          )
-
-         if @selection.started?
-            if opts[:selected]
-               opts[:selection] = true
-            elsif @selection.start_pos < @selected and index.between?(@selection.start_pos, @selected)
-               opts[:selection] = true
-            elsif @selection.start_pos > @selected and index.between?(@selected, @selection.start_pos)
-               opts[:selection] = true
-            end
-         end
 
          @item_renderer.render(@win, @list[index], index, **opts)
       end
@@ -182,6 +171,8 @@ module UI
 
       def selected=(new_index)
          fail ArgumentError unless new_index
+         old_index_bottom = index_bottom
+         old_index_top = index_top
          old_selected, @selected = @selected, new_index.clamp(0, index_last)
          return if old_selected == @selected or @list.empty?
 
@@ -208,11 +199,11 @@ module UI
                   write_at(old_cursor); render(old_selected)
                end
 
-               (index_top - 1).downto(@selected + 1).each do |index|
+               (old_index_top - 1).downto(@selected + 1).each do |index|
                   @win.insert_top; render(index)
                end
 
-               @win.insert_top; render(new_index, selected: true)
+               @win.insert_top; render(@selected, selected: true)
                @cursor = 0
                _check
             else
@@ -220,7 +211,7 @@ module UI
                   write_at(old_cursor); render(old_selected)
                end
 
-               (index_bottom + 1).upto(@selected - 1).each do |index|
+               (old_index_bottom + 1).upto(@selected - 1).each do |index|
                   @win.append_bottom; render(index)
                end
 
@@ -248,12 +239,17 @@ module UI
          return if (new_cursor == @cursor) or @list.empty?
 
          with_lock do
-            new_index = (@selected - (@cursor - new_cursor)).clamp(0, index_last)
-            write_at(@cursor);    render(@selected)
-            write_at(new_cursor); render(new_index, selected: true)
-            @selected, @cursor = new_index, new_cursor
+            old_cursor, @cursor = @cursor, new_cursor
+            old_selected, @selected = @selected, (@selected - (old_cursor - @cursor)).clamp(0, index_last)
             _check
-            want_refresh
+
+            if @selection.started?
+               want_redraw
+            else
+               write_at(old_cursor); render(old_selected)
+               write_at(new_cursor); render(@selected, selected: true)
+               want_refresh
+            end
          end
       end
 
@@ -280,13 +276,14 @@ module UI
             # list is already on top
             select_from_cursorpos((@cursor - n).clamp(0, cursor_max))
          elsif n < @size.height
+            old_index_top = index_top
             old_selected, @selected = @selected, @selected - n
 
             if lines_after_cursor > n
                write_at(@cursor); render(old_selected) 
             end
 
-            (index_top - 1).downto(index_top - n).each do |index|
+            (old_index_top - 1).downto(old_index_top - n).each do |index|
                @win.insert_top; render(index)
             end
 
@@ -314,13 +311,14 @@ module UI
             select_from_cursorpos((@cursor + n).clamp(0, cursor_max))
             _check
          elsif n < @size.height
+            old_index_bottom = index_bottom
             old_selected, @selected = @selected, @selected + n
 
             if lines_before_cursor > n
                write_at(@cursor); render(old_selected)
             end
 
-            (index_bottom + 1).upto(index_bottom + n).each do |index|
+            (old_index_bottom + 1).upto(old_index_bottom + n).each do |index|
                @win.append_bottom; render(index)
             end
 
