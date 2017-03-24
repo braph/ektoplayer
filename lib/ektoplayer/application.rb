@@ -112,7 +112,6 @@ module Ektoplayer
                Controllers::Help.new(main_w.help, view_ops)
                Controllers::Info.new(main_w.info, player, playlist, trackloader, database, view_ops)
                main_w.progressbar.attach(player)
-               main_w.volumemeter.attach(player)
                main_w.playinginfo.attach(playlist, player)
 
                # ... events ...

@@ -24,9 +24,6 @@ module Ektoplayer
                :'progressbar.progress'    => [:blue                   ].freeze,
                :'progressbar.rest'        => [:black                  ].freeze,
 
-               :'volumemeter.level'       => [:magenta                ].freeze,
-               :'volumemeter.rest'        => [:black                  ].freeze,
-
                :'tabbar.selected'         => [:blue                   ].freeze,
                :'tabbar.unselected'       => [:none                   ].freeze,
 
@@ -54,9 +51,6 @@ module Ektoplayer
 
                :'progressbar.progress'    => [23                      ].freeze,
                :'progressbar.rest'        => [236                     ].freeze,
-
-               :'volumemeter.level'       => [:magenta                ].freeze,
-               :'volumemeter.rest'        => [236                     ].freeze,
 
                :'tabbar.selected'         => [75                      ].freeze,
                :'tabbar.unselected'       => [250                     ].freeze,

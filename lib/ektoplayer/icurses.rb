@@ -1,4 +1,4 @@
-%w(ncursesw ffi-ncurses curses ncurses ncursesw).each do |f|
+%w(ffi-ncurses ncursesw ncurses curses).each do |f|
    begin
       $USING_CURSES = f
       require_relative "icurses/#{f}" 

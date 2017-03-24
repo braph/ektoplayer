@@ -159,16 +159,6 @@ module Ektoplayer
          reg 'progressbar.rest_char',
             'Character used for the rest of the line', ?~
 
-         # - Volumemeter
-         reg 'volumemeter.display',
-            'Enable/disable volumemeter', true
-
-         reg 'volumemeter.level_char',
-            'Character used for displaying volume level', ?~
-
-         reg 'volumemeter.rest_char',
-            'Character used for the rest of the line', ?~
-
          # - Playinginfo
          reg 'playinginfo.display',
             'Enable/display playinginfo', true
@@ -190,7 +180,7 @@ module Ektoplayer
             lambda { |v| v.split(/\s*,\s*/).map(&:to_sym) }
 
          reg 'main.widgets', 'Specify widgets to show (up to down)',
-            'playinginfo,progressbar,tabbar,windows,volumemeter',
+            'playinginfo,tabbar,windows,progressbar',
             lambda { |v| v.split(/\s*,\s*/).map(&:to_sym) }
       end
 
