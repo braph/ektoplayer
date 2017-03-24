@@ -26,29 +26,27 @@ module Ektoplayer
 
          def draw_heading(heading)
             @win.with_attr(Theme[:'info.head']) do
-               @win.next_line.from_left(START_HEADING).addstr(heading)
+               @win.mvaddstr(@win.cury + 1, START_HEADING, heading)
             end
          end
 
          def draw_tag(tag, value=nil)
             @win.with_attr(Theme[:'info.tag']) do
-               @win.next_line.from_left(START_TAG).addstr(tag)
+               @win.mvaddstr(@win.cury + 1, START_TAG, tag)
             end
 
-            @win.from_left(START_TAG_VALUE)
             @win.with_attr(Theme[:'info.value']) do
-               @win.addstr(value.to_s)
+               @win.mvaddstr(@win.cury, START_TAG_VALUE, value.to_s)
             end
          end
          
          def draw_info(string, value=nil)
             @win.with_attr(Theme[:'info.tag']) do
-               @win.next_line.from_left(START_INFO).addstr(string)
+               @win.mvaddstr(@win.cury + 1, START_INFO, string)
             end
 
-            @win.from_left(START_INFO_VALUE)
             @win.with_attr(Theme[:'info.value']) do
-               @win.addstr(value.to_s)
+               @win.mvaddstr(@win.cury, START_INFO_VALUE, value.to_s)
             end
          end
 
@@ -57,14 +55,14 @@ module Ektoplayer
             mevent = with_mouse_section_event do
                @win.with_attr(Theme[:url]) { @win << title }
             end
-            mevent.on(Curses::BUTTON1_CLICKED) do
+            mevent.on(ICurses::BUTTON1_CLICKED) do
                Common::open_url_extern(url)
             end
          end
          
          def draw_download(file, percent, error)
             @win.with_attr(Theme[:'info.download.file']) do
-               @win.next_line.from_left(START_TAG).addstr(file)
+               @win.mvaddstr(@win.cury + 1, START_TAG, file)
             end
             @win.with_attr(Theme[:'info.download.percent']) do
                @win.addstr(" #{percent}")
@@ -87,7 +85,7 @@ module Ektoplayer
 
             mouse_section.clear
             @win.erase
-            @win.setpos(0,0)
+            @win.move(0,0)
 
             if @track = (@playlist[@playlist.current_playing] rescue nil)
                draw_heading('Current track')
@@ -123,29 +121,29 @@ module Ektoplayer
                draw_heading('Description')
                line_length = START_TAG
                wrap_length = @size.width.clamp(1, LINE_WRAP)
-               @win.next_line.from_left(START_TAG)
+               @win.move(@win.cury + 1, START_TAG)
 
                Nokogiri::HTML("<p>#{@track['description']}</p>").css(?p).each do |p|
                   p.children.each do |element|
                      if element[:href]
                         if (line_length += element.text.size) > wrap_length
-                           @win.next_line.from_left(START_TAG)
+                           @win.move(@win.cury + 1, START_TAG)
                            line_length = START_TAG
                         end
 
                         draw_url(element[:href], element.text.strip)
-                        @win.addch(' ')
+                        @win.addch(32) # ' '
                      else
                         element.text.split(' ').each do |text|
                            if (line_length += text.size) > wrap_length
-                              @win.next_line.from_left(START_TAG)
+                              @win.move(@win.cury + 1, START_TAG)
                               line_length = START_TAG
                            end
 
                            @win.with_attr(Theme[:'info.description']) do
                               @win.mv_left(1) if text =~ /^[\.,:;]$/ 
                               @win << text
-                              @win << ' '
+                              @win.addch(32) # ' '
                            end
                         end
                      end

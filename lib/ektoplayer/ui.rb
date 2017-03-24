@@ -1,4 +1,4 @@
-require 'curses'
+require_relative 'icurses'
 require 'readline'
 require 'io/console'
 
@@ -6,19 +6,17 @@ require_relative 'ui/colors'
 require_relative 'events'
 
 module UI
-   CONDITION_SIGNALS = ConditionSignals.new
-
    class WidgetSizeError < Exception; end
 
    class Canvas
-      extend Curses
+      extend ICurses
 
       def self.size
-         UI::Size.new(height: Curses.lines, width: Curses.cols)
+         UI::Size.new(height: ICurses.lines, width: ICurses.cols)
       end
 
       def self.cursor
-         UI::Point.new(y: Curses.cury, x: Curses.curx)
+         #UI::Point.new(y: ICurses.cury, x: ICurses.curx)
       end
 
       def self.pos
@@ -28,10 +26,10 @@ module UI
       def self.start
          @@widget = nil
 
-         %w(init_screen crmode noecho start_color use_default_colors).
-            each {|_|Curses.send(_)}
-         Curses.mousemask(Curses::ALL_MOUSE_EVENTS)
-         Curses.stdscr.keypad(true)
+         %w(initscr cbreak noecho start_color use_default_colors).
+            each {|_|ICurses.send(_)}
+         ICurses.mousemask(ICurses::ALL_MOUSE_EVENTS | ICurses::REPORT_MOUSE_POSITION)
+         ICurses.stdscr.keypad(true)
          UI::Colors.start
 
          self.enable_resize_detection
@@ -43,7 +41,7 @@ module UI
 
       def self.widget;      @@widget                   end
       def self.widget=(w)   @@widget = w               end
-      def self.stop;        Curses.close_screen        end
+      def self.stop;        ICurses.endwin             end
       def self.visible?;    true                       end
       def self.inivsibile?; false                      end
 
@@ -52,36 +50,33 @@ module UI
          widget
       end
 
-      def self.getch(timeout=-1)
-         Curses.stdscr.timeout=(timeout)
-         UI::Input::KEYMAP_WORKAROUND[Curses.stdscr.getch]
-      end
+      #def self.getch(timeout=-1)
+      #   ICurses.stdscr.timeout(timeout)
+      #   UI::Input::KEYMAP_WORKAROUND[ICurses.stdscr.getch]
+      #end
       
-      def self.update_screen(force_redraw=false)
+      def self.update_screen(force_redraw=false, force_resize=false)
          @@updating ||= Mutex.new
          @@want_resize ||= false
 
          if @@updating.try_lock
             begin
-               if @@want_resize
+               if @@want_resize or force_resize
                   @@want_resize = false
                   h, w = IO.console.winsize()
-                  Curses.resizeterm(h, w)
-                  Curses.clear
-                  Curses.refresh
+                  ICurses.resizeterm(h, w)
                   @@widget.size=(Size.new(height: h, width: w)) if @@widget
                   @@widget.display(true, true, true) if @@widget
                else
                   @@widget.display(true, force_redraw) if @@widget
                end
             rescue UI::WidgetSizeError
-               Curses.clear
-               Curses.addstr('terminal too small!')
+               ICurses.stdscr.clear
+               ICurses.stdscr.addstr('terminal too small!')
             rescue
                Ektoplayer::Application.log(self, $!)
             end
 
-            Curses.doupdate
             @@updating.unlock
          end
       end
@@ -96,8 +91,8 @@ module UI
 
    class Input
       KEYMAP_WORKAROUND = {
-         13  => Curses::KEY_ENTER,
-         127 => Curses::KEY_BACKSPACE
+         13  => ICurses::KEY_ENTER,
+         127 => ICurses::KEY_BACKSPACE
       }
       KEYMAP_WORKAROUND.default_proc = proc { |h,k| k }
       KEYMAP_WORKAROUND.freeze
@@ -111,45 +106,51 @@ module UI
 
          loop do
             unless @@readline_obj.active?
-               Curses.curs_set(0)
-               Curses.nonl
+               ICurses.curs_set(0)
+               ICurses.nonl
 
                begin
-                  UI::Canvas.widget.win.keypad=(true)
-                  c = KEYMAP_WORKAROUND[UI::Canvas.widget.win.getch1]
+                  UI::Canvas.widget.win.keypad(true)
 
-                  if c == Curses::KEY_MOUSE
-                     if c = Curses.getmouse
-                        UI::Canvas.widget.mouse_click(c)
+                  if (c = UI::Canvas.widget.win.getch1(600))
+                     if c == ICurses::KEY_MOUSE
+                        if c = ICurses.getmouse
+                           UI::Canvas.widget.mouse_click(c)
+                        end
+                     else
+                        c = KEYMAP_WORKAROUND[c.ord]
+                        UI::Canvas.widget.key_press(c) if c >= 0
                      end
-                  elsif c # (not nil)
-                     UI::Canvas.widget.key_press(c.is_a?(Integer) ? c : c.to_sym)
                   end
+
+                  ICurses.doupdate
                end while !@@readline_obj.active?
             else
-               Curses.curs_set(1)
-               Curses.nl
+               ICurses.curs_set(1)
+               ICurses.nl
 
                begin
                   win = UI::Canvas.widget.win
-                  win.keypad=(false)
-                  next unless (c = win.getch1)
+                  win.keypad(false)
+                  @@readline_obj.redraw
+                  next unless (c = (win.getch1(100).ord rescue -1)) > 0
 
                   if c == 10 or c == 4
-                     @@readline_obj.feed(?\n)
+                     @@readline_obj.feed(?\n.ord)
                   else
-                     @@readline_obj.feed(c.chr)
+                     @@readline_obj.feed(c)
 
                      if c == 27 # pass 3-character escape sequence
-                        if c = win.getch1(1)
-                           @@readline_obj.feed(c.chr)
-                           if c = win.getch1(1)
-                              @@readline_obj.feed(c.chr)
+                        win.timeout(5)
+                        if (c = (win.getch.ord rescue -1)) > 0
+                           @@readline_obj.feed(c)
+                           if (c = (win.getch.ord rescue -1)) > 0
+                              @@readline_obj.feed(c)
                            end
                         end
                      end
                   end
-               rescue
+               #rescue
                   # getch() returned something weird that could not be chr()d
                end while @@readline_obj.active?
             end
@@ -165,7 +166,6 @@ module UI
 
    class ReadlineWindow
       def initialize
-         @mutex, @cond = Mutex.new, ConditionVariable.new
          Readline.input, @readline_in_write = IO.pipe
          Readline.output = File.open(File::NULL, ?w)
          @thread = nil
@@ -173,36 +173,38 @@ module UI
 
       def active?; @thread; end
 
+      def redraw
+         return unless @window
+         @window.erase
+         buffer = @prompt + Readline.line_buffer.to_s
+         @window.addstr(buffer[(buffer.size - @size.width).clamp(0, buffer.size)..-1])
+         @window.move(0, Readline.point + @prompt.size)
+         @window.refresh
+      end
+
       def readline(pos, size, prompt: '', add_hist: false, &block)
          @thread ||= Thread.new do
-            begin
-               window = Curses::Window.new(size.height, size.width, pos.y, pos.x)
+            @size, @prompt = size, prompt
+            @window = ICurses.newwin(size.height, size.width, pos.y, pos.x)
 
-               rlt = Thread.new { block.(Readline.readline(prompt, add_hist)) }
+            begin
                Readline.set_screen_size(size.height, size.width)
                Readline.delete_text
                @readline_in_write.read_nonblock(100) rescue nil
-
-               while rlt.alive?
-                  window.erase
-                  buffer = prompt + Readline.line_buffer.to_s
-                  window.addstr(buffer[(buffer.size - size.width).clamp(0, buffer.size)..-1])
-                  window.cursor=(Point.new(x: Readline.point + prompt.size, y: 0))
-                  window.refresh
-                  CONDITION_SIGNALS.wait(:readline, 0.2)
-               end
+               block.(Readline.readline(prompt, add_hist))
             ensure
-               @thread = nil
-               window.clear
+               @window.clear
+               @window = @thread = nil
                UI::Canvas.update_screen(true)
             end
          end
       end
 
       def feed(c)
-         @readline_in_write.write(c)
-         CONDITION_SIGNALS.signal(:readline)
-         @thread = nil if c == ?\n
+         @readline_in_write.putc(c)
+         Thread.pass
+         @thread = nil if c == ?\n.ord
+         redraw
       end
    end
 
@@ -252,49 +254,9 @@ module UI
       def to_s;  "[(Size) height=#{height}, width=#{width}]"  end
    end
    
-   # We want to change the mouse coordinates as we pass the mouse event
-   # through the widgets. The attributes of Curses::MouseEvent are
-   # readonly, therefore we need to carry out our own MouseEvent class.
-   class FakeMouseEvent
-      attr_accessor :x, :y, :z, :bstate
-
-      def initialize(mouse_event=nil)
-         if mouse_event
-            from_mouse_event!(mouse_event)
-         else
-            @x, @y, @z, @bstate = 0, 0, 0, Curses::BUTTON1_CLICKED
-         end
-      end
-
-      def from_mouse_event!(m)
-         @x, @y, @z, @bstate = m.x, m.y, m.z, m.bstate
-      end
-
-      def update!(x: nil, y: nil, z: nil, bstate: nil)
-         @x, @y, @z = (x or @x), (y or @y), (z or @z)
-         @bstate = (bstate or @bstate)
-      end
-
-      def pos
-         Point.new(x: @x, y: @y)
-      end
-
-      def to_fake
-         FakeMouseEvent.new(self)
-      end
-
-      def to_s
-         name = Curses.constants.
-            select { |c| c =~ /^BUTTON_/ }.
-            select { |c| Curses.const_get(c) & @bstate > 0 }[0]
-         name ||= @button
-         "[(FakeMouseEvent) button=#{name}, x=#{x}, y=#{y}, z=#{z}]"
-      end
-   end
-
    class MouseEvents < Events
       def on(mouse_event, &block)
-         return on_all(&block) if mouse_event == Curses::ALL_MOUSE_EVENTS
+         return on_all(&block) if mouse_event == ICurses::ALL_MOUSE_EVENTS
          super(mouse_event, &block)
       end
 
@@ -335,8 +297,8 @@ module UI
    end
 end
 
-module Curses
-   class Window
+module ICurses
+   class IWindow
       alias :height :maxy
       alias :width  :maxx
       alias :clear_line :clrtoeol
@@ -346,11 +308,11 @@ module Curses
       def size;    UI::Size.new(height: maxy, width: maxx)   end
 
       def cursor=(new)
-         setpos(new.y, new.x) # or fail "Could not set cursor: #{new} #{size}"
+         move(new.y, new.x) # or fail "Could not set cursor: #{new} #{size}"
       end
 
       def pos=(new)
-         move(new.y, new.x)
+         mvwin(new.y, new.x)
       end
 
       def size=(new)
@@ -362,18 +324,18 @@ module Curses
       end
 
       def getch1(timeout=-1)
-         self.timeout=(timeout)
+         self.timeout(timeout)
          getch
       end
 
-      def on_line(n)       setpos(n, curx)                        ;self;end
-      def on_column(n)     setpos(cury, n)                        ;self;end
-      def next_line;       setpos(cury + 1, 0)                    ;self;end
-      def mv_left(n)       setpos(cury, curx - 1)                 ;self;end
-      def line_start(l=0)  setpos(l, 0)                           ;self;end
-      def from_left(size)  setpos(cury, size)                     ;self;end
-      def from_right(size) setpos(cury, (maxx - size))            ;self;end
-      def center(size)     setpos(cury, (maxx / 2) - (size / 2))  ;self;end
+      def on_line(n)       move(n, curx)                        ;self;end
+      def on_column(n)     move(cury, n)                        ;self;end
+      def next_line;       move(cury + 1, 0)                    ;self;end
+      def mv_left(n)       move(cury, curx - 1)                 ;self;end
+      def line_start(l=0)  move(l, 0)                           ;self;end
+      def from_left(size)  move(cury, size)                     ;self;end
+      def from_right(size) move(cury, (maxx - size))            ;self;end
+      def center(size)     move(cury, (maxx / 2) - (size / 2))  ;self;end
 
       def center_string(string)
          center(string.size)
@@ -381,24 +343,32 @@ module Curses
       self end
 
       def insert_top
-         setpos(0, 0)
+         move(0, 0)
          insertln
       self end
 
       def append_bottom
-         setpos(0, 0)
+         move(0, 0)
          deleteln
-         setpos(maxy - 1, 0)
+         move(maxy - 1, 0)
       self end
    end
 
-   class MouseEvent
+   class IMouseEvent
       def pos
          UI::Point.new(x: x, y: y)
       end
 
       def to_fake
-         UI::FakeMouseEvent.new(self)
+         IMouseEvent.new(self)
+      end
+
+      def to_s
+         name = ICurses.constants.
+            select { |c| c =~ /^BUTTON_/ }.
+            select { |c| ICurses.const_get(c) & @bstate > 0 }[0]
+         name ||= @button
+         "[(IMouseEvent) button=#{name}, x=#{x}, y=#{y}, z=#{z}]"
       end
    end
 end

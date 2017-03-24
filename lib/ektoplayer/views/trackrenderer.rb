@@ -95,8 +95,8 @@ module Ektoplayer
             return unless @column_format
 
             additional_attributes = 0
-            additional_attributes |= Curses::A_BOLD     if marked
-            additional_attributes |= Curses::A_STANDOUT if selected
+            additional_attributes |= ICurses::A_BOLD     if marked
+            additional_attributes |= ICurses::A_STANDOUT if selected
 
             if item.is_a? String or item.is_a? Symbol
                if selection
@@ -138,7 +138,7 @@ module Ektoplayer
                   end
 
                   scr.addstr(value)
-                  scr.addstr(' ') if i < (@column_format.size - 1)
+                  scr.addch(32) if i < (@column_format.size - 1)
                end
             end
          end

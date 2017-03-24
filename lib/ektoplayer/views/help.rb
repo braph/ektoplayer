@@ -30,14 +30,14 @@ module Ektoplayer
                   end
 
                   @win.with_attr(Theme[:'help.command_name']) do
-                     @win.on_column(18).addstr(name.to_s)
+                     @win.mvaddstr(@win.cury, 18, name.to_s)
                   end
 
                   @win.with_attr(Theme[:'help.command_desc']) do
-                     @win.on_column(43).addstr(Bindings.commands[name.to_sym])
+                     @win.mvaddstr(@win.cury, 43, Bindings.commands[name.to_sym])
                   end
 
-                  @win.addch(?\n)
+                  @win.next_line
                end
             end
          end

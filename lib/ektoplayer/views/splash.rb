@@ -18,17 +18,17 @@ module Ektoplayer
  \  \__   | | |\    | |__         | |     | :___  | |_| | , /____  | |     | |
   \____)  |_| |_|   \___/         |_|     \____/  \_____| |______| |_|     |_|..
                                                        split(?\n)[1..-1].freeze
-         EKTOPLAZM_SIGNATURE = %q;
+         EKTOPLAZM_SIGNATURE = %q{
   ___                   _   _    _ _                  _   _
  / __| ___ _  _ _ _  __| | | |  (_) |__  ___ _ _ __ _| |_(_)___ _ _
  \__ \/ _ \ || | ' \/ _` | | |__| | '_ \/ -_) '_/ _` |  _| / _ \ ' \
- |___/\___/\_,_|_||_\__,_| |____|_|_.__/\___|_| \__,_|\__|_\___/_||_|;.
+ |___/\___/\_,_|_||_\__,_| |____|_|_.__/\___|_| \__,_|\__|_\___/_||_|}.
                                                        split(?\n)[1..-1].freeze
 
          BUBBLES = [
-            UI::Point.new(x: 6,  y: 3).frz, UI::Point.new(x: 6,  y: 7).frz,
-            UI::Point.new(x: 28, y: 1).frz, UI::Point.new(x: 28, y: 9).frz,
-            UI::Point.new(x: 46, y: 7).frz, UI::Point.new(x: 71, y: 9).frz
+            UI::Point.new(x: 6,  y: 3).freeze, UI::Point.new(x: 6,  y: 7).freeze,
+            UI::Point.new(x: 28, y: 1).freeze, UI::Point.new(x: 28, y: 9).freeze,
+            UI::Point.new(x: 46, y: 7).freeze, UI::Point.new(x: 71, y: 9).freeze
          ].freeze
 
          def load_colors
@@ -69,17 +69,16 @@ module Ektoplayer
 
             @ekto_logo_fade.fade(EKTOPLAZM_LOGO.size).each_with_index do |c,i|
                @win.with_attr(c) do
-                  @win.setpos(top_pad + i, left_pad)
-                  @win << EKTOPLAZM_LOGO[i]
+                  @win.mvaddstr(top_pad + i, left_pad, EKTOPLAZM_LOGO[i])
                end
             end
 
             f = @bubble_fade.fade(EKTOPLAZM_LOGO.size)
             BUBBLES.each do |p|
-               @win.setpos(top_pad + p.y - 1, left_pad + p.x + 1)
-               @win.attron(f[p.y - 1]) { @win.addch(?_) }
-               @win.setpos(top_pad + p.y, left_pad + p.x)
-               @win.attron(f[p.y]) { @win << '(_)' } 
+               @win.attron(f[p.y - 1])
+               @win.mvaddstr(top_pad + p.y - 1, left_pad + p.x + 1, ?_)
+               @win.attron(f[p.y])
+               @win.mvaddstr(top_pad + p.y, left_pad + p.x, '(_)')
             end
 
             return unless draw_signature
@@ -88,7 +87,7 @@ module Ektoplayer
             left_pad = w_center - (EKTOPLAZM_SIGNATURE.max.size / 2)
 
             EKTOPLAZM_SIGNATURE.each_with_index do |line, i|
-               @win.setpos(top_pad + i, left_pad)
+               @win.move(top_pad + i, left_pad)
                @signature_fade.fade2(line.size).each_with_index do |color,y|
                   @win.with_attr(color) { @win << line[y] }
                end

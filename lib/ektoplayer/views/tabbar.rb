@@ -31,7 +31,7 @@ module Ektoplayer
             self.pad_size=(@size.update(height: 1))
             mouse_section.clear
             @win.erase
-            @win.setpos(0,0)
+            @win.move(0,0)
 
             @tabs.each_with_index do |title, i|
                mevent = with_mouse_section_event do
@@ -41,9 +41,9 @@ module Ektoplayer
                      @win.with_attr(Theme[:'tabbar.unselected']) { @win << title.to_s }
                   end
 
-                  @win.addch(' ')
+                  @win.addch(32) # ' '
                end
-               mevent.on(Curses::BUTTON1_CLICKED) do
+               mevent.on(ICurses::BUTTON1_CLICKED) do
                   trigger(@events, :tab_clicked, i)
                end
             end

@@ -1,4 +1,4 @@
-require 'curses'
+require_relative '../icurses'
 
 module UI
    class ColorFader
@@ -29,14 +29,14 @@ module UI
    class Colors
       COLORS = {
          none: -1, default: -1, nil => -1,
-         white:    Curses::COLOR_WHITE,
-         black:    Curses::COLOR_BLACK,
-         red:      Curses::COLOR_RED,
-         blue:     Curses::COLOR_BLUE,
-         cyan:     Curses::COLOR_CYAN,
-         green:    Curses::COLOR_GREEN,
-         yellow:   Curses::COLOR_YELLOW,
-         magenta:  Curses::COLOR_MAGENTA
+         white:    ICurses::COLOR_WHITE,
+         black:    ICurses::COLOR_BLACK,
+         red:      ICurses::COLOR_RED,
+         blue:     ICurses::COLOR_BLUE,
+         cyan:     ICurses::COLOR_CYAN,
+         green:    ICurses::COLOR_GREEN,
+         yellow:   ICurses::COLOR_YELLOW,
+         magenta:  ICurses::COLOR_MAGENTA
       }
       COLORS.default_proc = proc do |h, key|
          fail "Unknown color #{key}" unless key.is_a?Integer
@@ -45,8 +45,8 @@ module UI
       COLORS.freeze
 
       ATTRIBUTES = {
-         bold:  Curses::A_BOLD,  standout:  Curses::A_STANDOUT,
-         blink: Curses::A_BLINK, underline: Curses::A_UNDERLINE
+         bold:  ICurses::A_BOLD,  standout:  ICurses::A_STANDOUT,
+         blink: ICurses::A_BLINK, underline: ICurses::A_UNDERLINE
       }
       ATTRIBUTES.default_proc = proc { |h,k| k }
       ATTRIBUTES.freeze
@@ -68,8 +68,8 @@ module UI
             @@id += 1
          end
 
-         Curses.init_pair(id, fg, bg) #or fail
-         Curses.color_pair(id)
+         ICurses.init_pair(id, fg, bg) #or fail
+         ICurses.color_pair(id)
       end
 
       def self.add_attributes(*attrs)
@@ -99,7 +99,7 @@ module UI
             @@id += 1
          end
 
-         @@volatile[name] = Curses.init_pair(id, fg, bg)
+         @@volatile[name] = ICurses.init_pair(id, fg, bg)
       end
    end
 end

@@ -143,8 +143,8 @@ module UI
 
       def initialize(**opts)
          super(**opts)
-         @win = Curses::Window.new(@size.height, @size.width, @pos.y, @pos.x)
-         @win.keypad=(true)
+         @win = ICurses.newwin(@size.height, @size.width, @pos.y, @pos.x)
+         @win.keypad(true)
       end
 
       def layout
@@ -163,7 +163,7 @@ module UI
 
       def initialize(**opts)
          super(**opts)
-         @win = Curses::Pad.new(@size.height, @size.width)
+         @win = ICurses.newpad(@size.height, @size.width)
          @pad_minrow = @pad_mincol = 0
       end
 
@@ -230,7 +230,7 @@ module UI
       end
 
       def refresh
-         @win.noutrefresh(
+         @win.pnoutrefresh(
             @pad_minrow, @pad_mincol,
             @pos.y, @pos.x,
             @pos.y + @size.height - 1, @pos.x + @size.width - 1

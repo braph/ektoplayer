@@ -1,5 +1,5 @@
 require 'set'
-require 'curses'
+require_relative 'icurses'
 
 module Ektoplayer
    # Keybinding storage.
@@ -21,10 +21,10 @@ module Ektoplayer
       def initialize
          @commands = {}
 
-         reg 'quit',    'Quit the program'
-         reg 'refresh', 'Refresh the screen'
-         reg 'reload',  'Apply database changes to browser'
-         reg 'update',  'Start a database update'
+         reg 'quit',                      'Quit the program'
+         reg 'refresh',                   'Refresh the screen'
+         reg 'reload',                    'Apply database changes to browser'
+         reg 'update',                    'Start a database update'
 
          reg 'player.stop',               'Stop playing'
          reg 'player.toggle',             'Toggle play/pause'
@@ -76,22 +76,22 @@ module Ektoplayer
                :'playlist.show'           => [?1                             ],
                :'browser.show'            => [?2                             ],
                :'info.show'               => [?3                             ],
-               :'help.show'               => [?4,      Curses::KEY_F1        ],
+               :'help.show'               => [?4,      ICurses::KEY_F1       ],
 
-               :'playinginfo.toggle'      => [?!,      Curses::KEY_F2        ],
-               :'progressbar.toggle'      => [?%,      Curses::KEY_F3        ],
-               :'tabbar.toggle'           => [?=,      Curses::KEY_F4        ],
-               :'volumemeter.toggle'      => [?~,      Curses::KEY_F5        ],
+               :'playinginfo.toggle'      => [?!,      ICurses::KEY_F2       ],
+               :'progressbar.toggle'      => [?%,      ICurses::KEY_F3       ],
+               :'tabbar.toggle'           => [?=,      ICurses::KEY_F4       ],
+               :'volumemeter.toggle'      => [?~,      ICurses::KEY_F5       ],
 
-               :'player.forward'          => [?f,      Curses::KEY_RIGHT     ],
-               :'player.backward'         => [?b,      Curses::KEY_LEFT      ],
+               :'player.forward'          => [?f,      ICurses::KEY_RIGHT    ],
+               :'player.backward'         => [?b,      ICurses::KEY_LEFT     ],
                :'player.stop'             => [?s                             ],
                :'player.toggle'           => [?p                             ],
 
                :'playlist.play_next'      => [?>                             ],
                :'playlist.play_prev'      => [?<                             ],
 
-               :'tabs.next'               => [?l, ?}, 9                      ],
+               :'tabs.next'               => [?l, ?}, '^i'                   ],
                :'tabs.prev'               => [?h, ?{, 353                    ],
 
                :quit                      => [?q                             ],
@@ -100,21 +100,21 @@ module Ektoplayer
                :update                    => [?U                             ]},
             playlist: {
                # movement
-               :'playlist.top'            => [?g,      Curses::KEY_HOME      ],
-               :'playlist.bottom'         => [?G,      Curses::KEY_END       ],
-               :'playlist.up'             => [?k,      Curses::KEY_UP        ],
-               :'playlist.down'           => [?j,      Curses::KEY_DOWN      ],
-               :'playlist.page_down'      => ['^d',    Curses::KEY_NPAGE     ],
-               :'playlist.page_up'        => ['^u',    Curses::KEY_PPAGE     ],
+               :'playlist.top'            => [?g,      ICurses::KEY_HOME     ],
+               :'playlist.bottom'         => [?G,      ICurses::KEY_END      ],
+               :'playlist.up'             => [?k,      ICurses::KEY_UP       ],
+               :'playlist.down'           => [?j,      ICurses::KEY_DOWN     ],
+               :'playlist.page_down'      => ['^d',    ICurses::KEY_NPAGE    ],
+               :'playlist.page_up'        => ['^u',    ICurses::KEY_PPAGE    ],
                # selection
-               :'playlist.toggle_selection' => ['^v'                           ],
+               :'playlist.toggle_selection' => ['^v'                         ],
                # search
                :'playlist.search_next'    => [?n                             ],
                :'playlist.search_prev'    => [?N                             ],
                :'playlist.search_up'      => [??                             ],
                :'playlist.search_down'    => [?/                             ],
                # playlist
-               :'playlist.play'           => [         Curses::KEY_ENTER     ],
+               :'playlist.play'           => [         ICurses::KEY_ENTER    ],
                :'playlist.download_album' => [?$                             ],
                :'playlist.reload'         => [?r                             ],
                :'playlist.goto_current'   => [?o                             ],
@@ -124,14 +124,14 @@ module Ektoplayer
                :'player.toggle'           => [' '                            ]},
             browser: {
                # movement
-               :'browser.top'             => [?g,      Curses::KEY_HOME      ],
-               :'browser.bottom'          => [?G,      Curses::KEY_END       ],
-               :'browser.up'              => [?k,      Curses::KEY_UP        ],
-               :'browser.down'            => [?j,      Curses::KEY_DOWN      ],
-               :'browser.page_up'         => ['^u',    Curses::KEY_PPAGE     ],
-               :'browser.page_down'       => ['^d',    Curses::KEY_NPAGE     ],
+               :'browser.top'             => [?g,      ICurses::KEY_HOME     ],
+               :'browser.bottom'          => [?G,      ICurses::KEY_END      ],
+               :'browser.up'              => [?k,      ICurses::KEY_UP       ],
+               :'browser.down'            => [?j,      ICurses::KEY_DOWN     ],
+               :'browser.page_up'         => ['^u',    ICurses::KEY_PPAGE    ],
+               :'browser.page_down'       => ['^d',    ICurses::KEY_NPAGE    ],
                # selection
-               :'browser.toggle_selection' => ['^v'                           ],
+               :'browser.toggle_selection' => ['^v'                          ],
                # search
                :'browser.search_next'     => [?n                             ],
                :'browser.search_prev'     => [?N                             ],
@@ -139,22 +139,22 @@ module Ektoplayer
                :'browser.search_down'     => [?/                             ],
                # browser
                :'browser.add_to_playlist' => [' ', ?a                        ],
-               :'browser.enter'           => [         Curses::KEY_ENTER     ],
-               :'browser.back'            => [?B,      Curses::KEY_BACKSPACE ]},
+               :'browser.enter'           => [         ICurses::KEY_ENTER    ],
+               :'browser.back'            => [?B,      ICurses::KEY_BACKSPACE ]},
             help: {
-               :'help.top'                => [?g,      Curses::KEY_HOME      ],
-               :'help.bottom'             => [?G,      Curses::KEY_END       ],
-               :'help.up'                 => [?k,      Curses::KEY_UP        ],
-               :'help.down'               => [?j,      Curses::KEY_DOWN      ],
-               :'help.page_up'            => ['^u',    Curses::KEY_PPAGE     ],
-               :'help.page_down'          => ['^d',    Curses::KEY_NPAGE     ]},
+               :'help.top'                => [?g,      ICurses::KEY_HOME     ],
+               :'help.bottom'             => [?G,      ICurses::KEY_END      ],
+               :'help.up'                 => [?k,      ICurses::KEY_UP       ],
+               :'help.down'               => [?j,      ICurses::KEY_DOWN     ],
+               :'help.page_up'            => ['^u',    ICurses::KEY_PPAGE    ],
+               :'help.page_down'          => ['^d',    ICurses::KEY_NPAGE    ]},
             info: {
-               :'info.top'                => [?g,      Curses::KEY_HOME      ],
-               :'info.bottom'             => [?G,      Curses::KEY_END       ],
-               :'info.up'                 => [?k,      Curses::KEY_UP        ],
-               :'info.down'               => [?j,      Curses::KEY_DOWN      ],
-               :'info.page_up'            => ['^u',    Curses::KEY_PPAGE     ],
-               :'info.page_down'          => ['^d',    Curses::KEY_NPAGE     ]},
+               :'info.top'                => [?g,      ICurses::KEY_HOME     ],
+               :'info.bottom'             => [?G,      ICurses::KEY_END      ],
+               :'info.up'                 => [?k,      ICurses::KEY_UP       ],
+               :'info.down'               => [?j,      ICurses::KEY_DOWN     ],
+               :'info.page_up'            => ['^u',    ICurses::KEY_PPAGE    ],
+               :'info.page_down'          => ['^d',    ICurses::KEY_NPAGE    ]},
             splash: {}
          }
 
@@ -168,30 +168,33 @@ module Ektoplayer
       end
 
       def keyname(key)
-         return 'SPACE'  if key.to_s == ' '
-         return key.to_s if key.is_a? Symbol
+         return 'SPACE'  if (key == ' ' or key == 32)
 
-         name = Curses.keyname(key)
+         name = ICurses.keyname(key)
          if name.start_with? 'KEY_'
-            name.sub('KEY_', '').sub(/\((\d+)\)/, '\1')
+            name.sub('KEY_', '').delete('()')
          else
             name
          end
       end
 
       def parse_key(key)
-         if key.is_a? Integer
-            key
-         elsif key.size == 1
-            key.to_sym
-         elsif key.size == 2 and key.start_with?(?^)
-            Curses.const_get("KEY_CTRL_#{key[1].upcase}")
+         return key if key.is_a? Integer
+         
+         if key.size == 1
+            return key.ord
+         elsif key.size == 2 and key[0] == ?^
+            return key[1].upcase.ord - 64
          elsif key =~ /^(key_)?space$/i
-            :' '
-         else
+            return ' '.ord
+         end
+
+         begin
+            return Integer(key) 
+         rescue
             key = key.upcase.tr(?-, ?_)
             key = "KEY_#{key}" unless key.start_with?('KEY_')
-            Curses.const_get(key)
+            return ICurses.const_get(key)
          end
       rescue NameError
          fail "Unknown key: #{key}"

@@ -1,4 +1,4 @@
-require 'curses'
+require_relative '../icurses'
 
 require_relative 'controller'
 

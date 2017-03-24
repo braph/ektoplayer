@@ -10,7 +10,7 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.9'.freeze
+      VERSION = '0.1.10'.freeze
       GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
       EKTOPLAZM_URL = 'http://www.ektoplazm.com'.freeze
 
@@ -70,7 +70,7 @@ module Ektoplayer
 
          UI::Canvas.run do
             if Config[:use_colors] == :auto
-               Theme.use_colors(Curses.colors >= 256 ? 256 : 8)
+               Theme.use_colors(ICurses.colors >= 256 ? 256 : 8)
             else
                Theme.use_colors(Config[:use_colors])
             end
@@ -89,7 +89,7 @@ module Ektoplayer
             operations.register(:quit,    &method(:exit))
             operations.register(:reload,  &browser.method(:reload))
             operations.register(:update,  &database.method(:update))
-            operations.register(:refresh) { UI::Canvas.on_winch; UI::Canvas.update_screen(true) }
+            operations.register(:refresh) { UI::Canvas.update_screen(true, true) }
             Operations::Player.new(operations, player)
             Operations::Browser.new(operations, browser, playlist)
             Operations::Playlist.new(operations, playlist, player, trackloader)

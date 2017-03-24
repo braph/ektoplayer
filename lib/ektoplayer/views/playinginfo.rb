@@ -42,11 +42,11 @@ module Ektoplayer
 
          def draw_position_and_length
             return unless visible?
-            @win.setpos(0,0)
             @win.with_attr(Theme[:'playinginfo.position']) do
-               @win << "[#{Common::to_time(@position)}/#{Common::to_time(@length)}]" 
+               @win.mvaddstr(0, 0, "[#{Common::to_time(@position)}/#{Common::to_time(@length)}]")
             end
-            @win.refresh
+            #@win.refresh
+            @win.noutrefresh
          end
 
          def attach(playlist, player)
@@ -64,7 +64,7 @@ module Ektoplayer
             }
 
             # TODO: move mouse?
-            self.mouse.on(Curses::BUTTON1_CLICKED) do |mevent|
+            self.mouse.on(ICurses::BUTTON1_CLICKED) do |mevent|
                player.toggle
             end
          end

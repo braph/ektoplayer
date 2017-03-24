@@ -28,7 +28,7 @@ module UI
       def draw
          @win.erase
          @text.split(?\n).each_with_index do |l, i|
-            @win.setpos(@pad[:top] + i, @pad[:left])
+            @win.move(@pad[:top] + i, @pad[:left])
             @win.attron(@attributes) { @win << l }
          end
       end

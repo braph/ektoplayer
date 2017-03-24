@@ -55,14 +55,14 @@ module Ektoplayer
             view.mouse.on(65536) do view.up(5) end
             view.mouse.on(2097152) do view.down(5) end
 
-            [Curses::BUTTON1_CLICKED, Curses::BUTTON2_CLICKED].
+            [ICurses::BUTTON1_CLICKED, ICurses::BUTTON2_CLICKED].
                each do |button|
                view.mouse.on(button) do |mevent|
                   view.select_from_cursorpos(mevent.y)
                end
             end
 
-            [Curses::BUTTON1_DOUBLE_CLICKED, Curses::BUTTON3_CLICKED].each do |btn|
+            [ICurses::BUTTON1_DOUBLE_CLICKED, ICurses::BUTTON3_CLICKED].each do |btn|
                view.mouse.on(btn) do |mevent|
                   view.select_from_cursorpos(mevent.y)
                   view_operations.send('playlist.play')

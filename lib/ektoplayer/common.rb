@@ -39,10 +39,6 @@ class ConditionSignals
    end
 end
 
-class Object
-   alias :frz :freeze
-end
-
 class Dir
    def Dir.size(path)
       Dir.glob(File.join(path, '**', ?*)).map { |f| File.size(f) }.sum

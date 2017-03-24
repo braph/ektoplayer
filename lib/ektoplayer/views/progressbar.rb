@@ -11,7 +11,7 @@ module Ektoplayer
             end
 
             view=self # TODO
-            [Curses::BUTTON1_CLICKED, Curses::BUTTON2_CLICKED, Curses::BUTTON3_CLICKED].
+            [ICurses::BUTTON1_CLICKED, ICurses::BUTTON2_CLICKED, ICurses::BUTTON3_CLICKED].
                each do |button|
                view.mouse.on(button) do |mevent|
                   pos = Float(mevent.x) / (self.size.width - 1) * player.length rescue player.position
@@ -31,7 +31,7 @@ module Ektoplayer
          end
 
          def draw
-            @win.setpos(0,0)
+            @win.move(0,0)
             @progress_width ||= 0
             @progress_char  ||= Config[:'progressbar.progress_char']
             @rest_char      ||= Config[:'progressbar.rest_char']
