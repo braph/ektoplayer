@@ -18,7 +18,6 @@ module Ektoplayer
 
          private def reload
             fail unless @browser
-            #puts 'eeheheheh reload!' todo refresh?
             self.list=(@browser.current.map.to_a)
          end
       end

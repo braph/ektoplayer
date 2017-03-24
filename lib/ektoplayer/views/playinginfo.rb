@@ -42,10 +42,8 @@ module Ektoplayer
 
          def draw_position_and_length
             return unless visible?
-            @win.with_attr(Theme[:'playinginfo.position']) do
-               @win.mvaddstr(0, 0, "[#{Common::to_time(@position)}/#{Common::to_time(@length)}]")
-            end
-            #@win.refresh
+            @win.attrset(Theme[:'playinginfo.position'])
+            @win.mvaddstr(0, 0, "[#{Common::to_time(@position)}/#{Common::to_time(@length)}]")
             @win.noutrefresh
          end
 
@@ -94,31 +92,28 @@ module Ektoplayer
             if @track
                fill(Config[:'playinginfo.format1']).each_with_index do |fmt,i|
                   @win.center(fmt[:sum]) if i == 0
-                  @win.with_attr(UI::Colors.set(nil, *fmt[:curses_attrs])) do
-                     @win << fmt[:filled]
-                  end
+                  @win.attrset(UI::Colors.set(nil, *fmt[:curses_attrs]))
+                  @win << fmt[:filled]
                end
 
-               @win.with_attr(Theme[:'playinginfo.state']) do
-                  @win.from_right(@state.to_s.size + 2) << "[#{@state}]"
-               end
+               @win.attrset(Theme[:'playinginfo.state'])
+               @win.from_right(@state.to_s.size + 2) << "[#{@state}]"
 
                @win.next_line
 
                fill(Config[:'playinginfo.format2']).each_with_index do |fmt,i|
                   @win.center(fmt[:sum]) if i == 0
-                  @win.with_attr(UI::Colors.set(nil, *fmt[:curses_attrs])) do
-                     @win << fmt[:filled]
-                  end
+                  @win.attrset(UI::Colors.set(nil, *fmt[:curses_attrs]))
+                  @win << fmt[:filled]
                end
             else
+               @win.attrset(0)
                @win.center_string(STOPPED_HEADING)
-               @win.with_attr(Theme[:'playinginfo.state']) do
-                  @win.from_right(9) << '[stopped]'
-               end
+               @win.attrset(Theme[:'playinginfo.state'])
+               @win.from_right(9) << '[stopped]'
             end
 
-            #@win.next_line.addstr('─' * @size.width)
+            #@win.next_line.addstr('~' * @size.width)
          end
       end
    end

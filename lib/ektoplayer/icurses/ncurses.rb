@@ -1,9 +1,13 @@
-require 'ncurses'
+require $USING_CURSES
 
-Ncurses.initscr#; Ncurses.endwin
+Ncurses.initscr
 
 module Ncurses
-   class WINDOW
+   class IWindow
+      def initialize(w)
+         @w = w
+      end
+
       def getch
          return Ncurses::wgetch(self)
          y, x = Ncurses::getcury(self), Ncurses::getcurx(self)
@@ -28,36 +32,48 @@ module Ncurses
             next if meth =~ /win$/
 
             define_method(meth.to_s.sub(?w, '')) do |*args|
-               Ektoplayer::Application.log(self, meth) unless meth =~ /attr/
                Ncurses.send(meth, @w, *args)
             end
          end
       end
-
-      #(Ncurses.public_methods - public_methods).each do |meth|
-
-      #   define_method(meth) do |*args|
-      #      Ncurses.send(meth, @w, *args)
-      #   end
-      #end
    end
 end
 
 module ICurses
    include Ncurses
 
-   (Ncurses.public_methods - public_methods).each do |method|
-      define_singleton_method(method, &Ncurses.method(method))
-      module_function method
+   def method_missing(m, *a)
+      Ncurses.send(m, *a)
+   rescue NoMethodError
+      Ncurses.send(m.downcase, *a)
    end
+   module_function :method_missing
 
-   def initscr; end
+   def initscr; end # do nothing
    module_function :initscr
+
+   def newwin(*a)
+      ICurses::IWindow.new( Ncurses.newwin(*a) )
+   end
+   module_function :newwin
+
+   def newpad(*a)
+      ICurses::IWindow.new( Ncurses.newpad(*a) )
+   end
+   module_function :newpad
 
    def mousemask(mask, *_)
       Ncurses.mousemask(mask, [])
    end
    module_function :mousemask
 
-   IWindow = Ncurses::WINDOW
+   def getmouse(mevent=nil)
+      mevent = Ncurses::MEVENT.new
+      if Ncurses.getmouse(mevent) > -1
+         return IMouseEvent.new(mevent)
+      end
+   end
+   module_function :getmouse
+
+   IWindow = Ncurses::IWindow
 end

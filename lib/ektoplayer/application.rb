@@ -10,7 +10,7 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.10'.freeze
+      VERSION = '0.1.11'.freeze
       GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
       EKTOPLAZM_URL = 'http://www.ektoplazm.com'.freeze
 
@@ -69,6 +69,8 @@ module Ektoplayer
          end
 
          UI::Canvas.run do
+            Application.log(self, 'running with ncurses interface:', $USING_CURSES)
+
             if Config[:use_colors] == :auto
                Theme.use_colors(ICurses.colors >= 256 ? 256 : 8)
             else

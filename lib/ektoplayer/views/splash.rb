@@ -68,16 +68,15 @@ module Ektoplayer
             end
 
             @ekto_logo_fade.fade(EKTOPLAZM_LOGO.size).each_with_index do |c,i|
-               @win.with_attr(c) do
-                  @win.mvaddstr(top_pad + i, left_pad, EKTOPLAZM_LOGO[i])
-               end
+               @win.attrset(c)
+               @win.mvaddstr(top_pad + i, left_pad, EKTOPLAZM_LOGO[i])
             end
 
             f = @bubble_fade.fade(EKTOPLAZM_LOGO.size)
             BUBBLES.each do |p|
-               @win.attron(f[p.y - 1])
+               @win.attrset(f[p.y - 1])
                @win.mvaddstr(top_pad + p.y - 1, left_pad + p.x + 1, ?_)
-               @win.attron(f[p.y])
+               @win.attrset(f[p.y])
                @win.mvaddstr(top_pad + p.y, left_pad + p.x, '(_)')
             end
 
@@ -89,7 +88,8 @@ module Ektoplayer
             EKTOPLAZM_SIGNATURE.each_with_index do |line, i|
                @win.move(top_pad + i, left_pad)
                @signature_fade.fade2(line.size).each_with_index do |color,y|
-                  @win.with_attr(color) { @win << line[y] }
+                  @win.attrset(color)
+                  @win.addstr(line[y])
                end
             end
          end

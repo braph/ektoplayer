@@ -15,9 +15,8 @@ module Ektoplayer
             @win.erase
 
             Bindings.bindings.each do |widget, commands|
-               @win.with_attr(Theme[:'help.widget_name']) do
-                  @win << "\n#{widget}\n"
-               end
+               @win.attrset(Theme[:'help.widget_name'])
+               @win.addstr("\n#{widget}\n")
 
                commands.each do |name, keys|
                   next if keys.empty?
@@ -29,13 +28,11 @@ module Ektoplayer
                      @win.with_attr(Theme[:'help.key_name']) { @win << key }
                   end
 
-                  @win.with_attr(Theme[:'help.command_name']) do
-                     @win.mvaddstr(@win.cury, 18, name.to_s)
-                  end
+                  @win.attrset(Theme[:'help.command_name'])
+                  @win.mvaddstr(@win.cury, 18, name.to_s)
 
-                  @win.with_attr(Theme[:'help.command_desc']) do
-                     @win.mvaddstr(@win.cury, 43, Bindings.commands[name.to_sym])
-                  end
+                  @win.attrset(Theme[:'help.command_desc'])
+                  @win.mvaddstr(@win.cury, 43, Bindings.commands[name.to_sym])
 
                   @win.next_line
                end

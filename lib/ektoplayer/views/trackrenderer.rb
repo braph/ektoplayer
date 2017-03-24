@@ -107,24 +107,21 @@ module Ektoplayer
                   color = Theme[:'list.item_odd']
                end
 
-               scr.with_attr(color | additional_attributes) do
-                  scr << "[#{item}]".ljust(@width)
-               end
+               scr.attrset(color | additional_attributes)
+               scr.addstr("[#{item}]".ljust(@width))
                return
             end
 
-            # todo write render code for selecte? optimize?
-
             @column_format.each_with_index do |c,i|
+               scr.addch(32) if i > 0
+
                if selection
-                  color = Theme[:'list.item_selection']
+                  scr.attrset(Theme[:'list.item_selection'] | additional_attributes)
                else
-                  color = c[:curses_codes]
+                  scr.attrset(c[:curses_codes] | additional_attributes)
                end
 
-               scr.with_attr(color | additional_attributes) do
-                  value = (item[c[:tag]] or '')
-
+               if value = item[c[:tag]]
                   if value.is_a?(Integer)
                      value = "%.2d" % value
                   else
@@ -132,13 +129,12 @@ module Ektoplayer
                   end
 
                   if c[:justify] == :right
-                     value = value.rjust(c[:render_size])
+                     scr.addstr(value.rjust(c[:render_size]))
                   else
-                     value = value.ljust(c[:render_size])
+                     scr.addstr(value.ljust(c[:render_size]))
                   end
-
-                  scr.addstr(value)
-                  scr.addch(32) if i < (@column_format.size - 1)
+               else
+                  scr.addstr(' ' * c[:render_size])
                end
             end
          end

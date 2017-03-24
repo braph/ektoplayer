@@ -25,35 +25,31 @@ module Ektoplayer
          end
 
          def draw_heading(heading)
-            @win.with_attr(Theme[:'info.head']) do
-               @win.mvaddstr(@win.cury + 1, START_HEADING, heading)
-            end
+            @win.attrset(Theme[:'info.head'])
+            @win.mvaddstr(@win.cury + 1, START_HEADING, heading)
          end
 
          def draw_tag(tag, value=nil)
-            @win.with_attr(Theme[:'info.tag']) do
-               @win.mvaddstr(@win.cury + 1, START_TAG, tag)
-            end
+            @win.attrset(Theme[:'info.tag'])
+            @win.mvaddstr(@win.cury + 1, START_TAG, tag)
 
-            @win.with_attr(Theme[:'info.value']) do
-               @win.mvaddstr(@win.cury, START_TAG_VALUE, value.to_s)
-            end
+            @win.attrset(Theme[:'info.value'])
+            @win.mvaddstr(@win.cury, START_TAG_VALUE, value.to_s)
          end
          
          def draw_info(string, value=nil)
-            @win.with_attr(Theme[:'info.tag']) do
-               @win.mvaddstr(@win.cury + 1, START_INFO, string)
-            end
+            @win.attrset(Theme[:'info.tag'])
+            @win.mvaddstr(@win.cury + 1, START_INFO, string)
 
-            @win.with_attr(Theme[:'info.value']) do
-               @win.mvaddstr(@win.cury, START_INFO_VALUE, value.to_s)
-            end
+            @win.attrset(Theme[:'info.value'])
+            @win.mvaddstr(@win.cury, START_INFO_VALUE, value.to_s)
          end
 
          def draw_url(url, title=nil)
             title ||= url
             mevent = with_mouse_section_event do
-               @win.with_attr(Theme[:url]) { @win << title }
+               @win.attrset(Theme[:url])
+               @win << title
             end
             mevent.on(ICurses::BUTTON1_CLICKED) do
                Common::open_url_extern(url)
@@ -61,17 +57,15 @@ module Ektoplayer
          end
          
          def draw_download(file, percent, error)
-            @win.with_attr(Theme[:'info.download.file']) do
-               @win.mvaddstr(@win.cury + 1, START_TAG, file)
-            end
-            @win.with_attr(Theme[:'info.download.percent']) do
-               @win.addstr(" #{percent}")
-            end
+            @win.attrset(Theme[:'info.download.file'])
+            @win.mvaddstr(@win.cury + 1, START_TAG, file)
+
+            @win.attrset(Theme[:'info.download.percent'])
+            @win.addstr(" #{percent}")
 
             if error
-               @win.with_attr(Theme[:'info.download.error']) do
-                  @win.addstr(" #{error}")
-               end
+               @win.attrset(Theme[:'info.download.error'])
+               @win.addstr(" #{error}")
             end
          end
 
@@ -140,11 +134,10 @@ module Ektoplayer
                               line_length = START_TAG
                            end
 
-                           @win.with_attr(Theme[:'info.description']) do
-                              @win.mv_left(1) if text =~ /^[\.,:;]$/ 
-                              @win << text
-                              @win.addch(32) # ' '
-                           end
+                           @win.attrset(Theme[:'info.description'])
+                           @win.mv_left(1) if text =~ /^[\.,:;]$/ 
+                           @win << text
+                           @win.addch(32) # ' '
                         end
                      end
                   end

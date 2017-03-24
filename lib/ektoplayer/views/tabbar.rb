@@ -36,11 +36,12 @@ module Ektoplayer
             @tabs.each_with_index do |title, i|
                mevent = with_mouse_section_event do
                   if i == @selected
-                     @win.with_attr(Theme[:'tabbar.selected']) { @win << title.to_s }
+                     @win.attrset(Theme[:'tabbar.selected'])
                   else
-                     @win.with_attr(Theme[:'tabbar.unselected']) { @win << title.to_s }
+                     @win.attrset(Theme[:'tabbar.unselected'])
                   end
 
+                  @win << title.to_s
                   @win.addch(32) # ' '
                end
                mevent.on(ICurses::BUTTON1_CLICKED) do
