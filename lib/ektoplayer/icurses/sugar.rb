@@ -18,7 +18,9 @@ module ICurses
       end
 
       def update!(x: nil, y: nil, z: nil, bstate: nil)
-         @x, @y, @z = (x or @x), (y or @y), (z or @z)
+         @x = x if x
+         @y = y if y
+         @z = z if z
          @bstate = (bstate or @bstate)
       end
    end

@@ -32,21 +32,21 @@ module Ektoplayer
          ].freeze
 
          def load_colors
-            @signature_fade = @ekto_logo_fade = @bubble_fade = [-1].freeze
+            signature_fade = ekto_logo_fade = bubble_fade = [-1].freeze
 
             if Theme.current == 256
-               @bubble_fade    = [161,162,167,168]
-               @signature_fade = [99, 105, 111, 117]
-               @ekto_logo_fade = [23, 23, 29, 36, 42, 48, 42, 36, 29, 23]
+               bubble_fade    = [168,167,161,161,161].freeze
+               signature_fade = [99, 105, 111, 117].freeze
+               ekto_logo_fade = [23, 23, 29, 36, 42, 48, 42, 36, 29, 23].freeze
             elsif Theme.current == 8
-               @bubble_fade    = [:red]
-               @ekto_logo_fade = [:blue]
-               @signature_fade = [:magenta]
+               bubble_fade    = [:red].freeze
+               ekto_logo_fade = [:blue].freeze
+               signature_fade = [:magenta].freeze
             end
 
-            @bubble_fade    = UI::ColorFader.new(@bubble_fade)
-            @signature_fade = UI::ColorFader.new(@signature_fade)
-            @ekto_logo_fade = UI::ColorFader.new(@ekto_logo_fade)
+            @bubble_fade    = UI::ColorFader.new(bubble_fade)
+            @signature_fade = UI::ColorFader.new(signature_fade)
+            @ekto_logo_fade = UI::ColorFader.new(ekto_logo_fade)
          end
 
          def draw

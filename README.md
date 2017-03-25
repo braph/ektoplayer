@@ -6,7 +6,7 @@ It allows you to
   * Search for tracks by tags (artist, album, style, ...)
   * Play tracks located at ektoplazm.com
   * Display information about albums
-  * Download a whole albums as mp3
+  * Download whole albums as mp3
 
 ## Features
 
@@ -28,6 +28,7 @@ It allows you to
   * Ruby (1.9)
   * Mpg123 (1.14)
   * Sqlite3 
+  * One of the following ncurses gems: curses, ffi-ncurses, ncurses, ncuresw
 
 ## Optional Requirements
 
@@ -37,13 +38,17 @@ It allows you to
 
 ### Arch Linux
 
-    pacman -S ruby mpg123 sqlite3 ncurses --needed
-    gem install ektoplayer
+  * Using yaourt:
+   `yaourt -S ektoplayer`
+
+  * Using pacman:
+   `pacman -S ruby mpg123 sqlite3 ncurses --needed`
+   `gem install ektoplayer`
 
 ### Debian / Ubuntu (not yet tested)
 
-    apt-get install ruby mpg123 sqlite3 libncurses5
-    gem install ektoplayer
+    `apt-get install ruby ruby-ncurses ruby-nokogiri ruby-sqlite3 mpg123 sqlite3 libncurses5`
+    `gem install ektoplayer`
 
 ## Configuration
 
@@ -58,7 +63,7 @@ Available configuration commands:
    * `color_mono <name> <fg> [<bg> [<attribute> ...]]`
    * `color_256 <name> <fg> [<bg> [<attribute> ...]]`
 
-See [ektoplayer.rc](https://github.com/braph/ektoplayer/blob/master/doc/ektoplayer.rc) for the a configuration file with the defaults.
+See [ektoplayer.rc](https://github.com/braph/ektoplayer/blob/master/doc/ektoplayer.rc) for a configuration file with the default values.
 
 ## Authors
 
