@@ -2,7 +2,7 @@ $:.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = 'ektoplayer'
-  s.version       = '0.1.11'
+  s.version       = '0.1.12'
   s.authors       = ['Benjamin Abendroth']
   s.email         = 'braph93@gmx.de'
   s.homepage      = 'http://github.com/braph/ektoplayer'
@@ -15,13 +15,12 @@ Gem::Specification.new do |s|
   s.executables   = ['ektoplayer']
   s.require_paths = ['lib']
 
-  s.add_dependency 'sqlite3', '~> 1.3'
+  s.add_dependency 'sqlite3',  '~> 1.3'
   s.add_dependency 'nokogiri', '~> 1.7'
-  #s.add_dependency 'curses', '~> 1.0'
 
-  s.requirements << 'For playback: /bin/mpg123 or the "audite-lib" RubyGem'
-  s.requirements << 'For archive extracting: /bin/unzip, /bin/7z or "rubyzip" RubyGem'
-  s.requirements << 'One of the following curses-gems: ffi-ncurses, curses'
+  s.requirements << 'For playback: /bin/mpg123 or the "audite-lib" gem'
+  s.requirements << 'For archive extracting: /bin/unzip, /bin/7z or the "rubyzip" gem'
+  s.requirements << 'One of these curses-gems: ffi-ncurses, ncurses, ncursesw, curses'
 
   s.extra_rdoc_files = ['README.md']
 end

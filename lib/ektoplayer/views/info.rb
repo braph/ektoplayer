@@ -69,6 +69,10 @@ module Ektoplayer
             end
          end
 
+         def get_cover_url(album)
+            "#{Application::EKTOPLAZM_COVER_BASE_URL}/#{album}"
+         end
+
          def draw
             return unless @player
 
@@ -108,7 +112,7 @@ module Ektoplayer
                draw_tag('Styles',       @track['styles'].gsub(?,, ', '))
                draw_tag('Downloads',    @track['download_count'])
                draw_tag('Rating',  "%0.2d%% (%d Votes)" % [@track['rating'], @track['votes']])
-               draw_tag('Cover'); draw_url(@track['cover_url'], 'Cover')
+               draw_tag('Cover'); draw_url(get_cover_url(@track['cover_url']), 'Cover')
                @win.next_line
 
                # -- description

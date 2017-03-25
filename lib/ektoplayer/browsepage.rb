@@ -4,6 +4,7 @@ require 'nokogiri'
 require 'date'
 require 'base64'
 require 'scanf'
+require 'uri'
 require 'open-uri'
 
 module Ektoplayer
@@ -60,23 +61,32 @@ module Ektoplayer
                album[:styles] << a.text
             end
 
-            album[:cover_url] = post.at_css('.cover')[:src]   rescue nil
-            album[:description] = post.at_css(?p).to_html     rescue ''
+            album[:description] = post.at_css(?p).
+               to_html.sub(/^<p>/, '').sub(/<\/p>$/, '') rescue ''
+
+            begin album[:cover_url] = File.basename(
+               URI.parse(post.at_css('.cover')[:src]).path
+            )
+            rescue
+            end
+
             album[:download_count] = post.at_css('.dc strong').text.delete(?,).to_i rescue 0
 
             post.css('h1 a').each do |a|
                album[:title] = a.text
-               album[:url] = a[:href]
+               album[:url] = File.basename(URI.parse(a[:href]).path)
             end 
 
             post.xpath('.//a[@rel="tag"]').each do |a|
                album[:released_by] = a.text
-               album[:released_by_url] = a[:href]
+               album[:released_by_url] = File.basename(URI.parse(a[:href]).path)
+               # todo
             end
 
             post.xpath('.//a[@rel="author external"]').each do |a|
                album[:posted_by] = a.text
-               album[:posted_by_url] = a[:href]
+               album[:posted_by_url] = File.basename(URI.parse(a[:href]).path)
+               # todo
             end
 
             album[:archive_urls] = post.css('.dll a').map do |a|

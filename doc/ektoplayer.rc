@@ -75,15 +75,6 @@ set progressbar.progress_char ~
 # Character used for the rest of the line
 set progressbar.rest_char ~
 
-# Enable/disable volumemeter
-set volumemeter.display true
-
-# Character used for displaying volume level
-set volumemeter.level_char ~
-
-# Character used for the rest of the line
-set volumemeter.rest_char ~
-
 # Enable/display playinginfo
 set playinginfo.display true
 
@@ -100,7 +91,7 @@ set tabbar.display true
 set tabs.widgets splash,playlist,browser,info,help
 
 # Specify widgets to show (up to down)
-set main.widgets playinginfo,progressbar,tabbar,windows,volumemeter
+set main.widgets playinginfo,tabbar,windows,progressbar
 
 
 ### Bindings ###
@@ -122,8 +113,6 @@ bind global % progressbar.toggle
 bind global F3 progressbar.toggle
 bind global = tabbar.toggle
 bind global F4 tabbar.toggle
-bind global F5 volumemeter.toggle
-bind global ~ volumemeter.toggle
 bind global RIGHT player.forward
 bind global f player.forward
 bind global LEFT player.backward
@@ -156,6 +145,7 @@ bind playlist NPAGE playlist.page_down
 bind playlist ^D playlist.page_down
 bind playlist PPAGE playlist.page_up
 bind playlist ^U playlist.page_up
+bind playlist ^V playlist.toggle_selection
 bind playlist n playlist.search_next
 bind playlist N playlist.search_prev
 bind playlist ? playlist.search_up
@@ -181,6 +171,7 @@ bind browser PPAGE browser.page_up
 bind browser ^U browser.page_up
 bind browser NPAGE browser.page_down
 bind browser ^D browser.page_down
+bind browser ^V browser.toggle_selection
 bind browser n browser.search_next
 bind browser N browser.search_prev
 bind browser ? browser.search_up
@@ -238,12 +229,11 @@ color info.download.percent   magenta none
 color info.download.error     red
 color progressbar.progress    blue
 color progressbar.rest        black
-color volumemeter.level       magenta
-color volumemeter.rest        black
 color tabbar.selected         blue
 color tabbar.unselected       none
 color list.item_even          blue
 color list.item_odd           blue
+color list.item_selection     magenta
 color playinginfo.position    magenta
 color playinginfo.state       cyan
 color help.widget_name        blue none bold
@@ -262,8 +252,6 @@ color_256 info.download.percent 68
 color_256 info.download.error red
 color_256 progressbar.progress 23
 color_256 progressbar.rest    236
-color_256 volumemeter.level   magenta
-color_256 volumemeter.rest    236
 color_256 tabbar.selected     75
 color_256 tabbar.unselected   250
 color_256 list.item_even      blue
