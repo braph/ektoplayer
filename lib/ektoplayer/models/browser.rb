@@ -91,7 +91,7 @@ module Ektoplayer
                   return [] if index == 0
                   return [ @contents[index] ]
                else
-                  @database.select(filters: new_filters(index)).map.to_a
+                  @database.select(filters: new_filters(index))
                end
             end
 

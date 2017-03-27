@@ -24,13 +24,18 @@ module Ektoplayer
             @fade = fader.fade(@size.width)
             @progress_width = @size.width
             @progress_char = Config[:'progressbar.progress_char']
-            @rest_char  = Config[:'progressbar.rest_char']
+            @rest_char= Config[:'progressbar.rest_char']
          end
-
 
          def attach(player)
             player.events.on(:position_change) do
-               self.percent_playing = player.position_percent
+               old = @progress_width
+               @progress_width = (player.position_percent * @size.width).to_i rescue @size.width
+
+               if (old != @progress_width) and visible?
+                  draw
+                  noutrefresh
+               end
             end
 
             view=self # TODO
@@ -39,17 +44,10 @@ module Ektoplayer
                view.mouse.on(button) do |mevent|
                   pos = Float(mevent.x) / (self.size.width - 1) * player.length rescue player.position
                   player.seek(pos.to_i)
+                  @progress_width = mevent.x
+                  draw
+                  noutrefresh
                end
-            end
-         end
-
-         def percent_playing=(percent_playing)
-            char_width = (percent_playing * @size.width).to_i
-            return if char_width == @progress_width
-
-            with_lock do
-               @progress_width = char_width
-               want_redraw
             end
          end
 

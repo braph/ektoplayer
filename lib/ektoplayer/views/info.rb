@@ -20,7 +20,7 @@ module Ektoplayer
                player, playlist, trackloader, database
 
             Thread.new do
-               loop { sleep 1; with_lock { want_redraw } }
+               loop { sleep 1; draw if visible? }
             end.priority=(-10)
          end
 
@@ -59,13 +59,14 @@ module Ektoplayer
          def draw_download(file, percent, error)
             @win.attrset(Theme[:'info.download.file'])
             @win.mvaddstr(@win.cury + 1, START_TAG, file)
+            @win.addch(32) # ' '
 
             @win.attrset(Theme[:'info.download.percent'])
-            @win.addstr(" #{percent}")
+            @win.addstr(percent.to_s)
 
             if error
                @win.attrset(Theme[:'info.download.error'])
-               @win.addstr(" #{error}")
+               @win.addstr(error.to_s)
             end
          end
 
@@ -172,6 +173,7 @@ module Ektoplayer
             draw_info('Github URL'); draw_url(Application::GITHUB_URL)
 
             self.pad_size=(@size.update(height: [@win.cursor.y + 2, @size.height].max))
+            noutrefresh
          end
       end
    end

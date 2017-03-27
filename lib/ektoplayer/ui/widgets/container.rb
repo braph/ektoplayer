@@ -73,7 +73,7 @@ module UI
 
       def draw;     visible_widgets.each(&:draw)     end
       def refresh;  visible_widgets.each(&:refresh)  end
-      def layout;   @widgets.each(&:layout)   end
+      def layout;   @widgets.each(&:layout)          end
 
       def on_key_press(key)
          @selected.key_press(key) if @selected

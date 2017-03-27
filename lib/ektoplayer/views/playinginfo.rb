@@ -28,23 +28,11 @@ module Ektoplayer
             with_lock { @track = t; want_redraw }
          end
 
-         def length=(l)
-            return if @length == l.to_i
-            @length = l.to_i
-            draw_position_and_length
-         end
-
-         def position=(p)
-            return if @position == p.to_i
-            @position = p.to_i
-            draw_position_and_length
-         end
-
          def draw_position_and_length
             return unless visible?
             @win.attrset(Theme[:'playinginfo.position'])
             @win.mvaddstr(0, 0, "[#{Common::to_time(@position)}/#{Common::to_time(@length)}]")
-            @win.noutrefresh
+            noutrefresh
          end
 
          def attach(playlist, player)
@@ -53,8 +41,11 @@ module Ektoplayer
             player.events.on(:play)   { self.playing! }
 
             player.events.on(:position_change) do
-               self.position=(player.position)
-               self.length=(player.length)
+               old_pos, old_length = @position, @length
+               @position = player.position.to_i
+               @length = player.length.to_i
+               return if old_pos == @position and old_len == @length
+               draw_position_and_length
             end
 
             playlist.events.on(:current_changed) {

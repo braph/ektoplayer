@@ -154,6 +154,10 @@ module UI
       end
 
       def refresh
+         @win.refresh
+      end
+
+      def noutrefresh
          @win.noutrefresh
       end
    end
@@ -230,6 +234,14 @@ module UI
       end
 
       def refresh
+         @win.prefresh(
+            @pad_minrow, @pad_mincol,
+            @pos.y, @pos.x,
+            @pos.y + @size.height - 1, @pos.x + @size.width - 1
+         )
+      end
+
+      def noutrefresh
          @win.pnoutrefresh(
             @pad_minrow, @pad_mincol,
             @pos.y, @pos.x,
