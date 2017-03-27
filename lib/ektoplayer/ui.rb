@@ -27,7 +27,7 @@ module UI
          @@widget = nil
 
          %w(initscr cbreak noecho start_color use_default_colors).
-            each {|_|ICurses.send(_)}
+            each(&ICurses.method(:send))
          ICurses.mousemask(ICurses::ALL_MOUSE_EVENTS | ICurses::REPORT_MOUSE_POSITION)
          ICurses.stdscr.keypad(true)
          UI::Colors.start
@@ -112,7 +112,7 @@ module UI
                begin
                   UI::Canvas.widget.win.keypad(true)
 
-                  if (c = UI::Canvas.widget.win.getch1(600))
+                  if (c = UI::Canvas.widget.win.getch1(500))
                      if c == ICurses::KEY_MOUSE
                         if c = ICurses.getmouse
                            UI::Canvas.widget.mouse_click(c)
@@ -150,8 +150,6 @@ module UI
                         end
                      end
                   end
-               #rescue
-                  # getch() returned something weird that could not be chr()d
                end while @@readline_obj.active?
             end
          end
@@ -168,13 +166,15 @@ module UI
       def initialize
          Readline.input, @readline_in_write = IO.pipe
          Readline.output = File.open(File::NULL, ?w)
+         @window = ICurses.newwin(0,0,0,0)
          @thread = nil
       end
 
       def active?; @thread; end
 
       def redraw
-         return unless @window
+         @window.resize(@size.height, @size.width)
+         @window.mvwin(@pos.y, @pos.x)
          @window.erase
          buffer = @prompt + Readline.line_buffer.to_s
          @window.addstr(buffer[(buffer.size - @size.width).clamp(0, buffer.size)..-1])
@@ -184,8 +184,7 @@ module UI
 
       def readline(pos, size, prompt: '', add_hist: false, &block)
          @thread ||= Thread.new do
-            @size, @prompt = size, prompt
-            @window = ICurses.newwin(size.height, size.width, pos.y, pos.x)
+            @size, @pos, @prompt = size, pos, prompt
 
             begin
                Readline.set_screen_size(size.height, size.width)
@@ -194,7 +193,7 @@ module UI
                block.(Readline.readline(prompt, add_hist))
             ensure
                @window.clear
-               @window = @thread = nil
+               @thread = nil
                UI::Canvas.update_screen(true)
             end
          end
@@ -308,7 +307,7 @@ module ICurses
       def size;    UI::Size.new(height: maxy, width: maxx)   end
 
       def cursor=(new)
-         move(new.y, new.x) # or fail "Could not set cursor: #{new} #{size}"
+         move(new.y, new.x)  #or warn "Could not set cursor: #{new} #{size}"
       end
 
       def pos=(new)

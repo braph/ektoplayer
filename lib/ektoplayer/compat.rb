@@ -1,9 +1,7 @@
 unless Array.respond_to? :sum
    class Array
-      def sum
-         result = 0
-         self.each { |i| result += i }
-         result
+      def sum 
+         reduce(:+)
       end
    end
 end

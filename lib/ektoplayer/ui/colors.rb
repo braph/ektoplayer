@@ -22,7 +22,7 @@ module UI
 
       def ColorFader._fade2(colors, size)
          half = size / 2
-         ColorFader._fade(colors, half) + ColorFader._fade(colors, size - half).reverse
+         ColorFader._fade(colors, half) + ColorFader._fade(colors.reverse, size - half)
       end
    end
 

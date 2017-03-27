@@ -160,13 +160,13 @@ module Ektoplayer
          @bindings.each do |widget, hash|
             hash.default_proc = proc { |h,k| h[k] = [] }
             hash.values.each do |keys|
-               keys.map! { |key| parse_key(key) }
+               keys.map!(&method(:parse_key))
             end
          end
       end
 
       def keyname(key)
-         return 'SPACE'  if (key == ' ' or key == 32)
+         return 'SPACE' if (key == ' ' or key == 32)
 
          name = ICurses.keyname(key)
          if name.start_with? 'KEY_'

@@ -144,10 +144,8 @@ module Ektoplayer
          insert_into(table, hash, mode: :replace)
       end
 
-      def execute(query, params=nil)
-         stm = @db.prepare query
-         stm.bind_params(*params) if params
-         stm.execute.to_a
+      def execute(query, params=[])
+         @db.execute(query, *params)
       rescue
          Application.log(self, $!)
       end
@@ -182,7 +180,7 @@ module Ektoplayer
 
          limit = "LIMIT #{limit}" if limit
 
-         stm = @db.prepare SELECT % {
+         query = SELECT % {
             SELECT_COLUMNS: columns,
             WHERE:          where_clauses.join(' '),
             GROUP_BY:       group_by,
@@ -190,8 +188,7 @@ module Ektoplayer
             LIMIT:          limit
          }
 
-         stm.bind_params(*where_params)
-         stm.execute.to_a
+         @db.execute(query, *where_params)
       rescue
          Application.log(self, $!)
       end
@@ -201,11 +198,11 @@ module Ektoplayer
       end
 
       def track_count
-         @db.execute('SELECT COUNT(*) FROM tracks')[0][0]
+         @db.get_first_value('SELECT COUNT(*) FROM tracks')
       end
 
       def album_count
-         @db.execute('SELECT COUNT(*) FROM albums')[0][0]
+         @db.get_first_value('SELECT COUNT(*) FROM albums')
       end
    end
 end

@@ -1,63 +1,9 @@
 require 'thread'
 require 'open3'
 
-class ConditionSignals
-   def initialize
-      @mutex, @cond = Mutex.new, ConditionVariable.new
-      @curr_signal = nil
-      @signal_hooks = {}
-
-      Thread.new do
-         @mutex.synchronize do
-            loop do
-               @cond.wait(@mutex)
-
-               if @signal_hooks.key? @curr_signal
-                  @signal_hooks[@curr_signal].()
-               end
-            end
-         end
-      end
-   end
-
-   def wait(name, timeout=nil)
-      @mutex.synchronize do
-         loop do
-            @cond.wait(@mutex, timeout)
-            return if @curr_signal == name
-         end
-      end
-   end
-
-   def signal(name)
-      @curr_signal = name
-      @cond.broadcast
-   end
-
-   def on(name, &block)
-      @signal_hooks[name] = block
-   end
-end
-
 class Dir
    def Dir.size(path)
-      Dir.glob(File.join(path, '**', ?*)).map { |f| File.size(f) }.sum
-   end
-end
-
-class String
-   def chunks(n)
-      return [self] if n < 1
-
-      if (chunk_size = self.size / n) < 1
-         return [self]
-      end
-
-      (n - 1).times.map do |i|
-         self.slice((chunk_size * i)..(chunk_size * (i + 1) - 1))
-      end + [
-         self.slice((chunk_size * (n-1))..-1)
-      ]
+      Dir.glob(File.join(path, '**', ?*)).map(&File.method(:size)).sum
    end
 end
 
@@ -102,7 +48,6 @@ module Common
    rescue
       # something failed ...
       Ektoplayer::Application.log(self, "error extracting zip", zip, dest, $!)
-      fail $!
    end
 
    def self.with_hash_zip(keys, values)
