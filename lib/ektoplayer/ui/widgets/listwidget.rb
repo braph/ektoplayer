@@ -20,6 +20,7 @@ module UI
 
    class ListSelector
       attr_reader :start_pos
+
       def start(pos)
          @start_pos = pos
       end
@@ -35,12 +36,10 @@ module UI
    end
 
    class ListSearch
-      attr_accessor :direction, :source
+      attr_accessor :direction, :search
 
-      def initialize(search: '', source: [], direction: :down)
-         @source, @result, @current = source, [], 0
-         @direction = direction
-         self.search=(search)
+      def initialize(search: '', direction: :down)
+         @search, @direction = search, direction
       end
 
       def comp(item, search)
@@ -55,31 +54,27 @@ module UI
          false
       end
 
-      def search=(search)
-         fail unless search
-         @search = search
-         @current = 0
-         @result = @source.size.times.select {|i| self.comp(@source[i], search) }
+      def next(*a)  @direction == :up ? search_up(*a): search_down(*a)  end
+      def prev(*a)  @direction == :up ? search_down(*a) : search_up(*a) end
+
+      def search_up(current_pos, source)
+         start_pos = (current_pos - 1).clamp(0, source.size)
+
+         start_pos.downto(0).each do |i|
+            return i if self.comp(source[i], @search)
+         end
+
+         source.size
       end
 
-      def current; @current or 0 end #or 0                         end
-      def next(p)  @direction == :up ? search_up(p): search_down(p)  end
-      def prev(p)  @direction == :up ? search_down(p) : search_up(p) end
+      def search_down(current_pos, source)
+         start_pos = (current_pos + 1).clamp(0, source.size)
 
-      def search_up(p)
-         @current = (
-            @result.reverse.select { |v| v < p }[0] or @result[-1]
-         )
+         start_pos.upto(source.size).each do |i|
+            return i if self.comp(source[i], @search)
+         end
 
-         self
-      end
-
-      def search_down(p)
-         @current = (
-            @result.select { |v| v > p }[0] or @result[0]
-         )
-
-         self
+         0
       end
    end
 
@@ -96,14 +91,13 @@ module UI
          @selection = ListSelector.new
       end
 
-      def search_next;  self.selected=(@search.next(@selected).current)  end
-      def search_prev;  self.selected=(@search.prev(@selected).current)  end
-      def search_up;    self.search_start(:up)                end
-      def search_down;  self.search_start(:down)              end
+      def search_next;  self.selected=(@search.next(@selected, @list))  end
+      def search_prev;  self.selected=(@search.prev(@selected, @list))  end
+      def search_up;    self.search_start(:up)                          end
+      def search_down;  self.search_start(:down)                        end
       def search_start(direction)
          UI::Input.readline(@pos, @size.update(height: 1), prompt: '> ', add_hist: true) do |result|
             if result
-               @search.source=(@list)
                @search.direction=(direction)
                @search.search=(result)
                search_next
