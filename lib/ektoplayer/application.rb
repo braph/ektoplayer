@@ -19,6 +19,14 @@ module Ektoplayer
       CONFIG_DIR  = File.join(Dir.home, '.config', 'ektoplayer').freeze
       CONFIG_FILE = File.join(CONFIG_DIR, 'ektoplayer.rc').freeze
 
+      def self.cover_url(album)
+         "#{EKTOPLAZM_COVER_BASE_URL}/#{cover}"
+      end
+
+      def self.album_url(album)
+         "#{EKTOPLAZM_ALBUM_BASE_URL}/#{album}"
+      end
+
       def self.log(from, *msgs)
          func = caller[0][/`.*'/][1..-2]
          from = from.class unless from.is_a?String

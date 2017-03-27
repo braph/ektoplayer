@@ -6,13 +6,11 @@ module Ektoplayer
          PARENT_DIRECTORY = '..'.freeze
 
          PATHS = {
-            artist:         [:artist     ].freeze,
-            album:          [:album      ].freeze,
-            style:          [:style      ].freeze,
-            year:           [:year       ].freeze,
-            title:          [].freeze,
-            released_by:    [:released_by].freeze,
-            posted_by:      [:posted_by  ].freeze
+            artist:  [:artist].freeze,
+            album:   [:album ].freeze,
+            style:   [:style ].freeze,
+            year:    [:year  ].freeze,
+            title:   [].freeze
          }.freeze
 
          def initialize(client)

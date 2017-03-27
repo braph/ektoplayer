@@ -10,8 +10,7 @@ require 'open-uri'
 module Ektoplayer
    class BrowsePage
       ALBUM_KEYS = %w(url title artist date category styles cover_url description
-                      download_count released_by released_by_url posted_by posted_by_url
-                      archive_urls rating votes tracks).map(&:to_sym).freeze
+                      download_count archive_urls rating votes tracks).map(&:to_sym).freeze
 
       TRACK_KEYS = %w(url album_url number title remix artist bpm).map(&:to_sym).freeze
 
@@ -76,18 +75,6 @@ module Ektoplayer
                album[:title] = a.text
                album[:url] = File.basename(URI.parse(a['href']).path)
             end 
-
-            post.xpath('.//a[@rel="tag"]').each do |a|
-               album[:released_by] = a.text
-               album[:released_by_url] = File.basename(URI.parse(a['href']).path)
-               # todo
-            end
-
-            post.xpath('.//a[@rel="author external"]').each do |a|
-               album[:posted_by] = a.text
-               album[:posted_by_url] = File.basename(URI.parse(a['href']).path)
-               # todo
-            end
 
             album[:archive_urls] = post.css('.dll a').map do |a|
                [ a.text.split[0] , a['href'] ]

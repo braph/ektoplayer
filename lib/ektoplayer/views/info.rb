@@ -70,10 +70,6 @@ module Ektoplayer
             end
          end
 
-         def get_cover_url(album)
-            "#{Application::EKTOPLAZM_COVER_BASE_URL}/#{album}"
-         end
-
          def draw
             return unless @player
 
@@ -98,22 +94,18 @@ module Ektoplayer
                @win.next_line
 
                draw_heading('Current album')
-               draw_tag('Album'); draw_url(@track['album_url'], @track['album'])
+
+               draw_tag('Album')
+               draw_url(Application.album_url(@track['album_url']), @track['album'])
                draw_tag('Artist',       @track['album__artist']) if @track['album_artist']
                draw_tag('Date',         @track['date'])
-
-               if url = @track['released_by_url']
-                  draw_tag('Released by'); draw_url(url, @track['released_by'])
-               end
-
-               if url = @track['posted_by_url']
-                  draw_tag('Posted by');   draw_url(url, @track['posted_by'])
-               end
 
                draw_tag('Styles',       @track['styles'].gsub(?,, ', '))
                draw_tag('Downloads',    @track['download_count'])
                draw_tag('Rating',  "%0.2d%% (%d Votes)" % [@track['rating'], @track['votes']])
-               draw_tag('Cover'); draw_url(get_cover_url(@track['cover_url']), 'Cover')
+               draw_tag('Cover')
+               draw_url(Application.cover_url(@track['cover_url']), 'Cover')
+
                @win.next_line
 
                # -- description
@@ -124,13 +116,13 @@ module Ektoplayer
 
                Nokogiri::HTML("<p>#{@track['description']}</p>").css(?p).each do |p|
                   p.children.each do |element|
-                     if element[:href]
+                     if element['href']
                         if (line_length += element.text.size) > wrap_length
                            @win.move(@win.cury + 1, START_TAG)
                            line_length = START_TAG
                         end
 
-                        draw_url(element[:href], element.text.strip)
+                        draw_url(element['href'], element.text.strip)
                         @win.addch(32) # ' '
                      else
                         element.text.split(' ').each do |text|

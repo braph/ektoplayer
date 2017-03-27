@@ -10,8 +10,7 @@ module Ektoplayer
 
    class DatabaseUpdater
       ALBUM_STR_TAGS = Set.new(%w(url title date category cover_url
-            description download_count rating votes
-            released_by released_by_url posted_by posted_by_url).map(&:to_sym)).freeze
+            description download_count rating votes).map(&:to_sym)).freeze
 
       TRACK_STR_TAGS = Set.new(%w(url number title remix artist bpm).map(&:to_sym)).freeze
 
