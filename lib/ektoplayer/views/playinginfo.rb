@@ -44,8 +44,10 @@ module Ektoplayer
                old_pos, old_length = @position, @length
                @position = player.position.to_i
                @length = player.length.to_i
-               return if old_pos == @position and old_length == @length
-               draw_position_and_length
+
+               if old_pos != @position or old_length != @length
+                  draw_position_and_length
+               end
             end
 
             playlist.events.on(:current_changed) {

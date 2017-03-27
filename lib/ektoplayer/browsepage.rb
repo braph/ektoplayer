@@ -40,13 +40,13 @@ module Ektoplayer
 
          @page_urls = []
          doc.css('.wp-pagenavi option').each_with_index do |option, i|
-            @current_page_index = i if option[:selected]
-            @page_urls << option[:value]
+            @current_page_index = i if option['selected']
+            @page_urls << option['value']
          end
 
          @@styles ||= begin
             doc.xpath('//a[contains(@href, "http") and contains(@href, "/style/")]').map do |a|
-               [ a.text, a[:href] ]
+               [ a.text, a['href'] ]
             end.to_h
          end
 
@@ -57,7 +57,7 @@ module Ektoplayer
 
             album[:styles] = []
             post.css('.style a').map do |a|
-               @@styles[a.text] = a[:href]
+               @@styles[a.text] = a['href']
                album[:styles] << a.text
             end
 
@@ -65,7 +65,7 @@ module Ektoplayer
                to_html.sub(/^<p>/, '').sub(/<\/p>$/, '') rescue ''
 
             begin album[:cover_url] = File.basename(
-               URI.parse(post.at_css('.cover')[:src]).path
+               URI.parse(post.at_css('.cover')['src']).path
             )
             rescue
             end
@@ -74,23 +74,23 @@ module Ektoplayer
 
             post.css('h1 a').each do |a|
                album[:title] = a.text
-               album[:url] = File.basename(URI.parse(a[:href]).path)
+               album[:url] = File.basename(URI.parse(a['href']).path)
             end 
 
             post.xpath('.//a[@rel="tag"]').each do |a|
                album[:released_by] = a.text
-               album[:released_by_url] = File.basename(URI.parse(a[:href]).path)
+               album[:released_by_url] = File.basename(URI.parse(a['href']).path)
                # todo
             end
 
             post.xpath('.//a[@rel="author external"]').each do |a|
                album[:posted_by] = a.text
-               album[:posted_by_url] = File.basename(URI.parse(a[:href]).path)
+               album[:posted_by_url] = File.basename(URI.parse(a['href']).path)
                # todo
             end
 
             album[:archive_urls] = post.css('.dll a').map do |a|
-               [ a.text.split[0] , a[:href] ]
+               [ a.text.split[0] , a['href'] ]
             end.to_h
 
             begin
@@ -102,7 +102,7 @@ module Ektoplayer
             end
 
             begin
-               base64_tracklist = post.at_css(:script).text.scan(/soundFile:"(.*)"/)[0][0]
+               base64_tracklist = post.at_css('script').text.scan(/soundFile:"(.*)"/)[0][0]
                tracklist_urls = Base64.decode64(base64_tracklist).split(?,)
             rescue
                # Sometimes there are no tracks:
@@ -112,8 +112,8 @@ module Ektoplayer
 
             post.css('.tl').each do |album_track_list|
                track = nil
-               album_track_list.css(:span).each do |ti|
-                  case ti[:class]
+               album_track_list.css('span').each do |ti|
+                  case ti['class']
                   when ?n 
                      album[:tracks] << track if track and track[:url]
                      track = { url: tracklist_urls.shift }
