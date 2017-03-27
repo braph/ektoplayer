@@ -113,13 +113,9 @@ module Ektoplayer
             end
 
             left_pad = 0
+            y = scr.cury
 
             @column_format.each_with_index do |c,i|
-               if i > 0
-                  scr.addch(32)
-                  left_pad += 1
-               end
-
                if selection
                   scr.attrset(Theme[:'list.item_selection'] | additional_attributes)
                else
@@ -133,16 +129,19 @@ module Ektoplayer
                      value = value.to_s[0..(c[:render_size] - 1)]
                   end
 
+                  scr.mvaddstr(y, left_pad, ' ' * c[:render_size])
+                  scr.addch(32) if i < @column_format.size - 1
+
                   if c[:justify] == :right
-                     scr.mvaddstr(scr.cury, left_pad, value.rjust(c[:render_size]))
+                     scr.mvaddstr(y, left_pad, value.rjust(c[:render_size]))
                   else
-                     scr.mvaddstr(scr.cury, left_pad, value.ljust(c[:render_size]))
+                     scr.mvaddstr(y, left_pad, value)
                   end
                end
 
-               left_pad += c[:render_size]
+               left_pad += c[:render_size] + 1
             end
          end
-      end
+      end 
    end
 end
