@@ -36,18 +36,22 @@ module UI
    end
 
    class ListSearch
-      attr_accessor :direction, :search
+      attr_accessor :direction
 
       def initialize(search: '', direction: :down)
          @search, @direction = search, direction
       end
 
-      def comp(item, search)
+      def search=(search)
+         @search = Regexp.new(search.downcase) rescue search.downcase
+      end
+
+      private def comp(item)
          if item.is_a?String or item.is_a?Symbol
-            return item.downcase =~ Regexp.new(search.downcase)
+            return item.downcase =~ @search
          elsif item.is_a?Hash
             %w(title artist album).each do |key|
-               return true if self.comp(item[key], search)
+               return true if comp(item[key])
             end
          end
 
@@ -61,7 +65,7 @@ module UI
          start_pos = (current_pos - 1).clamp(0, source.size)
 
          start_pos.downto(0).each do |i|
-            return i if self.comp(source[i], @search)
+            return i if comp(source[i])
          end
 
          source.size
@@ -71,7 +75,7 @@ module UI
          start_pos = (current_pos + 1).clamp(0, source.size)
 
          start_pos.upto(source.size).each do |i|
-            return i if self.comp(source[i], @search)
+            return i if comp(source[i])
          end
 
          0
@@ -157,8 +161,11 @@ module UI
       def list=(list)
          with_lock do
             @list = list
+
             @cursor = @selected = 0
             self.selected=(0)
+            self.force_cursorpos(0)
+
             want_redraw
          end
       end
@@ -172,7 +179,7 @@ module UI
 
          self.lock
 
-         old_cursor, new_cursor = @cursor, @cursor + @selected - old_selected
+         old_cursor, new_cursor = @cursor, @cursor + (@selected - old_selected)
 
          if new_cursor.between?(0, @size.height - 1)
             # new selected item resides in current screen,
@@ -183,7 +190,7 @@ module UI
             return want_redraw if @selection.started?
 
             write_at(old_cursor); render(old_selected)
-            write_at(new_cursor); render(new_index, selected: true)
+            write_at(new_cursor); render(@selected, selected: true)
             _check
             want_refresh
          elsif (new_cursor.between?(-(@size.height - 1), (2 * @size.height - 1)))

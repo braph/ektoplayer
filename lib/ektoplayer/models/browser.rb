@@ -36,16 +36,18 @@ module Ektoplayer
          end
 
          def enter(index)
-            return unless (sub = current.enter(index))
+            return false unless (sub = current.enter(index))
             return back() if sub == :parent
             @stack.push(sub)
             @events.trigger(:changed)
+            true
          end
 
          def back
-            return unless @stack.size > 1
+            return false unless @stack.size > 1
             @stack.pop
             @events.trigger(:changed)
+            true
          end
 
          class BrowsableCollection
