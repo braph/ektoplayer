@@ -145,6 +145,9 @@ module UI
          super(**opts)
          @win = ICurses.newwin(@size.height, @size.width, @pos.y, @pos.x)
          @win.keypad(true)
+         @win.idlok(true)
+         @win.leaveok(true)
+         @win.bkgd(UI::Colors.init_pair_cached(:default, :default))
       end
 
       def layout
@@ -168,6 +171,10 @@ module UI
       def initialize(**opts)
          super(**opts)
          @win = ICurses.newpad(@size.height, @size.width)
+         @win.keypad(true)
+         @win.idlok(true)
+         @win.leaveok(true)
+         @win.bkgd(UI::Colors.init_pair_cached(:default, :default))
          @pad_minrow = @pad_mincol = 0
       end
 

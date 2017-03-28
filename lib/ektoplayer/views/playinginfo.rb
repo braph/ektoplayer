@@ -54,7 +54,6 @@ module Ektoplayer
                self.track=(playlist[playlist.current_playing])
             }
 
-            # TODO: move mouse?
             self.mouse.on(ICurses::BUTTON1_CLICKED) do |mevent|
                player.toggle
             end
@@ -81,9 +80,17 @@ module Ektoplayer
          def draw
             @win.erase
             draw_position_and_length
+
+            if ICurses.colors == 256
+               top_format = Config[:'playinginfo.format_top_256']
+               bottom_format = Config[:'playinginfo.format_bottom_256']
+            else
+               top_format = Config[:'playinginfo.format_top']
+               bottom_format = Config[:'playinginfo.format_bottom']
+            end
             
             if @track
-               fill(Config[:'playinginfo.format1']).each_with_index do |fmt,i|
+               fill(top_format).each_with_index do |fmt,i|
                   @win.center(fmt[:sum]) if i == 0
                   @win.attrset(UI::Colors.set(nil, *fmt[:curses_attrs]))
                   @win << fmt[:filled]
@@ -94,7 +101,7 @@ module Ektoplayer
 
                @win.next_line
 
-               fill(Config[:'playinginfo.format2']).each_with_index do |fmt,i|
+               fill(bottom_format).each_with_index do |fmt,i|
                   @win.center(fmt[:sum]) if i == 0
                   @win.attrset(UI::Colors.set(nil, *fmt[:curses_attrs]))
                   @win << fmt[:filled]

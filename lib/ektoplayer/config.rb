@@ -24,12 +24,14 @@ module Ektoplayer
 
       def self.parse_simple_format(format)
          self._parse_markup(format).map do |fmt|
-            attrs = []
-            attrs << :bold      if fmt[:bold]
-            attrs << :blink     if fmt[:blink]
-            attrs << :standout  if fmt[:standout]
-            attrs << :underline if fmt[:underline]
-            fmt[:curses_attrs] = [ (fmt[:fg] and fmt[:fg].to_sym), (fmt[:bg] and fmt[:bg].to_sym), *attrs]
+            fmt[:curses_attrs] = [
+               (fmt[:fg] and Integer(fmt[:fg]) rescue fmt[:fg].to_sym),
+               (fmt[:bg] and Integer(fmt[:bg]) rescue fmt[:bg].to_sym),
+            ]
+            fmt[:curses_attrs] << :bold      if fmt[:bold]
+            fmt[:curses_attrs] << :blink     if fmt[:blink]
+            fmt[:curses_attrs] << :standout  if fmt[:standout]
+            fmt[:curses_attrs] << :underline if fmt[:underline]
             fmt
          end
       end
@@ -56,13 +58,27 @@ module Ektoplayer
          <album  rel="30" fg="red"     />
          <title  rel="33" fg="yellow"  />
          <styles rel="20" fg="cyan"    />
-         <bpm    size="4" fg="green" justify="right" />}.squeeze(' ').freeze
+         <bpm    size="3" fg="green" justify="right" />}.squeeze(' ').freeze
 
-      DEFAULT_PLAYINGINFO_FORMAT1 =
+      DEFAULT_PLAYINGINFO_FORMAT_TOP =
          '<text fg="black">&lt;&lt; </text><title bold="on" fg="yellow" /><text fg="black"> &gt;&gt;</text>'.freeze
 
-      DEFAULT_PLAYINGINFO_FORMAT2 = 
+      DEFAULT_PLAYINGINFO_FORMAT_BOTTOM = 
          '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><year fg="cyan" /><text>)</text>'.freeze
+
+      DEFAULT_PLAYLIST_FORMAT_256 = %{
+         <number size="3" fg="97"  />
+         <artist rel="25" fg="24"  />
+         <album  rel="30" fg="160" />
+         <title  rel="33" fg="178" />
+         <styles rel="20" fg="37"  />
+         <bpm    size="3" fg="28" justify="right" />}.squeeze(' ').freeze
+
+      DEFAULT_PLAYINGINFO_FORMAT_TOP_256 =
+         '<text fg="236">&lt;&lt; </text><title bold="on" fg="178" /><text fg="236"> &gt;&gt;</text>'.freeze
+
+      DEFAULT_PLAYINGINFO_FORMAT_BOTTOM_256 = 
+         '<artist bold="on" fg="24" /><text> - </text><album bold="on" fg="160" /><text> (</text><year fg="37" /><text>)</text>'.freeze
 
       def register(key, description, default, method=nil)
          # parameter `description` is used by tools/mkconfig.rb, but not here
@@ -143,11 +159,19 @@ module Ektoplayer
             'Number of donwload threads during database update',
             20, lambda { |v| fail if Integer(v) < 1; Integer(v) }
 
+         # - Playlist
+         reg 'playlist.format', 'Format of playlist columns',
+            DEFAULT_PLAYLIST_FORMAT, ColumnFormat.method(:parse_column_format)
+
+         reg 'playlist.format_256', 'Format of playlist columns (256 colors)',
+            DEFAULT_PLAYLIST_FORMAT_256, ColumnFormat.method(:parse_column_format)
+
+         # - Browser
          reg 'browser.format', 'Format of browser columns',
             DEFAULT_PLAYLIST_FORMAT, ColumnFormat.method(:parse_column_format)
 
-         reg 'playlist.format', 'Format of playlist columns',
-            DEFAULT_PLAYLIST_FORMAT, ColumnFormat.method(:parse_column_format)
+         reg 'browser.format_256', 'Format of browser columns (256 colors)',
+            DEFAULT_PLAYLIST_FORMAT_256, ColumnFormat.method(:parse_column_format)
 
          # - Progressbar
          reg 'progressbar.display',
@@ -163,12 +187,24 @@ module Ektoplayer
          reg 'playinginfo.display',
             'Enable/display playinginfo', true
 
-         reg 'playinginfo.format1',
-             'Format of first line in playinginfo', DEFAULT_PLAYINGINFO_FORMAT1,
+         reg 'playinginfo.format_top',
+             'Format of first line in playinginfo',
+             DEFAULT_PLAYINGINFO_FORMAT_TOP,
              ColumnFormat.method(:parse_simple_format)
 
-         reg 'playinginfo.format2',
-             'Format of second line in playinginfo', DEFAULT_PLAYINGINFO_FORMAT2,
+         reg 'playinginfo.format_top_256',
+             'Format of first line in playinginfo (256 colors)',
+             DEFAULT_PLAYINGINFO_FORMAT_TOP_256,
+             ColumnFormat.method(:parse_simple_format)
+
+         reg 'playinginfo.format_bottom',
+             'Format of second line in playinginfo',
+             DEFAULT_PLAYINGINFO_FORMAT_BOTTOM,
+             ColumnFormat.method(:parse_simple_format)
+
+         reg 'playinginfo.format_bottom_256',
+             'Format of second line in playinginfo (256 colors)',
+             DEFAULT_PLAYINGINFO_FORMAT_BOTTOM_256,
              ColumnFormat.method(:parse_simple_format)
 
          # - Tabbar
@@ -232,7 +268,6 @@ module Ektoplayer
             begin
                cb = callbacks[command.to_sym]
                cb.call(*args)
-               #fail "Command '#{command}' given args: #{args.size}, wanted #{cb.arity}" if args.size != cb.arity
             rescue
                fail "#{file}:#{$.}: #{command}: #{$!}"
             end

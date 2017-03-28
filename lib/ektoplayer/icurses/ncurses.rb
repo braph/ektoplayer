@@ -17,6 +17,7 @@ module Ncurses
       end
 
       %w(getcurx getcury getmaxx getmaxy getbegx getbegy
+         clearok idlok idcok immedok leaveok setscrreg scrollok nl nonl
          keypad nodelay notimeout prefresh pnoutrefresh).each do |meth|
          define_method(meth) do |*args|
             Ncurses.send(meth, @w, *args)

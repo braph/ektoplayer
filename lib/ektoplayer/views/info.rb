@@ -84,7 +84,7 @@ module Ektoplayer
 
             if @track = (@playlist[@playlist.current_playing] rescue nil)
                draw_heading('Current track')
-               draw_tag('Number', "%0.2d" % @track['number'])
+               draw_tag('Number', '%0.2d' % @track['number'])
                draw_tag('Title',  @track['title'])
                draw_tag('Remix',  @track['remix']) if @track['remix']
                draw_tag('Artist', @track['artist'])
@@ -102,7 +102,7 @@ module Ektoplayer
 
                draw_tag('Styles',       @track['styles'].gsub(?,, ', '))
                draw_tag('Downloads',    @track['download_count'])
-               draw_tag('Rating',  "%0.2d%% (%d Votes)" % [@track['rating'], @track['votes']])
+               draw_tag('Rating',  '%0.2d%% (%d Votes)' % [@track['rating'], @track['votes']])
                draw_tag('Cover')
                draw_url(Application.cover_url(@track['cover_url']), 'Cover')
 
@@ -122,8 +122,8 @@ module Ektoplayer
                            line_length = START_TAG
                         end
 
-                        draw_url(element['href'], element.text.strip)
                         @win.addch(32) # ' '
+                        draw_url(element['href'], element.text.strip)
                      else
                         element.text.split(' ').each do |text|
                            if (line_length += text.size) > wrap_length
@@ -131,10 +131,10 @@ module Ektoplayer
                               line_length = START_TAG
                            end
 
-                           @win.attrset(Theme[:'info.description'])
-                           @win.mv_left(1) if text =~ /^[\.,:;]$/ 
-                           @win << text
                            @win.addch(32) # ' '
+                           @win.attrset(Theme[:'info.description'])
+                           @win << text
+                           #@win.mv_left(1) if text =~ /^[\.,:;]$/ 
                         end
                      end
                   end
@@ -159,8 +159,8 @@ module Ektoplayer
             draw_info('Version', Application::VERSION)
             draw_info('Tracks in database', @database.track_count)
             draw_info('Albums in database', @database.album_count)
-            draw_info('Cache dir size', "%dMB" % (Dir.size(Config[:cache_dir]) / (1024 ** 2)))
-            draw_info('Archive dir size', "%dMB" % (Dir.size(Config[:archive_dir]) / (1024 ** 2)))
+            draw_info('Cache dir size', '%dMB' % (Dir.size(Config[:cache_dir]) / (1024 ** 2)))
+            draw_info('Archive dir size', '%dMB' % (Dir.size(Config[:archive_dir]) / (1024 ** 2)))
             draw_info('Ektoplazm URL'); draw_url(Application::EKTOPLAZM_URL)
             draw_info('Github URL'); draw_url(Application::GITHUB_URL)
 

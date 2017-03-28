@@ -8,9 +8,14 @@ module Ektoplayer
       class Playlist < UI::ListWidget
          def initialize(**opts)
             super(**opts)
-            self.item_renderer=(TrackRenderer.new(
-               width: @size.width, format: Config[:'playlist.format']
-            ))
+
+            if ICurses.colors == 256
+               f = Config[:'playlist.format_256']
+            else
+               f = Config[:'playlist.format']
+            end
+
+            self.item_renderer=(TrackRenderer.new(width: @size.width, format: f))
          end
          
          def attach(playlist)

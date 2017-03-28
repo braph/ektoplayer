@@ -28,7 +28,7 @@ module UI
 
    class Colors
       COLORS = {
-         none: -1, default: -1, nil => -1,
+         none:     -1, 
          white:    ICurses::COLOR_WHITE,
          black:    ICurses::COLOR_BLACK,
          red:      ICurses::COLOR_RED,
@@ -57,11 +57,35 @@ module UI
          @@volatile     ||= {}
          @@volatile_ids ||= {}
          @@cached       ||= Hash.new { |h,k| h[k] = {} }
+         @@default_fg = @@default_bg = -1
       end
       def self.reset; self.start end
 
+      def self.default_fg(color)
+         @@default_fg = COLORS[color]
+      end
+
+      def self.default_bg(color)
+         @@default_bg = COLORS[color]
+      end
+
+      def self.default_colors(fg = -1, bg = -1)
+         self.default_fg(fg)
+         self.default_bg(bg)
+      end
+
       def self.init_pair_cached(fg, bg)
-         fg, bg = COLORS[fg], COLORS[bg]
+         if !fg or fg == :default
+            fg = @@default_fg
+         else
+            fg = COLORS[fg]
+         end
+
+         if !bg or bg == :default
+            bg = @@default_bg
+         else
+            bg = COLORS[bg]
+         end
 
          unless id = @@cached[fg][bg]
             id = @@cached[fg][bg] = @@id
@@ -81,7 +105,7 @@ module UI
       def self.[](name)   @@aliases[name] || 0  end
       def self.get(name)  @@aliases[name] || 0  end
       
-      def self.set(name, fg, bg = -1, *attrs)
+      def self.set(name, fg, bg = nil, *attrs)
          @@aliases[name] = self.init_pair_cached(fg, bg)
          attrs.each { |attr| @@aliases[name] |= ATTRIBUTES[attr] }
          @@aliases[name]

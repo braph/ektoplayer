@@ -48,15 +48,6 @@ set use_colors auto
 # Number of donwload threads during database update
 set threads 20
 
-# Format of browser columns
-set browser.format '
- <number size="3" fg="magenta" />
- <artist rel="25" fg="blue" />
- <album rel="30" fg="red" />
- <title rel="33" fg="yellow" />
- <styles rel="20" fg="cyan" />
- <bpm size="4" fg="green" justify="right" />'
-
 # Format of playlist columns
 set playlist.format '
  <number size="3" fg="magenta" />
@@ -64,7 +55,34 @@ set playlist.format '
  <album rel="30" fg="red" />
  <title rel="33" fg="yellow" />
  <styles rel="20" fg="cyan" />
- <bpm size="4" fg="green" justify="right" />'
+ <bpm size="3" fg="green" justify="right" />'
+
+# Format of playlist columns (256 colors)
+set playlist.format_256 '
+ <number size="3" fg="97" />
+ <artist rel="25" fg="24" />
+ <album rel="30" fg="160" />
+ <title rel="33" fg="178" />
+ <styles rel="20" fg="37" />
+ <bpm size="3" fg="28" justify="right" />'
+
+# Format of browser columns
+set browser.format '
+ <number size="3" fg="magenta" />
+ <artist rel="25" fg="blue" />
+ <album rel="30" fg="red" />
+ <title rel="33" fg="yellow" />
+ <styles rel="20" fg="cyan" />
+ <bpm size="3" fg="green" justify="right" />'
+
+# Format of browser columns (256 colors)
+set browser.format_256 '
+ <number size="3" fg="97" />
+ <artist rel="25" fg="24" />
+ <album rel="30" fg="160" />
+ <title rel="33" fg="178" />
+ <styles rel="20" fg="37" />
+ <bpm size="3" fg="28" justify="right" />'
 
 # Enable/disable progressbar
 set progressbar.display true
@@ -79,10 +97,16 @@ set progressbar.rest_char ~
 set playinginfo.display true
 
 # Format of first line in playinginfo
-set playinginfo.format1 '<text fg="black">&lt;&lt; </text><title bold="on" fg="yellow" /><text fg="black"> &gt;&gt;</text>'
+set playinginfo.format_top '<text fg="black">&lt;&lt; </text><title bold="on" fg="yellow" /><text fg="black"> &gt;&gt;</text>'
+
+# Format of first line in playinginfo (256 colors)
+set playinginfo.format_top_256 '<text fg="236">&lt;&lt; </text><title bold="on" fg="178" /><text fg="236"> &gt;&gt;</text>'
 
 # Format of second line in playinginfo
-set playinginfo.format2 '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><year fg="cyan" /><text>)</text>'
+set playinginfo.format_bottom '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><year fg="cyan" /><text>)</text>'
+
+# Format of second line in playinginfo (256 colors)
+set playinginfo.format_bottom_256 '<artist bold="on" fg="24" /><text> - </text><album bold="on" fg="160" /><text> (</text><year fg="37" /><text>)</text>'
 
 # Enable/disable tabbar
 set tabbar.display true
@@ -214,18 +238,18 @@ bind info ^D info.page_down
 
 ### Theme ###
 
-color_mono default            none none
-color_mono url                none none underline
-color_mono tabbar.selected    none none bold
+color_mono default            white black
+color_mono url                default default underline
+color_mono tabbar.selected    default default bold
 
 color default                 none none
-color url                     magenta none underline
-color info.head               blue none bold
+color url                     magenta default underline
+color info.head               blue default bold
 color info.tag                blue
 color info.value              magenta
 color info.description        blue
 color info.download.file      blue
-color info.download.percent   magenta none
+color info.download.percent   magenta
 color info.download.error     red
 color progressbar.progress    blue
 color progressbar.rest        black
@@ -236,14 +260,14 @@ color list.item_odd           blue
 color list.item_selection     magenta
 color playinginfo.position    magenta
 color playinginfo.state       cyan
-color help.widget_name        blue none bold
+color help.widget_name        blue default bold
 color help.key_name           blue
 color help.command_name       magenta
 color help.command_desc       yellow
 
-color_256 default             none none
-color_256 url                 97 none underline
-color_256 info.head           32 none bold
+color_256 default             white 233
+color_256 url                 97 default underline
+color_256 info.head           32 default bold
 color_256 info.tag            74
 color_256 info.value          67
 color_256 info.description    67
@@ -251,11 +275,14 @@ color_256 info.download.file  75
 color_256 info.download.percent 68
 color_256 info.download.error red
 color_256 progressbar.progress 23
-color_256 progressbar.rest    236
+color_256 progressbar.rest    black
 color_256 tabbar.selected     75
 color_256 tabbar.unselected   250
-color_256 list.item_even      blue
+color_256 list.item_even      26
 color_256 list.item_odd       25
+color_256 list.item_selection 97
+color_256 playinginfo.position 97
+color_256 playinginfo.state   37
 color_256 help.widget_name    33
 color_256 help.key_name       75
 color_256 help.command_name   68

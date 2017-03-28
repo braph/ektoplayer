@@ -98,7 +98,7 @@ module Ektoplayer
             additional_attributes |= ICurses::A_BOLD     if marked
             additional_attributes |= ICurses::A_STANDOUT if selected
 
-            if item.is_a? String or item.is_a? Symbol
+            if item.is_a? String or item.is_a? Symbol or item.is_a? Integer
                if selection
                   color = Theme[:'list.item_selection']
                elsif index % 2 == 0
@@ -123,8 +123,8 @@ module Ektoplayer
                end
 
                if value = item[c[:tag]]
-                  if value.is_a?(Integer)
-                     value = "%.2d" % value
+                  if value.is_a? Integer
+                     value = '%.2d' % value
                   else
                      value = value.to_s[0..(c[:render_size] - 1)]
                   end

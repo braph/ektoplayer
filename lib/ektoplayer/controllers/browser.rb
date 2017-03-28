@@ -16,19 +16,24 @@ module Ektoplayer
                each { |op| register.(op, &view.method(op)) }
 
             register.(:enter) do
-               operations.send(:'browser.enter', view.selected)
+               selection = view.get_selection
+
+               operations.send(:'browser.enter', selection[0])
+
+               if selection.size > 1
+                  selection[1..-1].each do |index|
+                     operations.send(:'browser.add_to_playlist', index)
+                  end
+               end
             end
 
             register.(:add_to_playlist) do
-               #if tracks = browser.tracks(view.selected)
                view.get_selection.each do |index|
                   operations.send(:'browser.add_to_playlist', index)
                end
-               #end
             end
 
-            # TODO: mouse?
-            view.mouse.on(65536) do view.up(5) end
+            view.mouse.on(65536)   do view.up(5)   end
             view.mouse.on(2097152) do view.down(5) end
 
             [ICurses::BUTTON1_DOUBLE_CLICKED, ICurses::BUTTON3_CLICKED].each do |btn|

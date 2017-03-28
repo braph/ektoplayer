@@ -50,11 +50,6 @@ module UI
          widget
       end
 
-      #def self.getch(timeout=-1)
-      #   ICurses.stdscr.timeout(timeout)
-      #   UI::Input::KEYMAP_WORKAROUND[ICurses.stdscr.getch]
-      #end
-      
       def self.update_screen(force_redraw=false, force_resize=false)
          @@updating ||= Mutex.new
          @@want_resize ||= false
@@ -97,10 +92,6 @@ module UI
       KEYMAP_WORKAROUND.default_proc = proc { |h,k| k }
       KEYMAP_WORKAROUND.freeze
 
-      #def self.getch(timeout=-1)
-      #   KEYMAP_WORKAROUND[@@widget.getch(timeout)]
-      #end
-
       def self.start_loop
          @@readline_obj ||= ReadlineWindow.new
 
@@ -112,14 +103,13 @@ module UI
                begin
                   UI::Canvas.widget.win.keypad(true)
 
-                  if (c = UI::Canvas.widget.win.getch1(500))
+                  if (c = (UI::Canvas.widget.win.getch1(500).ord rescue -1)) > -1
                      if c == ICurses::KEY_MOUSE
                         if c = ICurses.getmouse
                            UI::Canvas.widget.mouse_click(c)
                         end
                      else
-                        c = KEYMAP_WORKAROUND[c.ord]
-                        UI::Canvas.widget.key_press(c) if c >= 0
+                        UI::Canvas.widget.key_press(KEYMAP_WORKAROUND[c])
                      end
                   end
 
@@ -133,7 +123,7 @@ module UI
                   win = UI::Canvas.widget.win
                   win.keypad(false)
                   @@readline_obj.redraw
-                  next unless (c = (win.getch1(100).ord rescue -1)) > 0
+                  next unless (c = (win.getch1(100).ord rescue -1)) > -1
 
                   if c == 10 or c == 4
                      @@readline_obj.feed(?\n.ord)
@@ -142,9 +132,9 @@ module UI
 
                      if c == 27 # pass 3-character escape sequence
                         win.timeout(5)
-                        if (c = (win.getch.ord rescue -1)) > 0
+                        if (c = (win.getch.ord rescue -1)) > -1
                            @@readline_obj.feed(c)
-                           if (c = (win.getch.ord rescue -1)) > 0
+                           if (c = (win.getch.ord rescue -1)) > -1
                               @@readline_obj.feed(c)
                            end
                         end
@@ -180,6 +170,8 @@ module UI
          @window.addstr(buffer[(buffer.size - @size.width).clamp(0, buffer.size)..-1])
          @window.move(0, Readline.point + @prompt.size)
          @window.refresh
+      rescue
+         nil
       end
 
       def readline(pos, size, prompt: '', add_hist: false, &block)
