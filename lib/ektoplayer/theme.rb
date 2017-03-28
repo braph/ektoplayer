@@ -8,12 +8,12 @@ module Ektoplayer
          @theme, @current = {}, 0
 
          @theme[0] = {
-            :default                   => [:white, :black                ].freeze,
+            :default                   => [-1, -1                        ].freeze,
             :'url'                     => [:default, :default, :underline].freeze,
             :'tabbar.selected'         => [:default, :default, :bold     ].freeze
          }
          @theme[8] = {
-            :default                   => [:white, :black                ].freeze,
+            :default                   => [-1, -1                        ].freeze,
             :'url'                     => [:magenta, :default, :underline].freeze,
 
             :'info.head'               => [:blue, :default, :bold        ].freeze,
