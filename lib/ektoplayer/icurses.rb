@@ -9,13 +9,21 @@
 end
 
 fail %{
-No interface for ncurses found. Please install one of the following gems
-   - curses
-   - ffi-ncurses
-   - ncurses-ruby
-   - ncursesw
+No module for ncurses found. Please install one of the following gems:
+   - ffi-ncurses  (preferred)
+   - ncursesw     (good)
+   - ncurses-ruby (good) 
+   - curses       (works...)
 
 Maybe your distribution ships one of these already as a package.
+
+   Arch Linux:
+      yaourt -S ruby-curses    # or
+      yaourt -S ruby-ncursesw
+
+   Debian / Ubuntu:
+      apt-get install ruby-ncurses
+
 } unless $USING_CURSES
 
 require_relative 'icurses/sugar'

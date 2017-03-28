@@ -69,92 +69,96 @@ module Ektoplayer
             %w(browser playlist).each { |w| reg("#{w}.#{cmd}", desc) }
          end
 
-         @bindings = {
-            global: {
-               :'splash.show'             => [?`, ?^                         ],
-               :'playlist.show'           => [?1                             ],
-               :'browser.show'            => [?2                             ],
-               :'info.show'               => [?3                             ],
-               :'help.show'               => [?4,      ICurses::KEY_F1       ],
+         @bindings = { }
+         @bindings[:global] = {
+            :'splash.show'             => [?`, ?^                          ],
+            :'playlist.show'           => [?1                              ],
+            :'browser.show'            => [?2                              ],
+            :'info.show'               => [?3                              ],
+            :'help.show'               => [?4,      ICurses::KEY_F1        ],
 
-               :'playinginfo.toggle'      => [?!,      ICurses::KEY_F2       ],
-               :'progressbar.toggle'      => [?%,      ICurses::KEY_F3       ],
-               :'tabbar.toggle'           => [?=,      ICurses::KEY_F4       ],
+            :'playinginfo.toggle'      => [?!, ?\\, ICurses::KEY_F2        ],
+            :'progressbar.toggle'      => [?%, ?~,  ICurses::KEY_F3        ],
+            :'tabbar.toggle'           => [?=,      ICurses::KEY_F4        ],
 
-               :'player.forward'          => [?f,      ICurses::KEY_RIGHT    ],
-               :'player.backward'         => [?b,      ICurses::KEY_LEFT     ],
-               :'player.stop'             => [?s                             ],
-               :'player.toggle'           => [?p                             ],
+            :'player.forward'          => [?f,      ICurses::KEY_RIGHT     ],
+            :'player.backward'         => [?b,      ICurses::KEY_LEFT      ],
+            :'player.stop'             => [?s                              ],
+            :'player.toggle'           => [?p                              ],
 
-               :'playlist.play_next'      => [?>                             ],
-               :'playlist.play_prev'      => [?<                             ],
+            :'playlist.play_next'      => [?>                              ],
+            :'playlist.play_prev'      => [?<                              ],
 
-               :'tabs.next'               => [?l, ?}, '^i'                   ],
-               :'tabs.prev'               => [?h, ?{, 353                    ],
+            :'tabs.next'               => [?l, ?}, '^i'                    ],
+            :'tabs.prev'               => [?h, ?{, 353                     ],
 
-               :quit                      => [?q                             ],
-               :refresh                   => ['^l'                           ],
-               :reload                    => ['^r'                           ],
-               :update                    => [?U                             ]},
-            playlist: {
-               # movement
-               :'playlist.top'            => [?g,      ICurses::KEY_HOME     ],
-               :'playlist.bottom'         => [?G,      ICurses::KEY_END      ],
-               :'playlist.up'             => [?k,      ICurses::KEY_UP       ],
-               :'playlist.down'           => [?j,      ICurses::KEY_DOWN     ],
-               :'playlist.page_down'      => ['^d',    ICurses::KEY_NPAGE    ],
-               :'playlist.page_up'        => ['^u',    ICurses::KEY_PPAGE    ],
-               # selection
-               :'playlist.toggle_selection' => ['^v'                         ],
-               # search
-               :'playlist.search_next'    => [?n                             ],
-               :'playlist.search_prev'    => [?N                             ],
-               :'playlist.search_up'      => [??                             ],
-               :'playlist.search_down'    => [?/                             ],
-               # playlist
-               :'playlist.play'           => [         ICurses::KEY_ENTER    ],
-               :'playlist.download_album' => [?$                             ],
-               :'playlist.reload'         => [?r                             ],
-               :'playlist.goto_current'   => [?o                             ],
-               :'playlist.clear'          => [?c                             ],
-               :'playlist.delete'         => [?d                             ],
-               # other
-               :'player.toggle'           => [' '                            ]},
-            browser: {
-               # movement
-               :'browser.top'             => [?g,      ICurses::KEY_HOME     ],
-               :'browser.bottom'          => [?G,      ICurses::KEY_END      ],
-               :'browser.up'              => [?k,      ICurses::KEY_UP       ],
-               :'browser.down'            => [?j,      ICurses::KEY_DOWN     ],
-               :'browser.page_up'         => ['^u',    ICurses::KEY_PPAGE    ],
-               :'browser.page_down'       => ['^d',    ICurses::KEY_NPAGE    ],
-               # selection
-               :'browser.toggle_selection' => ['^v'                          ],
-               # search
-               :'browser.search_next'     => [?n                             ],
-               :'browser.search_prev'     => [?N                             ],
-               :'browser.search_up'       => [??                             ],
-               :'browser.search_down'     => [?/                             ],
-               # browser
-               :'browser.add_to_playlist' => [' ', ?a                        ],
-               :'browser.enter'           => [         ICurses::KEY_ENTER    ],
-               :'browser.back'            => [?B,      ICurses::KEY_BACKSPACE ]},
-            help: {
-               :'help.top'                => [?g,      ICurses::KEY_HOME     ],
-               :'help.bottom'             => [?G,      ICurses::KEY_END      ],
-               :'help.up'                 => [?k,      ICurses::KEY_UP       ],
-               :'help.down'               => [?j,      ICurses::KEY_DOWN     ],
-               :'help.page_up'            => ['^u',    ICurses::KEY_PPAGE    ],
-               :'help.page_down'          => ['^d',    ICurses::KEY_NPAGE    ]},
-            info: {
-               :'info.top'                => [?g,      ICurses::KEY_HOME     ],
-               :'info.bottom'             => [?G,      ICurses::KEY_END      ],
-               :'info.up'                 => [?k,      ICurses::KEY_UP       ],
-               :'info.down'               => [?j,      ICurses::KEY_DOWN     ],
-               :'info.page_up'            => ['^u',    ICurses::KEY_PPAGE    ],
-               :'info.page_down'          => ['^d',    ICurses::KEY_NPAGE    ]},
-            splash: {}
+            :quit                      => [?q                              ],
+            :refresh                   => ['^l'                            ],
+            :reload                    => ['^r'                            ],
+            :update                    => [?U                              ]
          }
+         @bindings[:playlist] = {
+            # movement
+            :'playlist.top'            => [?g,      ICurses::KEY_HOME      ],
+            :'playlist.bottom'         => [?G,      ICurses::KEY_END       ],
+            :'playlist.up'             => [?k,      ICurses::KEY_UP        ],
+            :'playlist.down'           => [?j,      ICurses::KEY_DOWN      ],
+            :'playlist.page_down'      => ['^d',    ICurses::KEY_NPAGE     ],
+            :'playlist.page_up'        => ['^u',    ICurses::KEY_PPAGE     ],
+            # selection
+            :'playlist.toggle_selection' => ['^v'                          ],
+            # search
+            :'playlist.search_next'    => [?n                              ],
+            :'playlist.search_prev'    => [?N                              ],
+            :'playlist.search_up'      => [??                              ],
+            :'playlist.search_down'    => [?/                              ],
+            # playlist
+            :'playlist.play'           => [         ICurses::KEY_ENTER     ],
+            :'playlist.download_album' => [?$                              ],
+            :'playlist.reload'         => [?r                              ],
+            :'playlist.goto_current'   => [?o                              ],
+            :'playlist.clear'          => [?c                              ],
+            :'playlist.delete'         => [?d                              ],
+            # other
+            :'player.toggle'           => [' '                             ]
+         }
+         @bindings[:browser] = {
+            # movement
+            :'browser.top'             => [?g,      ICurses::KEY_HOME      ],
+            :'browser.bottom'          => [?G,      ICurses::KEY_END       ],
+            :'browser.up'              => [?k,      ICurses::KEY_UP        ],
+            :'browser.down'            => [?j,      ICurses::KEY_DOWN      ],
+            :'browser.page_up'         => ['^u',    ICurses::KEY_PPAGE     ],
+            :'browser.page_down'       => ['^d',    ICurses::KEY_NPAGE     ],
+            # selection
+            :'browser.toggle_selection' => ['^v'                           ],
+            # search
+            :'browser.search_next'     => [?n                              ],
+            :'browser.search_prev'     => [?N                              ],
+            :'browser.search_up'       => [??                              ],
+            :'browser.search_down'     => [?/                              ],
+            # browser
+            :'browser.add_to_playlist' => [' ', ?a                         ],
+            :'browser.enter'           => [         ICurses::KEY_ENTER     ],
+            :'browser.back'            => [?B,      ICurses::KEY_BACKSPACE ]
+         }
+         @bindings[:help] = {
+            :'help.top'                => [?g,      ICurses::KEY_HOME      ],
+            :'help.bottom'             => [?G,      ICurses::KEY_END       ],
+            :'help.up'                 => [?k,      ICurses::KEY_UP        ],
+            :'help.down'               => [?j,      ICurses::KEY_DOWN      ],
+            :'help.page_up'            => ['^u',    ICurses::KEY_PPAGE     ],
+            :'help.page_down'          => ['^d',    ICurses::KEY_NPAGE     ]
+         }
+         @bindings[:info] = {
+            :'info.top'                => [?g,      ICurses::KEY_HOME      ],
+            :'info.bottom'             => [?G,      ICurses::KEY_END       ],
+            :'info.up'                 => [?k,      ICurses::KEY_UP        ],
+            :'info.down'               => [?j,      ICurses::KEY_DOWN      ],
+            :'info.page_up'            => ['^u',    ICurses::KEY_PPAGE     ],
+            :'info.page_down'          => ['^d',    ICurses::KEY_NPAGE     ]
+         }
+         @bindings[:splash] = {}
 
          @bindings.default_proc = proc { |h,k| fail "Unknown widget #{k}" }
          @bindings.each do |widget, hash|

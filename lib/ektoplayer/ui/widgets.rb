@@ -147,7 +147,7 @@ module UI
          @win.keypad(true)
          @win.idlok(true)
          @win.leaveok(true)
-         @win.bkgd(UI::Colors.init_pair_cached(:default, :default))
+         @win.bkgdset(UI::Colors.init_pair_cached(:default, :default))
       end
 
       def layout
@@ -174,7 +174,7 @@ module UI
          @win.keypad(true)
          @win.idlok(true)
          @win.leaveok(true)
-         @win.bkgd(UI::Colors.init_pair_cached(:default, :default))
+         @win.bkgdset(UI::Colors.init_pair_cached(:default, :default))
          @pad_minrow = @pad_mincol = 0
       end
 

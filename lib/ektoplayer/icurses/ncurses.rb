@@ -37,6 +37,15 @@ module Ncurses
             end
          end
       end
+
+      if $USING_CURSES == 'ncurses'
+         ### FIX: 'attrset' in ncurses is broken!
+         def attrset(attributes)
+            Ncurses.send(:wattr_get, @w, old_a=[], old_c=[], nil)
+            Ncurses.send(:wattroff, @w, old_a[0] | old_c[0])
+            Ncurses.send(:wattron, @w, attributes)
+         end
+      end
    end
 end
 

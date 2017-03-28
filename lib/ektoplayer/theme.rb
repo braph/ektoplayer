@@ -5,16 +5,15 @@ module Ektoplayer
       attr_reader :current, :theme
 
       def initialize
-         @current = 0
+         @theme, @current = {}, 0
 
-         @theme = {}
          @theme[0] = {
-            default: [:white, :black].freeze,
+            :default                   => [:white, :black                ].freeze,
             :'url'                     => [:default, :default, :underline].freeze,
             :'tabbar.selected'         => [:default, :default, :bold     ].freeze
          }
          @theme[8] = {
-            default: [-1, -1].freeze,
+            :default                   => [:white, :black                ].freeze,
             :'url'                     => [:magenta, :default, :underline].freeze,
 
             :'info.head'               => [:blue, :default, :bold        ].freeze,
@@ -29,7 +28,7 @@ module Ektoplayer
             :'progressbar.rest'        => [:black                        ].freeze,
 
             :'tabbar.selected'         => [:blue                         ].freeze,
-            :'tabbar.unselected'       => [:none                         ].freeze,
+            :'tabbar.unselected'       => [:white                        ].freeze,
 
             :'list.item_even'          => [:blue                         ].freeze,
             :'list.item_odd'           => [:blue                         ].freeze,

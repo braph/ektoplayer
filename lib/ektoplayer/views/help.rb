@@ -32,7 +32,7 @@ module Ektoplayer
                   @win.mvaddstr(@win.cury, 18, name.to_s)
 
                   @win.attrset(Theme[:'help.command_desc'])
-                  @win.mvaddstr(@win.cury, 43, Bindings.commands[name.to_sym])
+                  @win.mvaddstr(@win.cury, 45, Bindings.commands[name.to_sym])
 
                   @win.next_line
                end

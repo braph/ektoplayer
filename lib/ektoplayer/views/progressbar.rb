@@ -57,7 +57,7 @@ module Ektoplayer
 
             @progress_width.times do |i|
                @win.attron(@fade[i])
-               @win << @progress_char
+               @win.addstr(@progress_char)
             end
 
             @win.attron(Theme[:'progressbar.rest'])

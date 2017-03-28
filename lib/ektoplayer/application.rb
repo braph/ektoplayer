@@ -79,7 +79,7 @@ module Ektoplayer
          end
 
          UI::Canvas.run do
-            Application.log(self, 'running with ncurses interface:', $USING_CURSES)
+            Application.log(self, "using '#{$USING_CURSES}' with #{ICurses.colors} colors available")
 
             if Config[:use_colors] == :auto
                Theme.use_colors(ICurses.colors >= 256 ? 256 : 8)

@@ -17,9 +17,24 @@ module Curses
          alias_method :"get#{method}", method.to_sym
       end
 
+      def leaveok(*_);   end # Curses does not 
+      def notimeout(*_); end # provide these functions
+
       alias :timeout :timeout=
-      alias :notimeout :nodelay= #todo
       alias :nodelay :nodelay=
+
+      def bkgd(attr)
+         @bkgd_color = attr
+      end
+      alias :bkgdset :bkgd
+
+      def erase
+         setpos(0, 0)
+         attrset((@bkgd_color or 0))
+         addstr(' ' * (maxx * maxy))
+         attroff((@bkgd_color or 0))
+         setpos(0, 0)
+      end
 
       alias :mvwin :move # 'fix' this Gem
       def move(y, x)
@@ -28,7 +43,8 @@ module Curses
    end
 
    class Pad < Window
-      alias :pnoutrefresh :refresh
+      alias :pnoutrefresh :noutrefresh
+      alias :prefresh     :refresh
    end
 end
 
