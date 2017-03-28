@@ -11,6 +11,7 @@ module UI
 
       def ColorFader._fade(colors, size)
          return [] if size < 1
+         return [colors[0]] * size if colors.size == 1
 
          part_len = (size / colors.size)
          diff = size - part_len * colors.size
