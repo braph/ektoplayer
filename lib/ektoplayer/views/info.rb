@@ -65,6 +65,7 @@ module Ektoplayer
             @win.addstr(percent.to_s)
 
             if error
+               @win.addch(32) # ' '
                @win.attrset(Theme[:'info.download.error'])
                @win.addstr(error.to_s)
             end
@@ -133,8 +134,8 @@ module Ektoplayer
 
                            @win.addch(32) # ' '
                            @win.attrset(Theme[:'info.description'])
+                           @win.mv_left(1) if text =~ /^[\.,:;]$/ 
                            @win << text
-                           #@win.mv_left(1) if text =~ /^[\.,:;]$/ 
                         end
                      end
                   end
@@ -148,9 +149,8 @@ module Ektoplayer
                draw_heading('Downloads')
                @trackloader.downloads.each do |dl|
                   name = File.basename(dl.filename)
-                  percent = Float(dl.progress) / dl.total * 100
-                  percent = '%0.2f' % percent
-                  draw_download(name, ?( + percent + '%)', dl.error)
+                  percent = '%0.2f' % dl.progress
+                  draw_download(name, "(#{percent}%)", dl.error)
                end
                @win.next_line
             end
@@ -159,8 +159,9 @@ module Ektoplayer
             draw_info('Version', Application::VERSION)
             draw_info('Tracks in database', @database.track_count)
             draw_info('Albums in database', @database.album_count)
-            draw_info('Cache dir size', '%dMB' % (Dir.size(Config[:cache_dir]) / (1024 ** 2)))
-            draw_info('Archive dir size', '%dMB' % (Dir.size(Config[:archive_dir]) / (1024 ** 2)))
+            draw_info('Tracks in playlist', @playlist.size)
+            draw_info('Cache dir size', '%dMB' % (Dir.size(Config[:cache_dir]) / (1024 ** 2) rescue 0))
+            draw_info('Archive dir size', '%dMB' % (Dir.size(Config[:archive_dir]) / (1024 ** 2) rescue 0))
             draw_info('Ektoplazm URL'); draw_url(Application::EKTOPLAZM_URL)
             draw_info('Github URL'); draw_url(Application::GITHUB_URL)
 

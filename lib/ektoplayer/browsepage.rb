@@ -9,7 +9,7 @@ require 'open-uri'
 
 module Ektoplayer
    class BrowsePage
-      ALBUM_KEYS = %w(url title artist date category styles cover_url description
+      ALBUM_KEYS = %w(url title artist date styles cover_url description
                       download_count archive_urls rating votes tracks).map(&:to_sym).freeze
 
       TRACK_KEYS = %w(url album_url number title remix artist bpm).map(&:to_sym).freeze
@@ -20,7 +20,7 @@ module Ektoplayer
          BrowsePage.new(src)
       end
 
-      def styles;             @@styles or []    end
+      def styles;            @@styles or []   end
       def first_page_url;    @page_urls[0]    end
       def last_page_url;     @page_urls[-1]   end
       def current_page_url;  @page_urls[@current_page_index] end
@@ -45,18 +45,17 @@ module Ektoplayer
 
          @@styles ||= begin
             doc.xpath('//a[contains(@href, "http") and contains(@href, "/style/")]').map do |a|
-               [ a.text, a['href'] ]
+               [ a.text, File.basename(a['href']) ]
             end.to_h
          end
 
          doc.xpath('//div[starts-with(@id, "post-")]').each do |post|
             album = { tracks: [] }
             album[:date] = Date.parse(post.at_css('.d').text).iso8601 rescue nil
-            album[:category] = post.at_css('.c a').text  rescue nil
 
             album[:styles] = []
             post.css('.style a').map do |a|
-               @@styles[a.text] = a['href']
+               @@styles[a.text] = File.basename(a['href'])
                album[:styles] << a.text
             end
 
@@ -77,7 +76,7 @@ module Ektoplayer
             end 
 
             album[:archive_urls] = post.css('.dll a').map do |a|
-               [ a.text.split[0] , a['href'] ]
+               [ a.text.split[0] , File.basename(a['href']) ]
             end.to_h
 
             begin
@@ -91,6 +90,7 @@ module Ektoplayer
             begin
                base64_tracklist = post.at_css('script').text.scan(/soundFile:"(.*)"/)[0][0]
                tracklist_urls = Base64.decode64(base64_tracklist).split(?,)
+               tracklist_urls.map! { |url| File.basename(url) }
             rescue
                # Sometimes there are no tracks:
                # http://www.ektoplazm.com/free-music/dj-basilisk-the-colours-of-ektoplazm

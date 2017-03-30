@@ -12,7 +12,7 @@ module Ektoplayer
             @player.events.on_all(&@events.method(:trigger))
 
             %w(pause toggle stop forward backward seek
-            length position position_percent level).each do |m|
+            length position position_percent can_http?).each do |m|
                self.define_singleton_method(m, &@player.method(m))
             end
          end

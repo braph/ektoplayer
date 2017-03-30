@@ -5,7 +5,10 @@ require_relative '../theme'
 module Ektoplayer
    module Views
       class Help < UI::Pad
-         def draw
+         def draw;
+         end
+
+         def layout
             self.pad_size=(UI::Size.new(
                height: (Bindings.bindings.values.map(&:size).sum +
                         Bindings.bindings.size * 2),

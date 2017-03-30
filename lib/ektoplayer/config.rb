@@ -134,7 +134,7 @@ module Ektoplayer
 
          reg :playlist_load_newest,
             %{How many tracks from database should be added to
-              the playlist on application start.}, 300
+              the playlist on application start.}, 1000
 
          reg :use_cache,
             %{Enable/disable local mp3 cache.

@@ -10,21 +10,37 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.15'.freeze
+      VERSION = '0.1.16'.freeze
       GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
       EKTOPLAZM_URL = 'http://www.ektoplazm.com'.freeze
-      EKTOPLAZM_ALBUM_BASE_URL = EKTOPLAZM_URL + '/free-music'.freeze
-      EKTOPLAZM_COVER_BASE_URL = EKTOPLAZM_URL + '/img'.freeze
+
+      EKTOPLAZM_ALBUM_BASE_URL   = "#{EKTOPLAZM_URL}/free-music".freeze
+      EKTOPLAZM_COVER_BASE_URL   = "#{EKTOPLAZM_URL}/img".freeze
+      EKTOPLAZM_TRACK_BASE_URL   = "#{EKTOPLAZM_URL}/mp3".freeze
+      EKTOPLAZM_STYLE_BASE_URL   = "#{EKTOPLAZM_URL}/style".freeze
+      EKTOPLAZM_ARCHIVE_BASE_URL = "#{EKTOPLAZM_URL}/files".freeze
 
       CONFIG_DIR  = File.join(Dir.home, '.config', 'ektoplayer').freeze
       CONFIG_FILE = File.join(CONFIG_DIR, 'ektoplayer.rc').freeze
+
+      def self.album_url(album)
+         "#{EKTOPLAZM_ALBUM_BASE_URL}/#{album}"
+      end
 
       def self.cover_url(cover)
          "#{EKTOPLAZM_COVER_BASE_URL}/#{cover}"
       end
 
-      def self.album_url(album)
-         "#{EKTOPLAZM_ALBUM_BASE_URL}/#{album}"
+      def self.track_url(track)
+         "#{EKTOPLAZM_TRACK_BASE_URL}/#{track}"
+      end
+
+      def self.style_url(style)
+         "#{EKTOPLAZM_STYLE_BASE_URL}/#{style}"
+      end
+
+      def self.archive_url(archive)
+         "#{EKTOPLAZM_ARCHIVE_BASE_URL}/#{archive}"
       end
 
       def self.log(from, *msgs)
@@ -44,7 +60,6 @@ module Ektoplayer
       end
 
       def run
-         #Thread.abort_on_exception=(true)
          Thread.report_on_exception=(true) if Thread.respond_to? :report_on_exception
 
          # make each configuration object globally accessible as a singleton
@@ -98,7 +113,12 @@ module Ektoplayer
 
             # ... operations ...
             operations = Operations::Operations.new
-            operations.register(:quit,    &method(:exit))
+            operations.register(:quit) do
+               Thread.list.each { |t| t.kill if t != Thread.current }
+               FileUtils.rm(Dir.glob(File.join(Config[:temp_dir], '~ekto-*'))) rescue nil
+               raise SystemExit
+            end
+
             operations.register(:reload,  &browser.method(:reload))
             operations.register(:update,  &database.method(:update))
             operations.register(:refresh) { UI::Canvas.update_screen(true, true) }
@@ -125,26 +145,25 @@ module Ektoplayer
                main_w.playinginfo.attach(playlist, player)
 
                # ... events ...
-               database.events.on(:update_finished, &browser.method(:reload ))
+               database.events.on(:update_finished, &browser.method(:reload))
                player.events.on(:stop) do |reason|
                   operations.send(:'playlist.play_next') if reason == :track_completed
                end
                
                if Config[:prefetch]
-                  @prefetch_thread = nil
-
                   Thread.new do
+                     current_download_track = nil
+
                      loop do
-                        sleep 10
+                        sleep 5
 
-                        @prefetch_thread ||= Thread.new do
-                           if player.length > 30 and player.position_percent > 0.7
-                              trackloader.get_track_file(playlist[playlist.get_next_pos]['url'])
-                              sleep 20
-                           end
-                           sleep 10
+                        next_track = playlist.get_next_pos
+                        next if current_download_track == next_track
 
-                           @prefetch_thread = nil
+                        if player.length > 30 and player.position_percent > 0.5
+                           trackloader.get_track_file(playlist[next_track]['url'])
+                           current_download_track = next_track
+                           sleep 5
                         end
                      end
                   end

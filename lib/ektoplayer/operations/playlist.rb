@@ -35,7 +35,7 @@ module Ektoplayer
             return unless track = @playlist[index]
             @playlist.current_playing=(index)
             Thread.new do
-               @player.play(@trackloader.get_track_file(track['url']))
+               @player.play(@trackloader.get_track_file(track['url'], http_okay: @player.can_http?))
             end.join(0.3) # prevent too many hits
          end
 

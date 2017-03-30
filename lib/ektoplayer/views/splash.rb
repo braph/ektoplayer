@@ -25,11 +25,7 @@ module Ektoplayer
  |___/\___/\_,_|_||_\__,_| |____|_|_.__/\___|_| \__,_|\__|_\___/_||_|}.
                                                        split(?\n)[1..-1].freeze
 
-         BUBBLES = [
-            UI::Point.new(x: 6,  y: 3).freeze, UI::Point.new(x: 6,  y: 7).freeze,
-            UI::Point.new(x: 28, y: 1).freeze, UI::Point.new(x: 28, y: 9).freeze,
-            UI::Point.new(x: 46, y: 7).freeze, UI::Point.new(x: 71, y: 9).freeze
-         ].freeze
+         BUBBLES = [[6,3], [6,7], [28,1], [28,9], [46,7], [71,9]].freeze
 
          def load_colors
             if Theme.current == 256
@@ -69,11 +65,11 @@ module Ektoplayer
             end
 
             f = @bubble_fade.fade(EKTOPLAZM_LOGO.size)
-            BUBBLES.each do |p|
-               @win.attrset(f[p.y - 1])
-               @win.mvaddstr(top_pad + p.y - 1, left_pad + p.x + 1, ?_)
-               @win.attrset(f[p.y])
-               @win.mvaddstr(top_pad + p.y, left_pad + p.x, '(_)')
+            BUBBLES.each do |x,y|
+               @win.attrset(f[y - 1])
+               @win.mvaddstr(top_pad + y - 1, left_pad + x + 1, ?_)
+               @win.attrset(f[y])
+               @win.mvaddstr(top_pad + y, left_pad + x, '(_)')
             end
 
             return unless draw_signature

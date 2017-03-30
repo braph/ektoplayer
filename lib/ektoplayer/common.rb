@@ -27,27 +27,27 @@ module Common
    end
    
    def self.extract_zip(zip_file, dest)
+      absolute_path = File.absolute_path(zip_file)
+      # try 'unzip'
+      out, err, status = Open3.capture3('unzip', absolute_path, chdir: dest)
+      fail err unless status.exitstatus == 0
+   rescue Errno::ENOENT
+      # try '7zip'
+      out, err, status = Open3.capture3('7z', ?x, absolute_path, chdir: dest)
+      fail err unless status.exitstatus == 0
+   rescue Errno::ENOENT
       # try RubyZip gem
       require 'zip'
 
-      Zip::File.open(zip_file) do |zip_obj|
+      Zip::File.open(absolute_path) do |zip_obj|
          zip_obj.each do |f|
             f.extract(File.join(dest, f.name))
          end
       end
    rescue LoadError
-      # try 'unzip'
-      out, err, status = Open3.capture3('unzip', ?x, zip_file, chdir: dest)
-      fail err unless status.exitcode == 0
-   rescue Error::ENOENT
-      # try '7zip'
-      out, err, status = Open3.capture3('7z', ?x, zip_file, chdir: dest)
-      fail err unless status.exitcode == 0
-   rescue Error::ENOENT
       fail 'neither RubzZip gem nor /bin/unzip or /bin/7z found'
    rescue
-      # something failed ...
-      Ektoplayer::Application.log(self, "error extracting zip", zip, dest, $!)
+      Ektoplayer::Application.log(self, "error extracting zip", zip_file, dest, $!)
    end
 
    def self.with_hash_zip(keys, values)

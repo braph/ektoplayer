@@ -29,10 +29,8 @@ module Ektoplayer
          end
 
          def draw_position_and_length
-            return unless visible?
             @win.attrset(Theme[:'playinginfo.position'])
             @win.mvaddstr(0, 0, "[#{Common::to_time(@position)}/#{Common::to_time(@length)}]")
-            noutrefresh
          end
 
          def attach(playlist, player)
@@ -46,7 +44,10 @@ module Ektoplayer
                @length = player.length.to_i
 
                if old_pos != @position or old_length != @length
-                  draw_position_and_length
+                  if visible?
+                     draw_position_and_length 
+                     noutrefresh
+                  end
                end
             end
 

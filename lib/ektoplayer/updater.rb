@@ -9,7 +9,7 @@ module Ektoplayer
    FREE_MUSIC_URL = "#{MAIN_URL}/section/free-music".freeze
 
    class DatabaseUpdater
-      ALBUM_STR_TAGS = Set.new(%w(url title date category cover_url
+      ALBUM_STR_TAGS = Set.new(%w(url title date cover_url
             description download_count rating votes).map(&:to_sym)).freeze
 
       TRACK_STR_TAGS = Set.new(%w(url number title remix artist bpm).map(&:to_sym)).freeze
