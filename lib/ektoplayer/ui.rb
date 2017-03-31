@@ -94,7 +94,7 @@ module UI
 
       def self.start_loop
          @@readline_obj ||= ReadlineWindow.new
-         getch_wait = 400
+         inactive = 0
 
          loop do
             unless @@readline_obj.active?
@@ -103,11 +103,9 @@ module UI
 
                begin
                   UI::Canvas.widget.win.keypad(true)
-               
-                  getch_wait = 5000 if getch_wait > 600
 
-                  if (c = (UI::Canvas.widget.win.getch1(getch_wait).ord rescue -1)) > -1
-                     getch_wait = 400
+                  if (c = (UI::Canvas.widget.win.getch1(500).ord rescue -1)) > -1
+                     inactive = 0
 
                      if c == ICurses::KEY_MOUSE
                         if c = ICurses.getmouse
@@ -117,8 +115,10 @@ module UI
                         UI::Canvas.widget.key_press(KEYMAP_WORKAROUND[c])
                      end
                   else
-                     GC.start
-                     getch_wait += 1
+                     if (inactive += 1) > 40
+                        s = STDIN.readpartial(10)
+                        ICurses.ungetch(s[0].ord) if s.size == 1
+                     end
                   end
 
                   ICurses.doupdate

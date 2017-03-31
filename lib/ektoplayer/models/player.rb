@@ -8,8 +8,9 @@ module Ektoplayer
             super()
             @client = client
             @player = MpgWrapperPlayer.new
-            @events.register(:position_change, :track_completed, :pause, :stop, :play)
-            @player.events.on_all(&@events.method(:trigger))
+            @events = @player.events
+            #@events.register(:position_change, :track_completed, :pause, :stop, :play)
+            #@player.events.on_all(&@events.method(:trigger))
 
             %w(pause toggle stop forward backward seek
             length position position_percent can_http?).each do |m|
@@ -21,8 +22,6 @@ module Ektoplayer
             Application.log(self, 'playing', file)
             @player.play(file) rescue Application.log(self, $!)
          end
-
-         def close;  @player.close  end
       end
    end
 end

@@ -144,7 +144,7 @@ module Ektoplayer
          columns: ?*,
          filters: [],
          group_by: 'url',
-         order_by: 'album, number',
+         order_by: 'album,number',
          limit: nil
       )
          where_clauses, where_params = [], []

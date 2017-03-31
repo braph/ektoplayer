@@ -9,13 +9,9 @@ end
 unless Integer.respond_to? :clamp
    class Integer
       def clamp(min, max)
-         if self < min
-            min
-         elsif self > max
-            max
-         else
-            self
-         end
+         return min if self < min
+         return max if self > max
+         self
       end
    end
 end

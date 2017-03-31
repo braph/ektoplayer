@@ -39,7 +39,7 @@ module Ektoplayer
 
                if (old != @progress_width) and visible?
                   @pad_mincol = (@progress_width)
-                  noutrefresh
+                  refresh
                end
             end
 

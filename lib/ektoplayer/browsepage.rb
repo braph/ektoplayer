@@ -9,8 +9,8 @@ require 'open-uri'
 
 module Ektoplayer
    class BrowsePage
-      ALBUM_KEYS = %w(url title artist date styles cover_url description
-                      download_count archive_urls rating votes tracks).map(&:to_sym).freeze
+      ALBUM_KEYS = %w(url title artist date styles cover_url description download_count
+                      archive_urls rating votes tracks).map(&:to_sym).freeze
 
       TRACK_KEYS = %w(url album_url number title remix artist bpm).map(&:to_sym).freeze
 
@@ -128,7 +128,7 @@ module Ektoplayer
             @albums << album
          end
 
-         Application.log(self, "completed; #{src} #{@albums.size} albums found")
+         Application.log(self, "#{src} #{@albums.size} albums found")
       rescue
          Application.log(self, src, $!)
       end

@@ -121,7 +121,7 @@ module Ektoplayer
 
             def tracks(index)
                @database.select(
-                  order_by: CONTENTS[index].to_s + ",album,year,number".sub(",#{CONTENTS[index]}", '')
+                  order_by: 'album,' + CONTENTS[index].to_s + ",album,number" 
                )
             end
          end

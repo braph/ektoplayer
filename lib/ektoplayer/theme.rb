@@ -95,6 +95,8 @@ module Ektoplayer
          UI::Colors.default_bg(@theme[@current][:default][1])
 
          @theme.values.map(&:keys).flatten.each do |name|
+            next if name == :default
+
             defs ||= @theme[256][name] if @current == 256
             defs ||= @theme[8][name]   if @current >= 8
             defs ||= @theme[0][name]

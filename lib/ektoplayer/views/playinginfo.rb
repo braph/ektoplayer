@@ -46,7 +46,7 @@ module Ektoplayer
                if old_pos != @position or old_length != @length
                   if visible?
                      draw_position_and_length 
-                     noutrefresh
+                     refresh
                   end
                end
             end

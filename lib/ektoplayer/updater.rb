@@ -32,7 +32,7 @@ module Ektoplayer
             queue << Thread.new do
                results << BrowsePage.new(url)
                queue.pop # unregister our thread
-            end.priority=(-10)
+            end.priority
 
             if results.size > 40
                @db.transaction

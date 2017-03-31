@@ -23,23 +23,33 @@ class MpgWrapperPlayer
       @state = 0
       @file = ''
 
-      @polling_interval = 0.4
+      @polling_interval = 0.9
 
       @seconds_played = @seconds_total = 0
+      @track_completed = nil
    end
 
    def can_http?; true; end
 
    def play(file=nil)
       start_mpg123_thread
+      @track_completed = :track_completed
       @file = file if file
       write("L #{@file}")
       Thread.new { sleep 3; write(CMD_FORMAT) }
    end
 
    def pause;  write(?P) if @state == STATE_PLAYING end
-   def stop;   write(?S) if @state != STATE_STOPPED end
    def toggle; write(?P)                            end
+
+   def stop
+      stop_polling_thread
+      @track_completed = nil
+      @seconds_played = @seconds_total = 0
+      @events.trigger(:position_change)
+      @events.trigger(:stop)
+      write(?Q) if @state != STATE_STOPPED
+   end
 
    def paused?;  @state == STATE_PAUSED  end
    def stopped?; @state == STATE_STOPPED end
@@ -55,7 +65,7 @@ class MpgWrapperPlayer
    def length;   @seconds_total   end
 
    def position_percent
-      Float(@seconds_played) / length rescue 0.0
+      @seconds_played.to_f / length rescue 0.0
    end
 
    def seek(seconds)        write("J  #{seconds}s") end
@@ -84,6 +94,11 @@ class MpgWrapperPlayer
       end
    end
 
+   private def stop_polling_thread
+      @polling_thread.kill if @polling_thread
+      @polling_thread = nil
+   end
+
    define_method '@FORMAT' do |line|
       @sample_rate, channels = line.scanf('%d %d')
    end
@@ -104,11 +119,7 @@ class MpgWrapperPlayer
 
    define_method '@P' do |line|
       if (@state = line.to_i) == STATE_STOPPED
-         if @seconds_total - @seconds_played < 3
-            @events.trigger(:stop, :track_completed)
-         else
-            @events.trigger(:stop)
-         end
+         @events.trigger(:stop, @track_completed)
       elsif @state == STATE_PAUSED
          @events.trigger(:pause)
       elsif @state == STATE_PLAYING
@@ -141,6 +152,7 @@ class MpgWrapperPlayer
                   (@mpg123_in.close rescue nil)  if @mpg123_in
                   (@mpg123_out.close rescue nil) if @mpg123_out
                   @mpg123_thread = nil
+                  stop_polling_thread
                end
             end
 

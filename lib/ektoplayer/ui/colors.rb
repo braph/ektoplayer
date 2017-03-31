@@ -49,7 +49,10 @@ module UI
          bold:  ICurses::A_BOLD,  standout:  ICurses::A_STANDOUT,
          blink: ICurses::A_BLINK, underline: ICurses::A_UNDERLINE
       }
-      ATTRIBUTES.default_proc = proc { |h,k| k }
+      ATTRIBUTES.default_proc = proc do |h,key|
+         fail "Unknown attribute #{key}" unless key.is_a?Integer
+         key
+      end
       ATTRIBUTES.freeze
 
       def self.start
