@@ -3,6 +3,12 @@ require_relative 'events'
 
 module Ektoplayer 
    class Database
+      SELECT_DESCRIPTION = %q[
+         SELECT description
+         FROM   albums
+         WHERE  url = ?
+      ].squeeze(' ').freeze
+
       SELECT_ARCHIVES = %q[
          SELECT archive_url, archive_type
          FROM   archive_urls
@@ -141,7 +147,7 @@ module Ektoplayer
       end
 
       def select(
-         columns: ?*,
+         columns: 'number,artist,album,title,styles,date,year,rating,votes,download_count,bpm,album_url,url',
          filters: [],
          group_by: 'url',
          order_by: 'album,number',
@@ -185,6 +191,10 @@ module Ektoplayer
 
       def get_archives(url)
          execute(SELECT_ARCHIVES, [url])
+      end
+
+      def get_description(album_url)
+         @db.get_first_value(SELECT_DESCRIPTION, [album_url])
       end
 
       def track_count

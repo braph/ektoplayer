@@ -21,6 +21,10 @@ module Ektoplayer
 
          def track_count; @client.database.track_count  end
          def album_count; @client.database.album_count  end
+
+         def get_description(*a)
+            @client.database.get_description(*a)
+         end
        
          def updating?
             @update_thread and @update_thread.alive?

@@ -111,11 +111,12 @@ module Ektoplayer
 
                # -- description
                draw_heading('Description')
+               description = @database.get_description(@track['album_url'])
                line_length = START_TAG
                wrap_length = @size.width.clamp(1, LINE_WRAP)
                @win.move(@win.cury + 1, START_TAG)
 
-               Nokogiri::HTML("<p>#{@track['description']}</p>").css(?p).each do |p|
+               Nokogiri::HTML("<p>#{description}</p>").css(?p).each do |p|
                   p.children.each do |element|
                      if element['href']
                         if (line_length += element.text.size) > wrap_length

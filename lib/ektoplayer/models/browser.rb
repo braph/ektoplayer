@@ -120,9 +120,7 @@ module Ektoplayer
             end
 
             def tracks(index)
-               @database.select(
-                  order_by: 'album,' + CONTENTS[index].to_s + ",album,number" 
-               )
+               @database.select(order_by: 'album,' + CONTENTS[index].to_s + ',album,number')
             end
          end
       end
