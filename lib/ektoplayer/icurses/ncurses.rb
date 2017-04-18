@@ -39,7 +39,7 @@ module Ncurses
       end
 
       if $USING_CURSES == 'ncurses'
-         ### FIX: 'attrset' in ncurses is broken!
+         ### FIX: 'attrset' in ncurses seems broken?
          def attrset(attributes)
             Ncurses.send(:wattr_get, @w, old_a=[], old_c=[], nil)
             Ncurses.send(:wattroff, @w, old_a[0] | old_c[0])
@@ -61,6 +61,11 @@ module ICurses
 
    def initscr; end # do nothing
    module_function :initscr
+
+   def stdscr
+      ICurses::IWindow.new Ncurses.stdscr
+   end
+   module_function :stdscr
 
    def newwin(*a)
       ICurses::IWindow.new( Ncurses.newwin(*a) )

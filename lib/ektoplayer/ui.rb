@@ -1,35 +1,24 @@
-require_relative 'icurses'
 require 'readline'
 require 'io/console'
 
+require_relative 'icurses'
 require_relative 'ui/colors'
+require_relative 'ui/escapesequencetranslator'
 require_relative 'events'
 
 module UI
    class WidgetSizeError < Exception; end
 
    class Canvas
-      extend ICurses
-
-      def self.size
-         UI::Size.new(height: ICurses.lines, width: ICurses.cols)
-      end
-
-      def self.cursor
-         #UI::Point.new(y: ICurses.cury, x: ICurses.curx)
-      end
-
-      def self.pos
-         UI::Point.new
-      end
-
       def self.start
          @@widget = nil
+         @@want_resize = false
+         @@updating = Mutex.new
 
          %w(initscr cbreak noecho start_color use_default_colors).
             each(&ICurses.method(:send))
          ICurses.mousemask(ICurses::ALL_MOUSE_EVENTS | ICurses::REPORT_MOUSE_POSITION)
-         ICurses.stdscr.keypad(true)
+         ICurses.stdscr.getch1(1) # first getch() clears screen?
          UI::Colors.start
 
          self.enable_resize_detection
@@ -39,21 +28,19 @@ module UI
          Signal.trap('WINCH') { @@want_resize = true }
       end
 
-      def self.widget;      @@widget                   end
-      def self.widget=(w)   @@widget = w               end
-      def self.stop;        ICurses.endwin             end
-      def self.visible?;    true                       end
-      def self.inivsibile?; false                      end
+      def self.widget;      @@widget          end
+      def self.widget=(w)   @@widget = w      end
+      def self.stop;        ICurses.endwin    end
 
       def self.sub(cls, **opts)
-         @@widget ||= (widget = cls.new(parent: self, **opts))
+         opts[:size] ||= UI::Size.new(height: ICurses.lines, width: ICurses.cols)
+         opts[:pos]  ||= UI::Point.new
+         widget = cls.new(**opts)
+         @@widget ||= widget
          widget
       end
 
       def self.update_screen(force_redraw=false, force_resize=false)
-         @@updating ||= Mutex.new
-         @@want_resize ||= false
-
          if @@updating.try_lock
             begin
                if @@want_resize or force_resize
@@ -78,7 +65,7 @@ module UI
 
       def self.run
          self.start
-         return yield
+         yield
       ensure
          self.stop
       end
@@ -87,51 +74,56 @@ module UI
    class Input
       KEYMAP_WORKAROUND = {
          13  => ICurses::KEY_ENTER,
-         127 => ICurses::KEY_BACKSPACE
+         127 => ICurses::KEY_BACKSPACE,
       }
       KEYMAP_WORKAROUND.default_proc = proc { |h,k| k }
       KEYMAP_WORKAROUND.freeze
 
       def self.start_loop
          @@readline_obj ||= ReadlineWindow.new
-         inactive = 0
 
          loop do
             unless @@readline_obj.active?
+               ICurses.stdscr.keypad(true)
                ICurses.curs_set(0)
                ICurses.nonl
 
-               begin
-                  UI::Canvas.widget.win.keypad(true)
+               until @@readline_obj.active?
+                  c = EscapeSequenceTranslator.to_curses(s = STDIN.readpartial(10))
+                  #Ektoplayer::Application.log(self, s)
 
-                  if (c = (UI::Canvas.widget.win.getch1(500).ord rescue -1)) > -1
-                     inactive = 0
-
-                     if c == ICurses::KEY_MOUSE
-                        if c = ICurses.getmouse
-                           UI::Canvas.widget.mouse_click(c)
-                        end
-                     else
-                        UI::Canvas.widget.key_press(KEYMAP_WORKAROUND[c])
-                     end
-                  else
-                     if (inactive += 1) > 40
-                        s = STDIN.readpartial(10)
-                        ICurses.ungetch(s[0].ord) if s.size == 1
-                     end
+                  if c.is_a? ICurses::IMouseEvent
+                     UI::Canvas.widget.mouse_click(c)
+                  elsif c
+                     UI::Canvas.widget.key_press(c)
                   end
 
-                  ICurses.doupdate
-               end while !@@readline_obj.active?
+                  inactivity_count = 0
+                  until @@readline_obj.active? or inactivity_count > 10
+                     if (c = (ICurses.stdscr.getch1(1000).ord rescue -1)) > -1
+                        inactivity_count = 0
+
+                        if c == ICurses::KEY_MOUSE
+                           if (c = ICurses.getmouse)
+                              UI::Canvas.widget.mouse_click(c)
+                           end
+                        else
+                           UI::Canvas.widget.key_press(KEYMAP_WORKAROUND[c])
+                        end
+                     else
+                        inactivity_count += 1
+                        GC.start
+                     end
+                  end
+               end
             else
+               ICurses.stdscr.keypad(false)
                ICurses.curs_set(1)
                ICurses.nl
 
                begin
-                  win = UI::Canvas.widget.win
-                  win.keypad(false)
                   @@readline_obj.redraw
-                  next unless (c = (win.getch1(100).ord rescue -1)) > -1
+                  next unless (c = (ICurses.stdscr.getch1(100).ord rescue -1)) > -1
 
                   if c == 10 or c == 4
                      @@readline_obj.feed(?\n.ord)
@@ -139,10 +131,10 @@ module UI
                      @@readline_obj.feed(c)
 
                      if c == 27 # pass 3-character escape sequence
-                        win.timeout(5)
-                        if (c = (win.getch.ord rescue -1)) > -1
+                        ICurses.stdscr.timeout(5)
+                        if (c = (ICurses.stdscr.getch.ord rescue -1)) > -1
                            @@readline_obj.feed(c)
-                           if (c = (win.getch.ord rescue -1)) > -1
+                           if (c = (ICurses.stdscr.getch.ord rescue -1)) > -1
                               @@readline_obj.feed(c)
                            end
                         end
@@ -168,7 +160,7 @@ module UI
          @thread = nil
       end
 
-      def active?; @thread; end
+      def active?; !@thread.nil?  end
 
       def redraw
          @window.resize(@size.height, @size.width)
@@ -245,8 +237,8 @@ module UI
          Size.new(width: (width or @width), height: (height or @height))
       end
 
-      def calc(height: 0, width: 0)
-         Size.new(height: @height + height, width: @width + width)
+      def calc(width: 0, height: 0)
+         Size.new(width: @width + width, height: @height + height)
       end
 
       def ==(s)  s.height == @height and s.width == @width    end
@@ -300,7 +292,6 @@ module ICurses
    class IWindow
       alias :height :maxy
       alias :width  :maxx
-      alias :clear_line :clrtoeol
 
       def cursor;  UI::Point.new(y: cury, x: curx)           end
       def pos;     UI::Point.new(y: begy, x: begx)           end
@@ -331,7 +322,6 @@ module ICurses
       def on_column(n)     move(cury, n)                        ;self;end
       def next_line;       move(cury + 1, 0)                    ;self;end
       def mv_left(n)       move(cury, curx - 1)                 ;self;end
-      def line_start(l=0)  move(l, 0)                           ;self;end
       def from_left(size)  move(cury, size)                     ;self;end
       def from_right(size) move(cury, (maxx - size))            ;self;end
       def center(size)     move(cury, (maxx / 2) - (size / 2))  ;self;end
@@ -363,11 +353,7 @@ module ICurses
       end
 
       def to_s
-         name = ICurses.constants.
-            select { |c| c =~ /^BUTTON_/ }.
-            select { |c| ICurses.const_get(c) & @bstate > 0 }[0]
-         name ||= @button
-         "[(IMouseEvent) button=#{name}, x=#{x}, y=#{y}, z=#{z}]"
+         "[(IMouseEvent) bstate=#{bstate}, x=#{x}, y=#{y}, z=#{z}]"
       end
    end
 end

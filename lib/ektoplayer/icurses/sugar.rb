@@ -2,7 +2,8 @@ module ICurses
    class IMouseEvent
       attr_accessor :x, :y, :z, :bstate
 
-      def initialize(mouse_event=nil)
+      def initialize(mouse_event=nil, bstate: 0, x: 0, y: 0, z: 0)
+         @x, @y, @z, @bstate = x, y, z, bstate
          from_mouse_event!(mouse_event)
       end
 
@@ -12,16 +13,16 @@ module ICurses
       def from_mouse_event!(m)
          @x, @y, @z, @bstate = m.x, m.y, m.z, m.bstate 
       rescue
-         @x, @y, @z, @bstate = m[:x], m[:y], m[:z], m[:bstate]
-      rescue
-         @x= @y= @z= @bstate = 0
+         begin @x, @y, @z, @bstate = m[:x], m[:y], m[:z], m[:bstate]
+         rescue
+         end
       end
 
       def update!(x: nil, y: nil, z: nil, bstate: nil)
          @x = x if x
          @y = y if y
          @z = z if z
-         @bstate = (bstate or @bstate)
+         @bstate = bstate if bstate
       end
    end
 end
@@ -36,7 +37,6 @@ module ICurses
                method_missing(meth_up, *args)
             end
          )
-
          module_function(meth)
       elsif not respond_to? meth_up
          alias_method(meth_up, meth) rescue (
