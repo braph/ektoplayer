@@ -133,7 +133,7 @@ class MpgWrapperPlayer
             Thread.new do
                begin
                   @mpg123_in, @mpg123_out, mpg123_err, @mpg123_thread =
-                     Open3.popen3('mpg123', '-o', 'jack,pulse,alsa,oss', '--fuzzy', '-b', '1024', '-R')
+                     Open3.popen3('mpg123', '-o', 'alsa,jack,pulse,oss', '--fuzzy', '-R')
 
                   while (line = @mpg123_out.readline)
                      cmd, line = line.split(' ', 2)
