@@ -191,7 +191,7 @@ module UI
 
             write_at(old_cursor); render(old_selected)
             write_at(new_cursor); render(@selected, selected: true)
-            _check
+            #_check
             want_refresh
          elsif (new_cursor.between?(-(@size.height - 1), (2 * @size.height - 1)))
             # new selected item is max a half screen size away
@@ -206,7 +206,7 @@ module UI
 
                @win.insert_top; render(@selected, selected: true)
                @cursor = 0
-               _check
+               #_check
             else
                if lines_before_cursor > (@selected - old_selected)
                   write_at(old_cursor); render(old_selected)
@@ -218,14 +218,14 @@ module UI
 
                @win.append_bottom; render(@selected, selected: true)
                @cursor = cursor_max
-               _check
+               #_check
             end
 
             want_refresh
          else
             #@selected = new_index
             @cursor = new_index.clamp(0, cursor_max) # todo new_index<>new_cursor? ne muess scho pasn
-            _check
+            #_check
             want_redraw
          end
 
@@ -242,7 +242,7 @@ module UI
          with_lock do
             old_cursor, @cursor = @cursor, new_cursor
             old_selected, @selected = @selected, (@selected - (old_cursor - @cursor)).clamp(0, index_last)
-            _check
+            #_check
 
             if @selection.started?
                want_redraw
@@ -290,12 +290,12 @@ module UI
 
             write_at(@cursor); render(@selected, selected: true)
 
-            _check
+            #_check
             want_refresh
          else
             @selected -= n # TODO: move up?
             force_cursorpos(@cursor)
-            _check # todo: move up
+            #_check # todo: move up
             want_redraw
          end
 
@@ -310,7 +310,7 @@ module UI
 
          if index_bottom == index_last
             select_from_cursorpos((@cursor + n).clamp(0, cursor_max))
-            _check
+            #_check
          elsif n < @size.height
             old_index_bottom = index_bottom
             old_selected, @selected = @selected, @selected + n
@@ -325,24 +325,24 @@ module UI
 
             write_at(@cursor); render(@selected, selected: true)
 
-            _check
+            #_check
             want_refresh
          else
             @selected += n
             force_cursorpos(@cursor)
-            _check
+            #_check
             want_redraw
          end
 
          self.unlock
-         _check
+         #_check
       end
 
       def draw
          @win.erase
          return if @list.empty?
          @selected = @selected.clamp(0, index_last)
-         _check
+         #_check
 
          @cursor.times do |i|
             unless row = @list[@selected - (@cursor - i)]
@@ -353,7 +353,7 @@ module UI
             write_at(i); render(@selected - (@cursor - i))
          end
 
-         _check
+         #_check
          write_at(@cursor); render(@selected, selected: true)
 
          (@cursor + 1).upto(@size.height - 1).each_with_index do |c, i|
@@ -361,7 +361,7 @@ module UI
             write_at(c); render(@selected + i + 1)
          end
 
-         _check
+         #_check
       end
 
       def on_mouse_click(mevent, mevent_transformed)
@@ -373,7 +373,7 @@ module UI
 
       protected
 
-      def write_at(pos)   @win.line_start(pos).clrtoeol   end
+      def write_at(pos)   @win.move(pos, 0)               end
 
       def index_first;   0                                end
       def index_last;    [@list.size, 1].max - 1          end

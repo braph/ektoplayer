@@ -48,7 +48,7 @@ module UI
             layout;
             @want ^= WANT_LAYOUT
          end
-         return   if not visible?
+         return if not visible?
 
          if @want & WANT_REDRAW > 0
             draw
@@ -66,7 +66,7 @@ module UI
             layout;
             @want ^= WANT_LAYOUT
          end
-         return   if not visible?
+         return if not visible?
 
          if @want & WANT_REDRAW > 0 or force_redraw
             draw
@@ -120,7 +120,7 @@ module UI
       def mouse_click(mevent)
          if new_event = mouse_event_transform(mevent)
             trigger(@mouse, new_event)
-            trigger(@mouse_event, new_event)
+            trigger(@mouse_section, new_event)
          end
       end
 
