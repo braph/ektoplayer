@@ -10,7 +10,7 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.17'.freeze
+      VERSION = '0.1.18'.freeze
       GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
       EKTOPLAZM_URL = 'http://www.ektoplazm.com'.freeze
 
