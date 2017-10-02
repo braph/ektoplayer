@@ -23,7 +23,12 @@ module UI
       self.reg('kend',  "\033[4~", ICurses::KEY_END)
       self.reg('kpp',   "\033[5~", ICurses::KEY_PPAGE)
       self.reg('knp',   "\033[6~", ICurses::KEY_NPAGE)
-      (0..60).each { |i| self.reg("kf#{i}", '', ICurses.const_get("KEY_F#{i}")) }
+      (0..60).each do |i|
+         begin
+            self.reg("kf#{i}", '', ICurses.const_get("KEY_F#{i}"))
+         rescue 
+         end
+      end
 
       KEYS.freeze
 
