@@ -28,7 +28,7 @@ set delete_after_extraction true
 
 # How many tracks from database should be added to
 # the playlist on application start.
-set playlist_load_newest 300
+set playlist_load_newest 1000
 
 # Enable/disable local mp3 cache.
 # If this option is disabled, the downloaded mp3 files won't be moved
@@ -49,40 +49,16 @@ set use_colors auto
 set threads 20
 
 # Format of playlist columns
-set playlist.format '
- <number size="3" fg="magenta" />
- <artist rel="25" fg="blue" />
- <album rel="30" fg="red" />
- <title rel="33" fg="yellow" />
- <styles rel="20" fg="cyan" />
- <bpm size="3" fg="green" justify="right" />'
+set playlist.format ' <number size="3" fg="magenta" /> <artist rel="25" fg="blue" /> <album rel="30" fg="red" /> <title rel="33" fg="yellow" /> <styles rel="20" fg="cyan" /> <bpm size="3" fg="green" justify="right" />'
 
 # Format of playlist columns (256 colors)
-set playlist.format_256 '
- <number size="3" fg="97" />
- <artist rel="25" fg="24" />
- <album rel="30" fg="160" />
- <title rel="33" fg="178" />
- <styles rel="20" fg="37" />
- <bpm size="3" fg="28" justify="right" />'
+set playlist.format_256 ' <number size="3" fg="97" /> <artist rel="25" fg="24" /> <album rel="30" fg="160" /> <title rel="33" fg="178" /> <styles rel="20" fg="37" /> <bpm size="3" fg="28" justify="right" />'
 
 # Format of browser columns
-set browser.format '
- <number size="3" fg="magenta" />
- <artist rel="25" fg="blue" />
- <album rel="30" fg="red" />
- <title rel="33" fg="yellow" />
- <styles rel="20" fg="cyan" />
- <bpm size="3" fg="green" justify="right" />'
+set browser.format ' <number size="3" fg="magenta" /> <artist rel="25" fg="blue" /> <album rel="30" fg="red" /> <title rel="33" fg="yellow" /> <styles rel="20" fg="cyan" /> <bpm size="3" fg="green" justify="right" />'
 
 # Format of browser columns (256 colors)
-set browser.format_256 '
- <number size="3" fg="97" />
- <artist rel="25" fg="24" />
- <album rel="30" fg="160" />
- <title rel="33" fg="178" />
- <styles rel="20" fg="37" />
- <bpm size="3" fg="28" justify="right" />'
+set browser.format_256 ' <number size="3" fg="97" /> <artist rel="25" fg="24" /> <album rel="30" fg="160" /> <title rel="33" fg="178" /> <styles rel="20" fg="37" /> <bpm size="3" fg="28" justify="right" />'
 
 # Enable/disable progressbar
 set progressbar.display true
@@ -133,8 +109,10 @@ bind global 4 help.show
 bind global F1 help.show
 bind global ! playinginfo.toggle
 bind global F2 playinginfo.toggle
+bind global \ playinginfo.toggle
 bind global % progressbar.toggle
 bind global F3 progressbar.toggle
+bind global ~ progressbar.toggle
 bind global = tabbar.toggle
 bind global F4 tabbar.toggle
 bind global RIGHT player.forward
@@ -238,7 +216,7 @@ bind info ^D info.page_down
 
 ### Theme ###
 
-color_mono default            white black
+color_mono default            none none
 color_mono url                default default underline
 color_mono tabbar.selected    default default bold
 
@@ -254,7 +232,7 @@ color info.download.error     red
 color progressbar.progress    blue
 color progressbar.rest        black
 color tabbar.selected         blue
-color tabbar.unselected       none
+color tabbar.unselected       white
 color list.item_even          blue
 color list.item_odd           blue
 color list.item_selection     magenta

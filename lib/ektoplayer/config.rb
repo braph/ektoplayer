@@ -52,12 +52,12 @@ module Ektoplayer
       CONFIG_DIR  = File.join(Dir.home, '.config', 'ektoplayer').freeze
       CONFIG_FILE = File.join(CONFIG_DIR, 'ektoplayer.rc').freeze
 
-      DEFAULT_PLAYLIST_FORMAT = %{
-         <number size="3" fg="magenta" />
-         <artist rel="25" fg="blue"    />
-         <album  rel="30" fg="red"     />
-         <title  rel="33" fg="yellow"  />
-         <styles rel="20" fg="cyan"    />
+      DEFAULT_PLAYLIST_FORMAT = %{\
+         <number size="3" fg="magenta" />\
+         <artist rel="25" fg="blue"    />\
+         <album  rel="30" fg="red"     />\
+         <title  rel="33" fg="yellow"  />\
+         <styles rel="20" fg="cyan"    />\
          <bpm    size="3" fg="green" justify="right" />}.squeeze(' ').freeze
 
       DEFAULT_PLAYINGINFO_FORMAT_TOP =
@@ -66,12 +66,12 @@ module Ektoplayer
       DEFAULT_PLAYINGINFO_FORMAT_BOTTOM = 
          '<artist bold="on" fg="blue" /><text> - </text><album bold="on" fg="red" /><text> (</text><year fg="cyan" /><text>)</text>'.freeze
 
-      DEFAULT_PLAYLIST_FORMAT_256 = %{
-         <number size="3" fg="97"  />
-         <artist rel="25" fg="24"  />
-         <album  rel="30" fg="160" />
-         <title  rel="33" fg="178" />
-         <styles rel="20" fg="37"  />
+      DEFAULT_PLAYLIST_FORMAT_256 = %{\
+         <number size="3" fg="97"  />\
+         <artist rel="25" fg="24"  />\
+         <album  rel="30" fg="160" />\
+         <title  rel="33" fg="178" />\
+         <styles rel="20" fg="37"  />\
          <bpm    size="3" fg="28" justify="right" />}.squeeze(' ').freeze
 
       DEFAULT_PLAYINGINFO_FORMAT_TOP_256 =
@@ -156,7 +156,7 @@ module Ektoplayer
             }
 
          reg :threads,
-            'Number of donwload threads during database update',
+            'Number of download threads during database update',
             20, lambda { |v| fail if Integer(v) < 1; Integer(v) }
 
          # - Playlist
