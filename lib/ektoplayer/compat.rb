@@ -1,4 +1,4 @@
-unless Array.respond_to? :sum
+unless Array.public_method_defined? :sum
    class Array
       def sum 
          reduce(:+)
@@ -6,7 +6,7 @@ unless Array.respond_to? :sum
    end
 end
 
-unless Integer.respond_to? :clamp
+unless Integer.public_method_defined? :clamp
    class Integer
       def clamp(min, max)
          return min if self < min
