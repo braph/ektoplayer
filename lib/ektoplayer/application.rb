@@ -61,6 +61,7 @@ module Ektoplayer
 
       def run
          puts "\033]0;ektoplayer\007"
+         Process.setproctitle('ektoplayer')
          Thread.report_on_exception=(true) if Thread.respond_to? :report_on_exception
 
          # make each configuration object globally accessible as a singleton
