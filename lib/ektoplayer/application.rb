@@ -152,6 +152,30 @@ module Ektoplayer
                   operations.send(:'playlist.play_next') if reason == :track_completed
                end
                
+               # ... bindings ...
+               Bindings.bind_view(:global, main_w, view_ops, operations)
+               %w(splash playlist browser info help).each do |w|
+                  Bindings.bind_view(w, main_w.send(w), view_ops, operations)
+               end
+
+               player.stop
+
+               # Preload playlist
+               if (n = Config[:playlist_load_newest]) > 0
+                  r = client.database.select(
+                     order_by: 'date DESC,album,number',
+                     limit: n
+                  )
+                  playlist.add(*r)
+               end
+
+               # If database is empty, start an initial update
+               if browser.tracks(0).size < 1
+                  operations.send(:update)
+               elsif (c = Config[:small_update_pages]) > 0
+                  operations.send(:update, pages: c)
+               end
+
                if Config[:prefetch]
                   Thread.new do
                      current_download_track = nil
@@ -169,29 +193,6 @@ module Ektoplayer
                         end
                      end
                   end
-               end
-
-               # ... bindings ...
-               Bindings.bind_view(:global, main_w, view_ops, operations)
-               %w(splash playlist browser info help).each do |w|
-                  Bindings.bind_view(w, main_w.send(w), view_ops, operations)
-               end
-
-               player.stop
-
-               # If database is empty, start an initial update
-               if browser.tracks(0).size < 1
-                  operations.send(:update)
-               elsif (c = Config[:small_update_pages]) > 0
-                  operations.send(:update, pages: c)
-               end
-
-               if (n = Config[:playlist_load_newest]) > 0
-                  r = client.database.select(
-                     order_by: 'date DESC,album,number',
-                     limit: n
-                  )
-                  playlist.add(*r)
                end
 
                rescue
