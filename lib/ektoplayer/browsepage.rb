@@ -127,10 +127,6 @@ module Ektoplayer
 
             @albums << album
          end
-
-         Application.log(self, "#{src} #{@albums.size} albums found")
-      rescue
-         Application.log(self, src, $!)
       end
    end
 end
