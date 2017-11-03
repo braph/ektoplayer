@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 unless ARGV[0]
-   %w(curses ncurses ncursesw ffi_curses).each do |i|
+   %w(curses ncurses ncursesw ffi-curses).each do |i|
       puts i
       fail i unless system($0, i)
    end
