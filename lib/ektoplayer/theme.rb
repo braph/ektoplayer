@@ -101,12 +101,6 @@ module Ektoplayer
             defs ||= @theme[8][name]   if @current >= 8
             defs ||= @theme[0][name]
 
-            #unless defs
-            #   defs ||= @theme[256][:default] if @current == 256
-            #   defs ||= @theme[8][:default]   if @current >= 8
-            #   defs ||= @theme[0][:default]
-            #end
-
             UI::Colors.set(name, *defs)
          end
       end
