@@ -20,8 +20,18 @@ module Ektoplayer
 
       def update(start_url: FREE_MUSIC_URL, pages: 0, parallel: 10)
          queue = parallel > 0 ? SizedQueue.new(parallel) : Queue.new 
-         insert_browserpage(bp = BrowsePage.new(start_url))
          results = Queue.new
+         bp = BrowsePage.new(start_url)
+         results << bp
+
+         insert_thread = Thread.new do
+            loop do
+               result = results.pop
+               @db.transaction
+               insert_browserpage(result)
+               @db.commit
+            end
+         end
 
          if pages > 0
             bp.page_urls[(bp.current_page_index + 1)..(bp.current_page_index + pages + 1)]
@@ -30,24 +40,24 @@ module Ektoplayer
          end.
          each do |url|
             queue << Thread.new do
-               results << BrowsePage.new(url)
+
+               3.times do |try|
+                  begin
+                     bp = BrowsePage.new(url)
+                     Application.log(self, url, bp.albums.size, "albums found")
+                     results << bp
+                     break
+                  rescue
+                     Application.log(self, url, $!, "(retry ##{try})")
+                  end
+               end
+
                queue.pop # unregister our thread
             end.priority
-
-            if results.size > 40
-               @db.transaction
-               40.times { insert_browserpage(results.pop(true)) }
-               @db.commit
-            end
          end
 
-         sleep 1 while not queue.empty?
-
-         @db.transaction
-         while (result = queue.pop(true) rescue nil)
-            insert_browserpage(result)
-         end
-         @db.commit
+         sleep 1 until queue.empty?
+         insert_thread.kill
       rescue
          Application.log(self, $!)
       end
