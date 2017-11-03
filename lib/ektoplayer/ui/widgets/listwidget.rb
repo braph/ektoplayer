@@ -58,27 +58,39 @@ module UI
          false
       end
 
-      def next(*a)  @direction == :up ? search_up(*a): search_down(*a)  end
+      def next(*a)  @direction == :up ? search_up(*a) : search_down(*a) end
       def prev(*a)  @direction == :up ? search_down(*a) : search_up(*a) end
 
       def search_up(current_pos, source)
          start_pos = (current_pos - 1).clamp(0, source.size)
 
+         # search up from current pos to 0
          start_pos.downto(0).each do |i|
             return i if comp(source[i])
          end
 
-         source.size
+         # restart search from bottom to start_pos
+         (source.size - 1).downto(start_pos).each do |i|
+            return i if comp(source[i])
+         end
+
+         nil # not found
       end
 
       def search_down(current_pos, source)
          start_pos = (current_pos + 1).clamp(0, source.size)
 
+         # search down from current pos
          start_pos.upto(source.size).each do |i|
             return i if comp(source[i])
          end
 
-         0
+         # restart search from top to start_pos
+         0.upto(start_pos).each do |i|
+            return i if comp(source[i])
+         end
+
+         nil # not found
       end
    end
 
@@ -95,10 +107,23 @@ module UI
          @selection = ListSelector.new
       end
 
-      def search_next;  self.selected=(@search.next(@selected, @list))  end
-      def search_prev;  self.selected=(@search.prev(@selected, @list))  end
-      def search_up;    self.search_start(:up)                          end
-      def search_down;  self.search_start(:down)                        end
+      def search_next
+         if pos = @search.next(@selected, @list)
+            self.selected=(pos)
+            self.center
+         end
+      end
+
+      def search_prev
+         if pos = @search.prev(@selected, @list)
+            self.selected=(pos)
+            self.center
+         end
+      end
+
+      def search_up;    self.search_start(:up)      end
+      def search_down;  self.search_start(:down)    end
+
       def search_start(direction)
          UI::Input.readline(@pos, @size.update(height: 1), prompt: '> ', add_hist: true) do |result|
             if result
@@ -132,14 +157,13 @@ module UI
 
       def render(index, **opts)
          return unless @item_renderer
-         return Ektoplayer::Application.log(self, 'render todo') unless @list[index]
+         return Ektoplayer::Application.log(self, index, caller) unless @list[index]
 
-         opts[:selection] = (@selection.started? and (
-               opts[:selected] or index.between?(
+         opts[:selection] = (@selection.started? and
+               index.between?(
                   [@selection.start_pos, @selected].min,
                   [@selection.start_pos, @selected].max
                )
-            )
          )
 
          @item_renderer.render(@win, @list[index], index, **opts)
@@ -152,97 +176,135 @@ module UI
 
       def top;         self.selected=(0)                          end
       def bottom;      self.selected=(index_last)                 end
-      def page_up;     self.scroll_up(size.height)                end
-      def page_down;   self.scroll_down(size.height)              end
-      def up(n=1)      self.selected=(selected - n)               end
-      def down(n=1)    self.selected=(selected + n)               end
+      def page_up;     self.scroll_list_up(@size.height)          end
+      def page_down;   self.scroll_list_down(@size.height)        end
+      def up(n=1)      self.scroll_cursor_up(1)                   end
+      def down(n=1)    self.scroll_cursor_down(1)                 end
       def center;      self.force_cursorpos(@size.height / 2)     end
 
       def list=(list)
          with_lock do
             @list = list
-
             @cursor = @selected = 0
             self.selected=(0)
             self.force_cursorpos(0)
-
             want_redraw
          end
       end
 
-      def selected=(new_index)
-         fail ArgumentError unless new_index
-         old_index_bottom = index_bottom
-         old_index_top = index_top
-         old_selected, @selected = @selected, new_index.clamp(0, index_last)
-         return if old_selected == @selected or @list.empty?
+      def scroll_cursor_down(n)
+         fail ArgumentError unless n
+         fail ArgumentError if n.negative?
+         n = n.clamp(0, items_after_cursor)
+         return if n == 0
+         new_cursor, new_selected = @cursor + n, @selected + n
 
          self.lock
 
-         old_cursor, new_cursor = @cursor, @cursor + (@selected - old_selected)
-
-         if new_cursor.between?(0, @size.height - 1)
-            # new selected item resides in current screen,
-            # just want_redraw the old line and the newly selected one
-            @cursor = new_cursor
-
-            # redraw whole screen in selection mode!
-            return want_redraw if @selection.started?
-
-            write_at(old_cursor); render(old_selected)
-            write_at(new_cursor); render(@selected, selected: true)
-            #_check
-            want_refresh
-         elsif (new_cursor.between?(-(@size.height - 1), (2 * @size.height - 1)))
-            # new selected item is max a half screen size away
-            if @selected < old_selected
-               if lines_after_cursor > (old_selected - @selected)
-                  write_at(old_cursor); render(old_selected)
-               end
-
-               (old_index_top - 1).downto(@selected + 1).each do |index|
-                  @win.insert_top; render(index)
-               end
-
-               @win.insert_top; render(@selected, selected: true)
-               @cursor = 0
-               #_check
-            else
-               if lines_before_cursor > (@selected - old_selected)
-                  write_at(old_cursor); render(old_selected)
-               end
-
-               (old_index_bottom + 1).upto(@selected - 1).each do |index|
-                  @win.append_bottom; render(index)
-               end
-
-               @win.append_bottom; render(@selected, selected: true)
-               @cursor = cursor_max
-               #_check
-            end
-
-            want_refresh
-         else
-            #@selected = new_index
-            @cursor = new_index.clamp(0, cursor_max) # todo new_index<>new_cursor? ne muess scho pasn
-            #_check
+         # it's faster to redraw the whole screen
+         if n >= @size.height
+            new_cursor = cursor_max
             want_redraw
+         else
+            # new cursor resides in current screen
+            if new_cursor <= cursor_max
+               if @selection.started?
+                  want_redraw
+               else
+                  write_at(@cursor); render(@selected)
+                  write_at(new_cursor); render(new_selected, selected: true)
+                  want_refresh
+               end
+            else
+               new_cursor = cursor_max
+
+               if @selection.started?
+                  want_redraw
+               else
+                  write_at(@cursor); render(@selected)
+
+                  (index_bottom + 1).upto(new_selected - 1).each do |index|
+                     @win.append_bottom; render(index)
+                  end
+
+                  @win.append_bottom; render(new_selected, selected: true)
+
+                  want_refresh
+               end
+            end
          end
 
+         @cursor, @selected = new_cursor, new_selected
       ensure
          self.unlock
+      end
+
+      def scroll_cursor_up(n)
+         fail ArgumentError unless n
+         fail ArgumentError if n.negative?
+         n = n.clamp(0, items_before_cursor)
+         return if n == 0
+         new_cursor, new_selected = @cursor - n, @selected - n
+
+         self.lock
+
+         if n >= @size.height
+            new_cursor = 0
+            want_redraw
+         else
+            # new cursor resides in current screen
+            if new_cursor >= 0
+               if @selection.started?
+                  want_redraw
+               else
+                  write_at(@cursor); render(@selected)
+                  write_at(new_cursor); render(new_selected, selected: true)
+                  want_refresh
+               end
+            else
+               new_cursor = 0
+
+               if @selection.started?
+                  want_redraw
+               else
+                  write_at(@cursor); render(@selected)
+
+                  (index_top - 1).downto(new_selected + 1).each do |index|
+                     @win.insert_top; render(index)
+                  end
+
+                  @win.insert_top; render(new_selected, selected: true)
+
+                  want_refresh
+               end
+            end
+         end
+
+         @cursor, @selected = new_cursor, new_selected
+      ensure
+         self.unlock
+      end
+
+      def selected=(new_index)
+         fail ArgumentError unless new_index
+         fail ArgumentError.new('negative index') if new_index.negative?
+         new_index = new_index.clamp(0, index_last)
+
+         with_lock do
+            @selected = new_index
+            self.force_cursorpos(@cursor)
+            want_redraw
+         end
       end
 
       # select an item by its current cursor pos
       def select_from_cursorpos(new_cursor)
          fail unless new_cursor.between?(0, cursor_max)
-         # FIXME: clamp with @list.size ????
          return if (new_cursor == @cursor) or @list.empty?
 
          with_lock do
             old_cursor, @cursor = @cursor, new_cursor
             old_selected, @selected = @selected, (@selected - (old_cursor - @cursor)).clamp(0, index_last)
-            #_check
 
             if @selection.started?
                want_redraw
@@ -255,19 +317,20 @@ module UI
       end
 
       def force_cursorpos(new_cursor)
-         self.lock
-         if @selected <= cursor_max
-            @cursor = @selected
-         elsif (diff = (index_last - @selected)) < cursor_max
-            @cursor = @size.height - diff - 1  #cursor_max.clamp(0, index_last - @selected)
-         else
-            @cursor = new_cursor.clamp(0, cursor_max)
+         with_lock do
+            if @selected <= cursor_max / 2
+               @cursor = @selected
+            elsif (diff = (index_last - @selected)) < cursor_max / 2
+               @cursor = @size.height - diff - 1
+            else
+               @cursor = new_cursor.clamp(cursor_max / 2, cursor_max)
+            end
+
+            want_redraw
          end
-         want_redraw
-         self.unlock
       end
 
-      def scroll_up(n=1)
+      def scroll_list_up(n=1)
          fail ArgumentError unless n
          n = n.clamp(0, items_before_cursor)
          return if n == 0 or @list.empty?
@@ -290,19 +353,17 @@ module UI
 
             write_at(@cursor); render(@selected, selected: true)
 
-            #_check
             want_refresh
          else
-            @selected -= n # TODO: move up?
+            @selected -= n
             force_cursorpos(@cursor)
-            #_check # todo: move up
             want_redraw
          end
 
          self.unlock
       end
 
-      def scroll_down(n=1)
+      def scroll_list_down(n=1)
          fail ArgumentError unless n
          n = n.clamp(0, items_after_cursor)
          return if n == 0 or @list.empty?
@@ -310,7 +371,6 @@ module UI
 
          if index_bottom == index_last
             select_from_cursorpos((@cursor + n).clamp(0, cursor_max))
-            #_check
          elsif n < @size.height
             old_index_bottom = index_bottom
             old_selected, @selected = @selected, @selected + n
@@ -325,27 +385,23 @@ module UI
 
             write_at(@cursor); render(@selected, selected: true)
 
-            #_check
             want_refresh
          else
             @selected += n
             force_cursorpos(@cursor)
-            #_check
             want_redraw
          end
 
          self.unlock
-         #_check
       end
 
       def draw
          @win.erase
          return if @list.empty?
-         @selected = @selected.clamp(0, index_last)
-         #_check
+         #@selected = @selected.clamp(0, index_last)
 
          @cursor.times do |i|
-            unless row = @list[@selected - (@cursor - i)]
+            unless @list[@selected - (@cursor - i)]
                @cursor = i
                break
             end
@@ -353,15 +409,12 @@ module UI
             write_at(i); render(@selected - (@cursor - i))
          end
 
-         #_check
          write_at(@cursor); render(@selected, selected: true)
 
          (@cursor + 1).upto(@size.height - 1).each_with_index do |c, i|
-            break unless row = @list[@selected + i + 1]
+            break unless @list[@selected + i + 1]
             write_at(c); render(@selected + i + 1)
          end
-
-         #_check
       end
 
       def on_mouse_click(mevent, mevent_transformed)
@@ -387,16 +440,8 @@ module UI
       def items_before_cursor;  @selected;                   end
       def items_after_cursor;   @list.size - @selected - 1   end
       def cursor_min;    0                                   end
-      def cursor_max;    [@size.height, @list.size].min - 1  end
-
-      private def _check # debug method
-         return
-         fail "@selected = nil"           unless @selected
-         fail "@selected = #{@selected}"  unless @selected >= 0
-         fail "@selected > @list.size"    if @selected >= @list.size
-         fail "@cursor = nil"             unless @cursor
-         fail "@cursor = #{@cursor}"      unless @cursor >= 0
-         fail "@cursor > max"             if @cursor > @win.maxy
+      def cursor_max
+         @list.empty? ? 0 : [@list.size, @size.height].min - 1
       end
    end
 end
