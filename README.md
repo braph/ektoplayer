@@ -36,6 +36,9 @@ It allows you to
 
 ## Installation
 
+*Note*: Running ruby gems requires to change the `$PATH` variable.
+See `gem env gempath`.
+
 ### Arch Linux
 
   * Using yaourt:
@@ -54,9 +57,18 @@ It allows you to
    * using gem:
 
       ```
-      apt-get install ruby ruby-dev libz-dev ruby-ncurses ruby-nokogiri ruby-sqlite3 \
+      apt-get install ruby ruby-dev libz libz-dev ruby-ncurses ruby-nokogiri ruby-sqlite3 \
                       mpg123 sqlite3 libncurses5
       gem install ektoplayer
+      ```
+
+### OpenSuse
+   * using gem:
+
+      ```
+      zypper in ruby ruby-devel gcc sqlite3 sqlite3-devel ncurses ncurses-devel zlib zlib-devel \
+                mpg123 
+      gem install ffi-curses ektoplayer
       ```
 
 ## Configuration
