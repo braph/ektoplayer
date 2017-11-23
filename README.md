@@ -39,20 +39,29 @@ It allows you to
 ### Arch Linux
 
   * Using yaourt:
-   `yaourt -S ektoplayer`
+      ```
+      yaourt -S ektoplayer
+      ```
 
-  * Using pacman:
-   `pacman -S ruby mpg123 sqlite3 ncurses --needed`
-   `gem install ektoplayer`
+  * Using gem:
+
+      ```
+      pacman -S ruby mpg123 sqlite3 ncurses --needed
+      gem install ektoplayer
+      ```
 
 ### Debian / Ubuntu (not yet tested)
+   * using gem:
 
-    `apt-get install ruby ruby-ncurses ruby-nokogiri ruby-sqlite3 mpg123 sqlite3 libncurses5`
-    `gem install ektoplayer`
+      ```
+      apt-get install ruby ruby-dev libz-dev ruby-ncurses ruby-nokogiri ruby-sqlite3 \
+                      mpg123 sqlite3 libncurses5
+      gem install ektoplayer
+      ```
 
 ## Configuration
 
-Ektplayer keeps it's default configuration file under `~/.config/ektoplayer/ektoplayer.rc`.
+Ektoplayer keeps it's default configuration file under `~/.config/ektoplayer/ektoplayer.rc`.
 
 Available configuration commands:
    * `set <option> <value>`
