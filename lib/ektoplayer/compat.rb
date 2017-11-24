@@ -15,3 +15,11 @@ unless Integer.public_method_defined? :clamp
       end
    end
 end
+
+unless Integer.public_method_defined? :negative?
+   class Integer
+      def negative?
+         return (self < 0)
+      end
+   end
+end
