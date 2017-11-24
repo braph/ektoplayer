@@ -37,7 +37,7 @@ It allows you to
 ## Installation
 
 *Note*: Running ruby gems requires to change the `$PATH` variable.
-See `gem env gempath`.
+See output of `gem env gempath`.
 
 ### Arch Linux
 
@@ -47,15 +47,13 @@ See `gem env gempath`.
       ```
 
   * Using gem:
-
       ```
-      pacman -S ruby mpg123 sqlite3 ncurses --needed
+      pacman -S --needed ruby mpg123 sqlite3 ncurses
       gem install ektoplayer
       ```
 
-### Debian / Ubuntu (not yet tested)
-   * using gem:
-
+### Debian
+   * Using gem:
       ```
       apt-get install ruby ruby-dev libz libz-dev ruby-ncurses ruby-nokogiri ruby-sqlite3 \
                       mpg123 sqlite3 libncurses5
@@ -63,12 +61,18 @@ See `gem env gempath`.
       ```
 
 ### OpenSuse
-   * using gem:
-
+   * Using gem:
       ```
       zypper in ruby ruby-devel gcc sqlite3 sqlite3-devel ncurses ncurses-devel zlib zlib-devel \
                 mpg123 
-      gem install ffi-curses ektoplayer
+      gem install ektoplayer ffi-curses
+      ```
+
+### Ubuntu
+   * Using gem:
+      ```
+      apt-get install ruby ruby-dev sqlite3 ruby-sqlite3 ruby-nokogiri ruby-ncurses mpg123
+      gem install ektoplayer
       ```
 
 ## Configuration
