@@ -2,7 +2,7 @@ $:.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = 'ektoplayer'
-  s.version       = '0.1.20'
+  s.version       = '0.1.21'
   s.authors       = ['Benjamin Abendroth']
   s.email         = 'braph93@gmx.de'
   s.homepage      = 'http://github.com/braph/ektoplayer'
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'sqlite3',  '~> 1.3'
-  s.add_dependency 'nokogiri', '~> 1.7'
+  s.add_dependency 'nokogiri', '~> 1.6'
 
   s.requirements << 'Playback: /bin/mpg123 or the "audite-lib" gem'
   s.requirements << 'Archive unpacking: /bin/unzip, /bin/7z or the "rubyzip" gem'
