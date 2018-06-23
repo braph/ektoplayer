@@ -10,7 +10,7 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.22'.freeze
+      VERSION = '0.1.23'.freeze
       GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
       EKTOPLAZM_URL = 'http://www.ektoplazm.com'.freeze
 
@@ -107,7 +107,7 @@ module Ektoplayer
             client = Client.new
 
             # ... models ...
-            player      = Models::Player.new(client)
+            player      = Models::Player.new(client, Config[:audio_system])
             browser     = Models::Browser.new(client)
             playlist    = Models::Playlist.new
             database    = Models::Database.new(client)

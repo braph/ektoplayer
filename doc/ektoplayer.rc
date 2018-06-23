@@ -45,7 +45,10 @@ set small_update_pages 5
 # Choose color capabilities. auto|mono|8|256
 set use_colors auto
 
-# Number of donwload threads during database update
+# Set output audio system. See option `-o` in mpg123(1)
+set audio_system pulse,alsa,jack,oss
+
+# Number of download threads during database update
 set threads 20
 
 # Format of playlist columns

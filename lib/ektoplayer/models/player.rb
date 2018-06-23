@@ -4,10 +4,10 @@ require_relative '../players/mpg_wrapper_player'
 module Ektoplayer
    module Models
       class Player < Model
-         def initialize(client)
+         def initialize(client, audio_system)
             super()
             @client = client
-            @player = MpgWrapperPlayer.new
+            @player = MpgWrapperPlayer.new(audio_system)
             @events = @player.events
             #@events.register(:position_change, :track_completed, :pause, :stop, :play)
             #@player.events.on_all(&@events.method(:trigger))

@@ -16,7 +16,8 @@ class MpgWrapperPlayer
    CMD_FORMAT = 'FORMAT'.freeze
    CMD_SAMPLE = 'SAMPLE'.freeze
 
-   def initialize
+   def initialize(audio_system)
+      @audio_system = audio_system
       @events = Events.new(:play, :pause, :stop, :position_change)
       @lock = Mutex.new
       @mpg123_in, @mpg123_out, @mpg123_thread = nil, nil, nil
@@ -133,7 +134,7 @@ class MpgWrapperPlayer
             Thread.new do
                begin
                   @mpg123_in, @mpg123_out, mpg123_err, @mpg123_thread =
-                     Open3.popen3('mpg123', '--fuzzy', '-R')
+                     Open3.popen3('mpg123', '-o', @audio_system, '--fuzzy', '-R')
 
                   while (line = @mpg123_out.readline)
                      cmd, line = line.split(' ', 2)

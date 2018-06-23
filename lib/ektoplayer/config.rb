@@ -155,6 +155,9 @@ module Ektoplayer
                  '8' => 8, '256' => 256 }[v] or fail 'invalid value'
             }
 
+         reg :audio_system,
+            'Set output audio system. See option `-o` in mpg123(1)', 'pulse,alsa,jack,oss'
+
          reg :threads,
             'Number of download threads during database update',
             20, lambda { |v| fail if Integer(v) < 1; Integer(v) }
