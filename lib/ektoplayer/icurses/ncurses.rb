@@ -63,7 +63,7 @@ module ICurses
    module_function :initscr
 
    def stdscr
-      ICurses::IWindow.new Ncurses.stdscr
+      ICurses::IWindow.new( Ncurses.stdscr )
    end
    module_function :stdscr
 

@@ -2,9 +2,10 @@ module ICurses
    class IMouseEvent
       attr_accessor :x, :y, :z, :bstate
 
-      def initialize(mouse_event=nil, bstate: 0, x: 0, y: 0, z: 0)
-         @x, @y, @z, @bstate = x, y, z, bstate
-         from_mouse_event!(mouse_event)
+      def initialize(mouse_event=nil, bstate: nil, x: nil, y: nil, z: nil)
+         @x, @y, @z, @bstate = 0, 0, 0, 0
+         from_mouse_event!(mouse_event) if mouse_event
+         update!(x:x, y:y, z:z, bstate:bstate)
       end
 
       def [](key)          send(key)               end
@@ -13,9 +14,7 @@ module ICurses
       def from_mouse_event!(m)
          @x, @y, @z, @bstate = m.x, m.y, m.z, m.bstate 
       rescue
-         begin @x, @y, @z, @bstate = m[:x], m[:y], m[:z], m[:bstate]
-         rescue
-         end
+         @x, @y, @z, @bstate = m[:x], m[:y], m[:z], m[:bstate]
       end
 
       def update!(x: nil, y: nil, z: nil, bstate: nil)
@@ -28,6 +27,7 @@ module ICurses
 end
 
 module ICurses
+   # Alias methods (`LINES` becomes `lines`, etc ...)
    %w(lines cols colors init_pair color_pair).each do |meth| 
       meth_up = meth.upcase
 
@@ -53,6 +53,7 @@ module ICurses
          alias_method(:<<, :addstr)
       end
 
+      # Provide `curx` as well as `getcurx`
       %w(curx cury maxx maxy begx begy).each do |meth|
          full = 'get' + meth
          if not respond_to? meth
