@@ -30,7 +30,11 @@ class MpgWrapperPlayer
       @track_completed = nil
    end
 
-   def can_http?; true; end
+   # NOTE
+   # Since ektoplazm.com switched to Cloudflare (using HTTP/2.0) mpg123
+   # cannot handle those streams anymore. This may change in future versions
+   # of mpg123.
+   def can_http?; false; end
 
    def play(file=nil)
       start_mpg123_thread

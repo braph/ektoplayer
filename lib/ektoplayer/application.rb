@@ -10,13 +10,13 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.23'.freeze
+      VERSION = '0.1.24'.freeze
       GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
-      EKTOPLAZM_URL = 'http://www.ektoplazm.com'.freeze
+      EKTOPLAZM_URL = 'https://ektoplazm.com'.freeze
 
       EKTOPLAZM_ALBUM_BASE_URL   = "#{EKTOPLAZM_URL}/free-music".freeze
       EKTOPLAZM_COVER_BASE_URL   = "#{EKTOPLAZM_URL}/img".freeze
-      EKTOPLAZM_TRACK_BASE_URL   = "#{EKTOPLAZM_URL}/mp3".freeze
+      EKTOPLAZM_TRACK_BASE_URL   = "#{EKTOPLAZM_URL}/audio".freeze
       EKTOPLAZM_STYLE_BASE_URL   = "#{EKTOPLAZM_URL}/style".freeze
       EKTOPLAZM_ARCHIVE_BASE_URL = "#{EKTOPLAZM_URL}/files".freeze
 

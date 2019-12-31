@@ -84,7 +84,7 @@ module Ektoplayer
          # parameter `description` is used by tools/mkconfig.rb, but not here
 
          if method
-            @cast[key.to_sym]    = method if method
+            @cast[key.to_sym]    = method
             @options[key.to_sym] = method.(default).freeze
          else
             @options[key.to_sym] = default.freeze
@@ -104,9 +104,10 @@ module Ektoplayer
             File.join(CONFIG_DIR, 'ektoplayer.log'),
             File.method(:expand_path)
 
-         reg :temp_dir, %{Temporary dir for downloading mp3 files. They will be moved to `cache_dir`
-                          after the download completed and was successful.
-                          Directory will be created if it does not exist, parent directories will not be created.},
+         reg :temp_dir,
+            %{Temporary dir for downloading mp3 files.
+              They will be moved to `cache_dir` after the download completed and was successful.
+              Directory will be created if it does not exist, parent directories will not be created.},
             '/tmp/.ektoplazm',
             File.method(:expand_path)
 
@@ -143,7 +144,7 @@ module Ektoplayer
               be deleted on application exit.}, true
 
          reg :prefetch,
-            'Enable prefetching next track do be played', true
+            'Enable prefetching the next track do be played', true
 
          reg :small_update_pages,
             'How many pages should be fetched after start', 5
@@ -156,7 +157,8 @@ module Ektoplayer
             }
 
          reg :audio_system,
-            'Set output audio system. See option `-o` in mpg123(1)', 'pulse,alsa,jack,oss'
+            'Set output audio system. See option `-o` in mpg123(1)',
+            'pulse,alsa,jack,oss'
 
          reg :threads,
             'Number of download threads during database update',

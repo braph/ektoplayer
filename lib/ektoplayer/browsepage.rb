@@ -16,14 +16,14 @@ module Ektoplayer
 
       attr_reader :albums, :page_urls, :current_page_index
 
-      def self.parse(src)
-         BrowsePage.new(src)
+      def self.from_url(url)
+         BrowsePage.new(open(url))
       end
 
       def styles;            @@styles or []   end
       def first_page_url;    @page_urls[0]    end
       def last_page_url;     @page_urls[-1]   end
-      def current_page_url;  @page_urls[@current_page_index] end
+      def current_page_url;  @page_urls[@current_page_index - 1] end
 
       def prev_page_url
          @page_urls[@current_page_index - 1] if @current_page_index > 0
@@ -34,14 +34,14 @@ module Ektoplayer
       end
 
       def initialize(src)
-         doc = Nokogiri::HTML(open(src))
+         doc = Nokogiri::HTML(src)
          @albums = []
 
-         @page_urls = []
-         doc.css('.wp-pagenavi option').each_with_index do |option, i|
-            @current_page_index = i if option['selected']
-            @page_urls << option['value']
-         end
+         base_url = doc.css('.wp-pagenavi a')[0]['href'].sub(/\d+$/, '')
+         pages = doc.css('.wp-pagenavi .pages')[0].text # -> "Page 1 of 22"
+         @current_page_index, last = pages.gsub(/[^\d ]/, '').split()
+         @current_page_index, last = @current_page_index.to_i, last.to_i
+         @page_urls = (1..last).map do |i| "#{base_url}#{i}" end
 
          @@styles ||= begin
             doc.xpath('//a[contains(@href, "http") and contains(@href, "/style/")]').map do |a|
@@ -87,14 +87,22 @@ module Ektoplayer
                album[:rating], album[:votes] = 0, 0
             end
 
-            begin
-               base64_tracklist = post.at_css('script').text.scan(/soundFile:"(.*)"/)[0][0]
-               tracklist_urls = Base64.decode64(base64_tracklist).split(?,)
-               tracklist_urls.map! { |url| File.basename(url) }
-            rescue
+            # Extract audio file URLs
+            tracklist_urls = []
+            post.xpath('.//script').each do |script|
+               soundFile = script.text.scan(/soundFile:"(.*)"/)
+               if soundFile.size > 0
+                  soundFile = soundFile[0][0]
+                  tracklist_urls = Base64.decode64(soundFile).split(?,)
+                  tracklist_urls.map! { |url| File.basename(url) }
+                  break
+               end
+            end
+            #
+            unless tracklist_urls.size > 0
                # Sometimes there are no tracks:
                # http://www.ektoplazm.com/free-music/dj-basilisk-the-colours-of-ektoplazm
-               tracklist_urls = []
+               Application.log(self, "Found no tracks for #{album[:title]} on #{current_page_url}")
             end
 
             post.css('.tl').each do |album_track_list|

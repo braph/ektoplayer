@@ -5,7 +5,7 @@ require 'open-uri'
 require_relative 'browsepage'
 
 module Ektoplayer
-   MAIN_URL = 'http://www.ektoplazm.com'.freeze
+   MAIN_URL = 'https://ektoplazm.com'.freeze
    FREE_MUSIC_URL = "#{MAIN_URL}/section/free-music".freeze
 
    class DatabaseUpdater
@@ -21,7 +21,7 @@ module Ektoplayer
       def update(start_url: FREE_MUSIC_URL, pages: 0, parallel: 10)
          queue = parallel > 0 ? SizedQueue.new(parallel) : Queue.new 
          results = Queue.new
-         bp = BrowsePage.new(start_url)
+         bp = BrowsePage.from_url(start_url)
          results << bp
 
          insert_thread = Thread.new do
@@ -43,7 +43,7 @@ module Ektoplayer
 
                3.times do |try|
                   begin
-                     bp = BrowsePage.new(url)
+                     bp = BrowsePage.from_url(url)
                      Application.log(self, url, bp.albums.size, "albums found")
                      results << bp
                      break

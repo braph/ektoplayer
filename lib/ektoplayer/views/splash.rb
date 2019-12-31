@@ -6,32 +6,32 @@ require_relative '../common'
 module Ektoplayer
    module Views
       class Splash < UI::Window
-         EKTOPLAZM_LOGO = %q.
+         EKTOPLAZM_LOGO = %q[
    ____    _   _     _             ____    _       _____   ______   _ ___ ___
   /  __)  ; | | ;   | |           |  _ \  | |     /___  \ |____  | | '_  `_  \
  /  /     | | | |  _| |__   ___   | | | | | |         | |      | | | | | | | |
-(  (      | | | | |_   __) / _ \  | | | | | |      ___| |      / , | | | | | |
+(  (      | | | | |_   __) / _ \  | | | | | |      ___| |      / ; | | | | | |
  \  \_    | | | |   | |   | | | | | | | | | |     /  _| |     / /  | | | | | |
   )  _)   | | | |   | |   | | | | | |_| ; | |     | | | |    / /   | | | | | |
  /  /     | |_|/    | |   | |_| | |  __/  | |     | | | |   / /    | | | | | |
 (  (      |  _{     | |    \___/  | |     | |     | | | |  / /     | | |_| | |
- \  \__   | | |\    | |__         | |     | :___  | |_| | , /____  | |     | |
-  \____)  |_| |_|   \___/         |_|     \____/  \_____| |______| |_|     |_|..
+ \  \__   | | |\    | |__         | |     | :___  | |_| | : /____  | |     | |
+  \____)  |_| |_|   \___/         |_|     \____/  \_____| |______| |_|     |_|].
                                                        split(?\n)[1..-1].freeze
-         EKTOPLAZM_SIGNATURE = %q{
+         EKTOPLAZM_SIGNATURE = %q[
   ___                   _   _    _ _                  _   _
  / __| ___ _  _ _ _  __| | | |  (_) |__  ___ _ _ __ _| |_(_)___ _ _
  \__ \/ _ \ || | ' \/ _` | | |__| | '_ \/ -_) '_/ _` |  _| / _ \ ' \
- |___/\___/\_,_|_||_\__,_| |____|_|_.__/\___|_| \__,_|\__|_\___/_||_|}.
+ |___/\___/\_,_|_||_\__,_| |____|_|_.__/\___|_| \__,_|\__|_\___/_||_|].
                                                        split(?\n)[1..-1].freeze
 
          BUBBLES = [[6,3], [6,7], [28,1], [28,9], [46,7], [71,9]].freeze
 
-         def load_colors
+         def load_colorfaders
             if Theme.current == 256
                @bubble_fade    = UI::ColorFader.new([168,167,161,161,161])
-               @signature_fade = UI::ColorFader.new([99, 105, 111, 117])
-               @ekto_logo_fade = UI::ColorFader.new([23, 23, 29, 36, 42, 48, 42, 36, 29, 23])
+               @signature_fade = UI::ColorFader.new([99,105,111,117])
+               @ekto_logo_fade = UI::ColorFader.new([23,23,29,36,42,48,42,36,29,23])
             elsif Theme.current == 8
                @bubble_fade    = UI::ColorFader.new([:red])
                @ekto_logo_fade = UI::ColorFader.new([:blue])
@@ -45,7 +45,7 @@ module Ektoplayer
             @win.erase
             return if (EKTOPLAZM_LOGO.size >= @size.height or
                       EKTOPLAZM_LOGO.max.size >= @size.width)
-            load_colors
+            load_colorfaders unless @bubble_fade#,@signature_fade,@ekto_logo_fade
 
             w_center = @size.width / 2
             h_center = @size.height / 2
