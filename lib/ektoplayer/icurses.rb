@@ -18,8 +18,9 @@ No module for ncurses found. Please install one of the following gems:
 Maybe your distribution ships one of these already as a package.
 
    Arch Linux:
-      yaourt -S ruby-curses    # or
-      yaourt -S ruby-ncursesw
+      yaourt -S ruby-ncursesw # preferred
+      or
+      yaourt -S ruby-curses
 
    Debian / Ubuntu:
       apt-get install ruby-ncurses

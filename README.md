@@ -46,13 +46,21 @@ See output of `gem env gempath`.
       yaourt -S ektoplayer
       ```
 
+  * Using makepkg:
+      ```
+      git clone https://github.com/braph/ektoplayer
+      cd ektoplayer
+      makepkg
+      sudo pacman -U ektoplayer-*.pkg.tar.xz
+      ```
+
   * Using gem:
       ```
       pacman -S --needed ruby mpg123 sqlite3 ncurses
       gem install ektoplayer
       ```
 
-### Debian
+### Debian (*)
    * Using gem:
       ```
       apt-get install ruby ruby-dev libz libz-dev ruby-ncurses ruby-nokogiri ruby-sqlite3 \
@@ -60,7 +68,7 @@ See output of `gem env gempath`.
       gem install ektoplayer
       ```
 
-### OpenSuse
+### OpenSuse (*)
    * Using gem:
       ```
       zypper in ruby ruby-devel gcc sqlite3 sqlite3-devel ncurses ncurses-devel zlib zlib-devel \
@@ -68,12 +76,14 @@ See output of `gem env gempath`.
       gem install ektoplayer ffi-curses
       ```
 
-### Ubuntu
+### Ubuntu (*)
    * Using gem:
       ```
       apt-get install ruby ruby-dev sqlite3 ruby-sqlite3 ruby-nokogiri ruby-ncurses mpg123
       gem install ektoplayer
       ```
+
+(*) Not tested yet
 
 ## Configuration
 

@@ -7,7 +7,7 @@ module Ektoplayer
    module Views
       class Splash < UI::Window
          EKTOPLAZM_LOGO = %q[
-   ____    _   _     _             ____    _       _____   ______   _ ___ ___
+   ____    _   _     _             ____    _       _____   ______   _ ___ ___ 
   /  __)  ; | | ;   | |           |  _ \  | |     /___  \ |____  | | '_  `_  \
  /  /     | | | |  _| |__   ___   | | | | | |         | |      | | | | | | | |
 (  (      | | | | |_   __) / _ \  | | | | | |      ___| |      / ; | | | | | |
@@ -44,7 +44,7 @@ module Ektoplayer
          def draw
             @win.erase
             return if (EKTOPLAZM_LOGO.size >= @size.height or
-                      EKTOPLAZM_LOGO.max.size >= @size.width)
+                       EKTOPLAZM_LOGO[0].size >= @size.width)
             load_colorfaders unless @bubble_fade#,@signature_fade,@ekto_logo_fade
 
             w_center = @size.width / 2
