@@ -19,9 +19,9 @@ module Ektoplayer
   \____)  |_| |_|   \___/         |_|     \____/  \_____| |______| |_|     |_|].
                                                        split(?\n)[1..-1].freeze
          EKTOPLAZM_SIGNATURE = %q[
-  ___                   _   _    _ _                  _   _
- / __| ___ _  _ _ _  __| | | |  (_) |__  ___ _ _ __ _| |_(_)___ _ _
- \__ \/ _ \ || | ' \/ _` | | |__| | '_ \/ -_) '_/ _` |  _| / _ \ ' \
+  ___                   _   _    _ _                  _   _          
+ / __| ___ _  _ _ _  __| | | |  (_) |__  ___ _ _ __ _| |_(_)___ _ _  
+ \__ \/ _ \ || | ' \/ _` | | |__| | '_ \/ -_) '_/ _` |  _| / _ \ ' \ 
  |___/\___/\_,_|_||_\__,_| |____|_|_.__/\___|_| \__,_|\__|_\___/_||_|].
                                                        split(?\n)[1..-1].freeze
 
@@ -49,7 +49,7 @@ module Ektoplayer
 
             w_center = @size.width / 2
             h_center = @size.height / 2
-            left_pad = w_center - (EKTOPLAZM_LOGO.max.size / 2)
+            left_pad = w_center - (EKTOPLAZM_LOGO[0].size / 2)
 
             if EKTOPLAZM_LOGO.size + EKTOPLAZM_SIGNATURE.size + 3 > @size.height
                top_pad = h_center - (EKTOPLAZM_LOGO.size / 2)
@@ -75,7 +75,7 @@ module Ektoplayer
             return unless draw_signature
 
             top_pad += EKTOPLAZM_LOGO.size + 2
-            left_pad = w_center - (EKTOPLAZM_SIGNATURE.max.size / 2)
+            left_pad = w_center - (EKTOPLAZM_SIGNATURE[0].size / 2)
 
             EKTOPLAZM_SIGNATURE.each_with_index do |line, i|
                @win.move(top_pad + i, left_pad)
