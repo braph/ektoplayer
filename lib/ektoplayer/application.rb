@@ -10,8 +10,8 @@ require 'date'
 
 module Ektoplayer
    class Application
-      VERSION = '0.1.24'.freeze
-      GITHUB_URL = 'https://github.com/braph/ektoplayer'.freeze
+      VERSION       = '0.1.24'.freeze
+      GITHUB_URL    = 'https://github.com/braph/ektoplayer'.freeze
       EKTOPLAZM_URL = 'https://ektoplazm.com'.freeze
 
       EKTOPLAZM_ALBUM_BASE_URL   = "#{EKTOPLAZM_URL}/free-music".freeze
@@ -19,9 +19,6 @@ module Ektoplayer
       EKTOPLAZM_TRACK_BASE_URL   = "#{EKTOPLAZM_URL}/audio".freeze
       EKTOPLAZM_STYLE_BASE_URL   = "#{EKTOPLAZM_URL}/style".freeze
       EKTOPLAZM_ARCHIVE_BASE_URL = "#{EKTOPLAZM_URL}/files".freeze
-
-      CONFIG_DIR  = File.join(Dir.home, '.config', 'ektoplayer').freeze
-      CONFIG_FILE = File.join(CONFIG_DIR, 'ektoplayer.rc').freeze
 
       def self.album_url(album)
          "#{EKTOPLAZM_ALBUM_BASE_URL}/#{album}"
