@@ -1,6 +1,5 @@
 require 'set'
 require 'thread'
-require 'open-uri'
 
 require_relative 'browsepage'
 

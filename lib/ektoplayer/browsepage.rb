@@ -17,7 +17,7 @@ module Ektoplayer
       attr_reader :albums, :page_urls, :current_page_index
 
       def self.from_url(url)
-         BrowsePage.new(open(url))
+         BrowsePage.new(URI.open(url).read())
       end
 
       def styles;            @@styles or []   end
@@ -89,11 +89,11 @@ module Ektoplayer
 
             # Extract audio file URLs
             tracklist_urls = []
-            post.xpath('.//script').each do |script|
-               soundFile = script.text.scan(/soundFile:"(.*)"/)
+            post.xpath('.//div').each do |div|
+              soundFile = div.text.scan(/\[audio:([^\]].+)\]/)
                if soundFile.size > 0
                   soundFile = soundFile[0][0]
-                  tracklist_urls = Base64.decode64(soundFile).split(?,)
+                  tracklist_urls = soundFile.split(?,)
                   tracklist_urls.map! { |url| File.basename(url) }
                   break
                end
