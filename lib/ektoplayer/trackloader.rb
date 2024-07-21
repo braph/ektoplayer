@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'uri'
+require 'cgi'
 
 require_relative 'common'
 
@@ -27,7 +28,7 @@ module Ektoplayer
             @database.get_archives(url).select {|_|_['archive_type'] == 'MP3'}[0]
          )
 
-         r['archive_filename'] = URI.unescape(r['archive_url'])
+         r['archive_filename'] = CGI.unescapeURIComponent(r['archive_url'])
          r['archive_basename'] = File.basename(r['archive_filename'], '.zip')
          r['album_path'] = File.join(Config[:archive_dir], r['archive_basename'])
          r
