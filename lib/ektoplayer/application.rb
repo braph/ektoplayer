@@ -128,6 +128,13 @@ module Ektoplayer
             # ... views ...
             main_w = UI::Canvas.sub(Views::MainWindow)
 
+            Thread.new do
+              while true
+                UI::Canvas.update_screen(true, true)
+                sleep 0.05
+              end
+            end
+
             # next operations may take some time, espacially the ones
             # using the database (browser), so we put this inside a thread
             Thread.new do
